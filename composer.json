@@ -1,0 +1,31 @@
+{
+    "name": "swag/saas-connect",
+    "authors": [
+        {
+            "name": "shopware AG"
+        }
+    ],
+    "description": "A webhook based plugin system",
+    "type": "shopware-platform-plugin",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Swag\\SaasConnect\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Swag\\SaasConnect\\Test\\": "tests/"
+        }
+    },
+    "extra": {
+        "shopware-plugin-class": "Swag\\SaasConnect\\SaasConnect",
+        "label": {
+            "de-DE": "Cloud-Plugins",
+            "en-GB": "Cloud plugins"
+        }
+    },
+    "require-dev": {
+        "shopware/platform": "6.1.x-dev"
+    }
+}
