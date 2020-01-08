@@ -1,0 +1,18 @@
+version: '3.7'
+
+services:
+    static-analysis:
+        build:
+            context: dev-ops/container/static-analysis
+        volumes:
+            -   type: volume
+                source: composer-cache
+                target: /.composer
+            -   type: volume
+                source: npm-cache
+                target: /.npm
+            - ./:/app
+
+volumes:
+    composer-cache:
+    npm-cache:
