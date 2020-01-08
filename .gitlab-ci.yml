@@ -7,7 +7,27 @@ variables:
     PLATFORM_BRANCH: "6.1"
 
 stages:
+    - Build
+    - Static analysis
     - Unit
+
+Build-Analysis-Container:
+    stage: Build
+    only:
+        refs:
+            - merge_requests
+        changes:
+            - dev-ops/container/static-analysis/*
+    image: docker
+    services:
+        -   name: docker:18.09.7-dind
+            alias: docker
+    script:
+        - export IMAGE_TAG="${REPOSITORY_HOST}/shopware/php-static-analysis:${CI_COMMIT_SHORT_SHA}"
+        - apk add git bash
+        - docker login gitlab.shopware.com:5005 -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
+        - docker build dev-ops/container/static-analysis -t "${IMAGE_TAG}"
+        - docker push "${IMAGE_TAG}"
 
 Unit:
     stage: Unit
