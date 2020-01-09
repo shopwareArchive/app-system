@@ -3,7 +3,7 @@ USER_ID := $(shell id -u)
 GROUP_ID := $(shell id -g)
 
 # TARGETS
-.PHONY: help static-analysis test cs-fixer init
+.PHONY: help static-analysis test cs-fixer cs-fixer-all init
 
 .DEFAULT_GOAL := help
 
@@ -18,9 +18,10 @@ static-analysis: ## runs psalm and phpstan
 
 test: ## runs phpunit
 	composer dump-autoload
-	php -d pcov.enabled=1 ../../../vendor/bin/phpunit \
+	php -d pcov.enabled=1 -d pcov.directory=./src ../../../vendor/bin/phpunit \
        --configuration phpunit.xml.dist \
-       --coverage-clover build/artifacts/phpunit.clover.xml
+       --coverage-clover build/artifacts/phpunit.clover.xml \
+       --coverage-html build/artifacts/phpunit-coverage-html
 
 cs-fixer: ## fixes all php files currently marked edited by git
 	docker-compose run -w '/app' -u "$(USER_ID):$(GROUP_ID)" static-analysis composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress

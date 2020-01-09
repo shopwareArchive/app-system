@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:element name="manifest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="meta" type="meta"/>
+                <xs:element name="admin" type="admin" minOccurs="0">
+                    <xs:unique name="uniqueActionName">
+                        <xs:selector xpath="action-button"/>
+                        <xs:field xpath="@action"/>
+                    </xs:unique>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="meta">
+        <xs:sequence>
+            <xs:element type="xs:string" name="name"/>
+            <xs:element name="label" maxOccurs="unbounded" type="translatableString"/>
+            <xs:element name="description" maxOccurs="unbounded" minOccurs="0" type="translatableString"/>
+            <xs:element type="xs:string" name="author"/>
+            <xs:element type="xs:string" name="copyright"/>
+            <xs:element type="xs:string" name="version"/>
+            <xs:element type="xs:string" name="icon" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="admin">
+        <xs:sequence>
+            <xs:element name="action-button" maxOccurs="unbounded" minOccurs="0" type="action-button"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="action-button">
+        <xs:sequence>
+            <xs:element name="label" maxOccurs="unbounded" type="translatableString"/>
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="action" use="required"/>
+        <xs:attribute type="entity" name="entity" use="required"/>
+        <xs:attribute type="view" name="view" use="required"/>
+        <xs:attribute type="xs:string" name="url" use="required"/>
+        <xs:attribute type="xs:boolean" name="openNewTab" default="false"/>
+    </xs:complexType>
+    <xs:simpleType name="entity">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="product"/>
+            <xs:enumeration value="order"/>
+            <xs:enumeration value="catalogue"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="view">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="detail"/>
+            <xs:enumeration value="listing"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="translatableString">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="lang" type="languageCode" default="en-GB"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:simpleType name="languageCode">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[a-z]{2}-[A-Z]{2}"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>
