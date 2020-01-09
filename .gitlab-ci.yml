@@ -7,8 +7,61 @@ variables:
     PLATFORM_BRANCH: "6.1"
 
 stages:
+    - Build
+    - Static analysis
     - Unit
 
+cache:
+    key: "Eternal static key"
+    paths:
+        - .composer
+
+Build-Analysis-Container:
+    stage: Build
+    only:
+        refs:
+            - master
+        changes:
+            - dev-ops/container/static-analysis/*
+            - dev-ops/container/static-analysis/**/*
+    image: docker
+    services:
+        -   name: docker:18.09.7-dind
+            alias: docker
+    script:
+        - export IMAGE_NAME="${REPOSITORY_HOST}/shopware/shopware-cloud/connect/php-static-analysis"
+        - apk add git bash
+        - docker login gitlab.shopware.com:5005 -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
+        - docker build dev-ops/container/static-analysis -t "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"
+        - docker tag "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}" "${IMAGE_NAME}:latest"
+        - docker push "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"
+        - docker push "${IMAGE_NAME}:latest"
+
+Cs-Fixer:
+    stage: Static analysis
+    image: gitlab.shopware.com:5005/shopware/shopware-cloud/connect/php-static-analysis:latest
+    script:
+        - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
+        - php-cs-fixer fix --dry-run -v --allow-risky=yes --format=junit src | tee php-cs-fixer.xml
+    artifacts:
+        reports:
+            junit: php-cs-fixer.xml
+
+
+Psalm:
+    stage: Static analysis
+    image: gitlab.shopware.com:5005/shopware/shopware-cloud/connect/php-static-analysis:latest
+    script:
+        - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
+        - psalm --output-format=compact
+
+
+Phpstan:
+    stage: Static analysis
+    image: gitlab.shopware.com:5005/shopware/shopware-cloud/connect/php-static-analysis:latest
+    script:
+        - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
+        - phpstan analyze --configuration phpstan.neon src
 Unit:
     stage: Unit
     image: shopware/development:latest
