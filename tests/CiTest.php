@@ -17,7 +17,8 @@ class CiTest extends TestCase
 {
     use IntegrationTestBehaviour;
 
-    public function testStuff() {
+    public function testStuff()
+    {
         /** @var EntityRepository $repo */
         $repo = $this->getContainer()->get('media.repository');
         $id = Uuid::randomHex();
