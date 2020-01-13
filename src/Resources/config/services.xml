@@ -4,7 +4,38 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
+    <parameters>
+        <parameter key="saas_connect.app_dir">%kernel.root_dir%/../custom/apps</parameter>
+    </parameters>
     <services>
+        <service id="Swag\SaasConnect\Core\Content\App\AppService">
+            <argument type="service" id="app.repository"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\AppLoader"/>
+        </service>
 
+        <service id="Swag\SaasConnect\Core\Content\App\AppLoader">
+            <argument>%saas_connect.app_dir%</argument>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\Api\AppActionController" public="true">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Command\RefreshAppCommand">
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\AppService"/>
+            <argument type="service" id="app.repository"/>
+
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\AppDefinition">
+            <tag name="shopware.entity.definition" entity="app"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationDefinition">
+            <tag name="shopware.entity.definition" entity="app_translation"/>
+        </service>
     </services>
 </container>

@@ -20,6 +20,9 @@
             <errorLevel type="info">
                 <directory name="tests"/>
             </errorLevel>
+            <errorLevel type="suppress">
+                <referencedMethod name="Shopware\Core\Framework\Context::createDefaultContext" />
+            </errorLevel>
         </InternalMethod>
 
         <DeprecatedTrait>
