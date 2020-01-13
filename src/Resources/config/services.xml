@@ -10,6 +10,7 @@
     <services>
         <service id="Swag\SaasConnect\Core\Content\App\AppService">
             <argument type="service" id="app.repository"/>
+            <argument type="service" id="app_action_button.repository"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\AppLoader"/>
         </service>
 
@@ -36,6 +37,14 @@
 
         <service id="Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationDefinition">
             <tag name="shopware.entity.definition" entity="app_translation"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonDefinition">
+            <tag name="shopware.entity.definition" entity="app_action_button"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\Aggregate\ActionButtonTranslation\ActionButtonTranslationDefinition">
+            <tag name="shopware.entity.definition" entity="app_action_button_translation"/>
         </service>
     </services>
 </container>

@@ -2,6 +2,8 @@
 
 namespace Swag\SaasConnect\Core\Content\App;
 
+use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
+use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonDefinition;
 use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationDefinition;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
@@ -54,6 +56,8 @@ class AppDefinition extends EntityDefinition
             (new TranslationsAssociationField(AppTranslationDefinition::class, 'app_id'))->addFlags(new Required(), new CascadeDelete()),
             new TranslatedField('label'),
             new TranslatedField('description'),
+
+            new OneToManyAssociationField('actionButtons', ActionButtonDefinition::class, 'app_id')
         ]);
     }
 }

@@ -15,18 +15,15 @@ class Manifest
     private $metadata;
 
     /**
-     * @var ActionButton[]
+     * @var array
      */
-    private $actionButtons = [];
+    private $admin = [];
 
     private function __construct(string $path, array $data)
     {
         $this->path = $path;
         $this->metadata = $data['metadata'];
-
-        foreach ($data['admin']['actionButtons'] as $actionButton) {
-            $this->actionButtons[] = (new ActionButton())->assign($actionButton);
-        }
+        $this->admin = $data['admin'];
     }
 
     public static function createFromXmlFile(string $xmlFile): self
@@ -47,8 +44,8 @@ class Manifest
         return $this->metadata;
     }
 
-    public function getActionButtons(): array
+    public function getAdmin(): array
     {
-        return $this->actionButtons;
+        return $this->admin;
     }
 }
