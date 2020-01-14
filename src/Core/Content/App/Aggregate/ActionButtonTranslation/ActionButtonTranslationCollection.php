@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation;
+namespace Swag\SaasConnect\Core\Content\App\Aggregate\ActionButtonTranslation;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 

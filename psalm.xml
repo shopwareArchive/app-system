@@ -37,6 +37,10 @@
             </errorLevel>
         </DeprecatedMethod>
 
+        <!-- Happens a lot for nullable props in DAL entities for associations -->
+        <PossiblyNullReference errorLevel="info"/>
+        <PossiblyNullIterator errorLevel="info"/>
+
         <!-- level 3 issues - slightly lazy code writing, but provably low false-negatives -->
 
         <PropertyNotSetInConstructor errorLevel="info"/>

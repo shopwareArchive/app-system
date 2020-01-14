@@ -43,41 +43,50 @@ class AppService
         $appsFromDb = $this->getRegisteredApps($context);
 
         foreach ($appsFromFileSystem as $manifest) {
-            $appData = $manifest->getMetadata();
-            $appData['path'] = $manifest->getPath();
-
-            /** @var AppEntity|null $app */
-            $app = $appsFromDb->filterByProperty('name', $manifest->getMetadata()['name'])->first();
-
-            if (!$app) {
-                $this->updateApp($appData, $manifest, $context);
+            // install
+            if (!array_key_exists($manifest->getMetadata()['name'], $appsFromDb)) {
+                $this->updateApp($manifest, $context);
                 continue;
             }
 
-            if (version_compare($manifest->getMetadata()['version'], $app->getVersion()) > 0) {
-                $appData['id'] = $app->getId();
-
-                $this->updateApp($appData, $manifest, $context);
+            $app = $appsFromDb[$manifest->getMetadata()['name']];
+            // update
+            if (version_compare($manifest->getMetadata()['version'], $app['version']) > 0) {
+                $this->updateApp($manifest, $context, $app['id']);
             }
 
-            $appsFromDb = $appsFromDb->filter(function (AppEntity $x) use ($app) {
-                return $x->getId() !== $app->getId();
-            });
+            unset($appsFromDb[$manifest->getMetadata()['name']]);
         }
 
         $this->deleteNotFoundApps($appsFromDb, $context);
     }
 
-    private function getRegisteredApps(Context $context): AppCollection
+    private function getRegisteredApps(Context $context): array
     {
         /** @var AppCollection $apps */
         $apps = $this->appRepository->search(new Criteria(), $context)->getEntities();
 
-        return $apps;
+        $appData = [];
+        /** @var AppEntity $app */
+        foreach ($apps as $app) {
+            $appData[$app->getName()] = [
+                'id' => $app->getId(),
+                'version' => $app->getVersion()
+            ];
+        }
+
+        return $appData;
     }
 
-    private function updateApp(array $metadata, Manifest $manifest, Context $context): void
+    private function updateApp(Manifest $manifest, Context $context, ?string $id = null): void
     {
+        $metadata = $manifest->getMetadata();
+        $metadata['path'] = $manifest->getPath();
+
+        if ($id) {
+            $metadata['id'] = $id;
+        }
+
         // ToDo handle import and saving of icons
         unset($metadata['icon']);
 
@@ -88,15 +97,15 @@ class AppService
         $this->updateActions($manifest->getAdmin()['actionButtons'], $appId, $context);
     }
 
-    private function deleteNotFoundApps(AppCollection $toBeDeleted, Context $context): void
+    private function deleteNotFoundApps(array $toBeDeleted, Context $context): void
     {
-        if ($toBeDeleted->count() === 0) {
+        if (empty($toBeDeleted)) {
             return;
         }
 
-        $toBeDeletedIds = $toBeDeleted->map(function (AppEntity $app) {
-            return ['id' => $app->getId()];
-        });
+        $toBeDeletedIds = array_map(function (array $app) {
+            return ['id' => $app['id']];
+        }, $toBeDeleted);
 
         $this->appRepository->delete(array_values($toBeDeletedIds), $context);
     }

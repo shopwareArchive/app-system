@@ -7,8 +7,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonDefinition;
-use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\ActionButtonTranslationCollection;
-use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\ActionButtonTranslationEntity;
 
 class ActionButtonTranslationDefinition extends EntityTranslationDefinition
 {

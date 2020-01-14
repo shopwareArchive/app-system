@@ -4,7 +4,7 @@ namespace Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
-use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\ActionButtonTranslationCollection;
+use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButtonTranslation\ActionButtonTranslationCollection;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
 
 class ActionButtonEntity extends Entity
@@ -52,7 +52,7 @@ class ActionButtonEntity extends Entity
     protected $app;
 
     /**
-     * @var ActionButtonTranslationCollection
+     * @var ActionButtonTranslationCollection|null
      */
     protected $translations;
 
@@ -136,7 +136,7 @@ class ActionButtonEntity extends Entity
         $this->openNewTab = $openNewTab;
     }
 
-    public function getTranslations(): ActionButtonTranslationCollection
+    public function getTranslations(): ?ActionButtonTranslationCollection
     {
         return $this->translations;
     }

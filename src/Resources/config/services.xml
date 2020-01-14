@@ -19,6 +19,7 @@
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Api\AppActionController" public="true">
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Action\ActionButtonLoader"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
@@ -29,6 +30,10 @@
             <argument type="service" id="app.repository"/>
 
             <tag name="console.command"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\Action\ActionButtonLoader">
+            <argument type="service" id="app_action_button.repository"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\AppDefinition">

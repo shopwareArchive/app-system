@@ -6,7 +6,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonCollection;
-use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\ActionButtonTranslationCollection;
+use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationCollection;
 
 class AppEntity extends Entity
 {
@@ -58,7 +58,7 @@ class AppEntity extends Entity
     protected $icon;
 
     /**
-     * @var ActionButtonTranslationCollection
+     * @var AppTranslationCollection|null
      */
     protected $translations;
 
@@ -177,12 +177,12 @@ class AppEntity extends Entity
         $this->icon = $icon;
     }
 
-    public function getTranslations(): ActionButtonTranslationCollection
+    public function getTranslations(): ?AppTranslationCollection
     {
         return $this->translations;
     }
 
-    public function setTranslations(ActionButtonTranslationCollection $translations): void
+    public function setTranslations(AppTranslationCollection $translations): void
     {
         $this->translations = $translations;
     }

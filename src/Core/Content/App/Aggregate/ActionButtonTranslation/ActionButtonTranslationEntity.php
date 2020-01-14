@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation;
+namespace Swag\SaasConnect\Core\Content\App\Aggregate\ActionButtonTranslation;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
-use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\System\Language\LanguageEntity;
+use Swag\SaasConnect\Core\Content\App\AppEntity;
 
 class ActionButtonTranslationEntity extends Entity
 {
@@ -37,7 +37,7 @@ class ActionButtonTranslationEntity extends Entity
     protected $languageId;
 
     /**
-     * @var ArrayEntity|null
+     * @var AppEntity|null
      */
     protected $app;
 
@@ -96,12 +96,12 @@ class ActionButtonTranslationEntity extends Entity
         $this->languageId = $languageId;
     }
 
-    public function getApp(): ?ArrayEntity
+    public function getApp(): ?AppEntity
     {
         return $this->app;
     }
 
-    public function setApp(?ArrayEntity $app): void
+    public function setApp(AppEntity $app): void
     {
         $this->app = $app;
     }
