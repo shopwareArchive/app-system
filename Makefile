@@ -36,3 +36,9 @@ init: ## activates the plugin and dumps test-db
 		&& ./psh.phar init \
 		&& php bin/console plugin:install --activate SaasConnect \
 		&& ./psh.phar init-test-databases
+
+administration-unit:
+	npm --prefix src/Resources/app/administration run unit
+
+administration-lint:
+	npm --prefix src/Resources/app/administration run eslint

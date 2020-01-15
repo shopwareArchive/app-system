@@ -62,6 +62,26 @@ Phpstan:
     script:
         - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
         - phpstan analyze --configuration phpstan.neon src
+
+Eslint Administration:
+    stage: Static analysis
+    image: shopware/development:latest
+    before_script:
+        - zip -rq plugin.zip .
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git --branch $PLATFORM_BRANCH
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch $PLATFORM_BRANCH
+        - unzip -q plugin.zip -d development/custom/plugins/SaasConnect
+        - cd development
+        - cp -v dev-ops/gitlab/.psh.yaml.override .
+        - /entrypoint supervisord > /dev/null 2>&1 &
+    script:
+        - cd custom/plugins/SaasConnect/src/Resources/app/administration
+        - npm install
+        - npm run eslint-junit > eslint-administration.junit.xml
+    artifacts:
+        reports:
+            junit: development/custom/plugins/SaasConnect/src/Resources/app/administration/eslint-administration.junit.xml
+
 Unit:
     stage: Unit
     image: shopware/development:latest
@@ -99,3 +119,33 @@ Unit:
             - development/build/artifacts/phpunit.clover.xml
         reports:
             junit: development/build/artifacts/phpunit.junit.xml
+
+Jest (Administration):
+    stage: Unit
+    image: shopware/development:latest
+    services:
+        -   name: mysql:5.7
+            alias: mysql
+        -   name: elastic/elasticsearch:7.1.1
+            alias: elasticsearch
+            command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
+    before_script:
+        - zip -rq plugin.zip .
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git --branch $PLATFORM_BRANCH
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch $PLATFORM_BRANCH
+        - unzip -q plugin.zip -d development/custom/plugins/SaasConnect
+        - cd development
+        - cp -v dev-ops/gitlab/.psh.yaml.override .
+        - /entrypoint supervisord > /dev/null 2>&1 &
+    script:
+        - composer install
+        - ./psh.phar administration:install-dependencies
+        - npm --prefix custom/plugins/SaasConnect/src/Resources/app/administration/ install
+        - PROJECT_ROOT=${CI_PROJECT_DIR}/development npm --prefix custom/plugins/SaasConnect/src/Resources/app/administration/ run unit
+
+    coverage: '/^\s?All files[^|]*\|[^|]*\s+([\d\.]+)/'
+    artifacts:
+        paths:
+            - development/build/artifacts/clover.xml
+        reports:
+            junit: development/build/artifacts/administration.junit.xml
