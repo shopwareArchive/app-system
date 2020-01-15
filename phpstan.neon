@@ -3,3 +3,7 @@ parameters:
     level: 8
     excludes_analyse:
         - test/TestBootstrap.php
+    ignoreErrors:
+        # Happens a lot for nullable props in DAL entities for associations
+        - '#Cannot call method .*\|null\.$#'
+        - '#Argument of an invalid type .*\|null supplied for foreach, only iterables are supported\.$#'

@@ -5,6 +5,7 @@ namespace Swag\SaasConnect\Core\Content\App;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonCollection;
 use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationCollection;
 
 class AppEntity extends Entity
@@ -57,7 +58,7 @@ class AppEntity extends Entity
     protected $icon;
 
     /**
-     * @var AppTranslationCollection
+     * @var AppTranslationCollection|null
      */
     protected $translations;
 
@@ -80,6 +81,11 @@ class AppEntity extends Entity
      * @var \DateTimeInterface
      */
     protected $updatedAt;
+
+    /**
+     * @var ActionButtonCollection|null
+     */
+    protected $actionButtons;
 
     public function getId(): string
     {
@@ -171,7 +177,7 @@ class AppEntity extends Entity
         $this->icon = $icon;
     }
 
-    public function getTranslations(): AppTranslationCollection
+    public function getTranslations(): ?AppTranslationCollection
     {
         return $this->translations;
     }
@@ -219,5 +225,15 @@ class AppEntity extends Entity
     public function setUpdatedAt(\DateTimeInterface $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
+    }
+
+    public function getActionButtons(): ?ActionButtonCollection
+    {
+        return $this->actionButtons;
+    }
+
+    public function setActionButtons(ActionButtonCollection $actionButtons): void
+    {
+        $this->actionButtons = $actionButtons;
     }
 }

@@ -28,6 +28,28 @@ class ManifestTest extends TestCase
             'icon' => 'icon.png'
         ], $manifest->getMetadata());
 
-        static::assertCount(2, $manifest->getActionButtons());
+        static::assertCount(2, $manifest->getAdmin()['actionButtons']);
+        static::assertEquals([
+            [
+                'label' => [
+                    'en-GB' => 'View Order',
+                    'de-DE' => 'Zeige Bestellung',
+                ],
+                'action' => 'viewOrder',
+                'entity' => 'order',
+                'view' => 'detail',
+                'url' => 'https://swag-test.com/your-order',
+                'openNewTab' => true
+            ],
+            [
+                'label' => [
+                    'en-GB' => 'Do Stuff',
+                ],
+                'action' => 'doStuffWithProducts',
+                'entity' => 'product',
+                'view' => 'listing',
+                'url' => 'https://swag-test.com/do-stuff',
+            ]
+        ], $manifest->getAdmin()['actionButtons']);
     }
 }

@@ -26,6 +26,7 @@ class RefreshAppCommandTest extends TestCase
         $this->command = new RefreshAppCommand(
             new AppService(
                 $appRepository,
+                $this->getContainer()->get('app_action_button.repository'),
                 new AppLoader(__DIR__ . '/_fixtures')
             ),
             $appRepository

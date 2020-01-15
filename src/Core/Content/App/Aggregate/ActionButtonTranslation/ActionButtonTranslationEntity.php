@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation;
+namespace Swag\SaasConnect\Core\Content\App\Aggregate\ActionButtonTranslation;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 use Shopware\Core\System\Language\LanguageEntity;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
 
-class AppTranslationEntity extends Entity
+class ActionButtonTranslationEntity extends Entity
 {
     use EntityIdTrait;
 
@@ -15,11 +15,6 @@ class AppTranslationEntity extends Entity
      * @var string
      */
     protected $label;
-
-    /**
-     * @var string|null
-     */
-    protected $description;
 
     /**
      * @var \DateTimeInterface
@@ -59,16 +54,6 @@ class AppTranslationEntity extends Entity
     public function setLabel(string $label): void
     {
         $this->label = $label;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): void
-    {
-        $this->description = $description;
     }
 
     public function getCreatedAt(): \DateTimeInterface
@@ -116,7 +101,7 @@ class AppTranslationEntity extends Entity
         return $this->app;
     }
 
-    public function setApp(?AppEntity $app): void
+    public function setApp(AppEntity $app): void
     {
         $this->app = $app;
     }
