@@ -1,0 +1,9 @@
+{
+    "sw-saas-connect": {
+        "component": {
+            "sw-connect-action-button": {
+                "label": "Actions"
+            }
+        }
+    }
+}
