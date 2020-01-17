@@ -17,7 +17,7 @@ class AppActionControllerTest extends TestCase
 
     public function testGetActionsPerViewEmpty(): void
     {
-        $url = '/api/v' . PlatformRequest::API_VERSION . '/app-system/action-button/product/listing';
+        $url = '/api/v' . PlatformRequest::API_VERSION . '/app-system/action-button/product/index';
         $this->getBrowser()->request('GET', $url);
         $response = json_decode($this->getBrowser()->getResponse()->getContent(), true);
 

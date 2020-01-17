@@ -56,7 +56,7 @@ class ManifestReaderTest extends TestCase
                             'en-GB' => 'Do Stuff',
                         ],
                         'entity' => 'product',
-                        'view' => 'listing',
+                        'view' => 'index',
                         'url' => 'https://swag-test.com/do-stuff',
                     ]
                 ]

@@ -50,7 +50,7 @@
     <xs:simpleType name="view">
         <xs:restriction base="xs:string">
             <xs:enumeration value="detail"/>
-            <xs:enumeration value="listing"/>
+            <xs:enumeration value="index"/>
         </xs:restriction>
     </xs:simpleType>
     <xs:complexType name="translatableString">
