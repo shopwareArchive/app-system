@@ -3,6 +3,7 @@
 namespace Swag\SaasConnect\Test;
 
 use Shopware\Core\Framework\Context;
+use Swag\SaasConnect\Core\Content\App\AppLifecycle;
 use Swag\SaasConnect\Core\Content\App\AppLoader;
 use Swag\SaasConnect\Core\Content\App\AppService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -15,7 +16,7 @@ trait AppSystemTestBehaviour
     {
         $appService = new AppService(
             $this->getContainer()->get('app.repository'),
-            $this->getContainer()->get('app_action_button.repository'),
+            $this->getContainer()->get(AppLifecycle::class),
             new AppLoader($appDir)
         );
 

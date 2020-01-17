@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\SaasConnect\Core\Command\RefreshAppCommand;
+use Swag\SaasConnect\Core\Content\App\AppLifecycle;
 use Swag\SaasConnect\Core\Content\App\AppLoader;
 use Swag\SaasConnect\Core\Content\App\AppService;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -26,7 +27,7 @@ class RefreshAppCommandTest extends TestCase
         $this->command = new RefreshAppCommand(
             new AppService(
                 $appRepository,
-                $this->getContainer()->get('app_action_button.repository'),
+                $this->getContainer()->get(AppLifecycle::class),
                 new AppLoader(__DIR__ . '/_fixtures')
             ),
             $appRepository

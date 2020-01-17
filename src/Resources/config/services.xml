@@ -10,12 +10,25 @@
     <services>
         <service id="Swag\SaasConnect\Core\Content\App\AppService">
             <argument type="service" id="app.repository"/>
-            <argument type="service" id="app_action_button.repository"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\AppLifecycle"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\AppLoader"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\AppLifecycle">
+            <argument type="service" id="app.repository"/>
+            <argument type="service" id="app_action_button.repository"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument>%acl_resource_privileges%</argument>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\AppLoader">
             <argument>%saas_connect.app_dir%</argument>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Framework\Routing\ApiRequestContextResolverDecorator"
+                 decorates="Shopware\Core\Framework\Routing\ApiRequestContextResolver">
+            <argument type="service" id="Swag\SaasConnect\Core\Framework\Routing\ApiRequestContextResolverDecorator.inner"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Api\AppActionController" public="true">

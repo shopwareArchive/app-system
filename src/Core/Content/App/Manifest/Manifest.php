@@ -20,6 +20,11 @@ class Manifest
     private $admin = [];
 
     /**
+     * @var array<string, string>
+     */
+    private $permissions = [];
+
+    /**
      * @param array<string, array<string, string|array<string, string>|array<array<string, string|int|bool|array<string, string>|null>>>> $data
      */
     private function __construct(string $path, array $data)
@@ -31,6 +36,9 @@ class Manifest
         /** @var array<string, array<array<string, string|int|bool|array<string, string>|null>>> $admin */
         $admin = $data['admin'];
         $this->admin = $admin;
+        /** @var array<string, string> $permissions */
+        $permissions = $data['permissions'];
+        $this->permissions = $permissions;
     }
 
     public static function createFromXmlFile(string $xmlFile): self
@@ -60,5 +68,13 @@ class Manifest
     public function getAdmin(): array
     {
         return $this->admin;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getPermissions(): array
+    {
+        return $this->permissions;
     }
 }

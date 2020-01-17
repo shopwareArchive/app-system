@@ -3,6 +3,8 @@
 namespace Swag\SaasConnect\Test\Core\Content\App;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Api\Acl\Resource\AclResourceCollection;
+use Shopware\Core\Framework\Api\Acl\Resource\AclResourceEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -14,15 +16,16 @@ use Swag\SaasConnect\Core\Content\App\AppCollection;
 use Swag\SaasConnect\Core\Content\App\AppLifecycle;
 use Swag\SaasConnect\Core\Content\App\AppLoader;
 use Swag\SaasConnect\Core\Content\App\AppService;
+use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 
-class AppServiceTest extends TestCase
+class AppLifecycleTest extends TestCase
 {
     use IntegrationTestBehaviour;
 
     /**
-     * @var AppService
+     * @var AppLifecycle
      */
-    private $appService;
+    private $appLifecycle;
 
     /**
      * @var EntityRepositoryInterface
@@ -44,17 +47,14 @@ class AppServiceTest extends TestCase
         $this->appRepository = $this->getContainer()->get('app.repository');
         $this->actionButtonRepository = $this->getContainer()->get('app_action_button.repository');
 
-        $this->appService = new AppService(
-            $this->appRepository,
-            $this->getContainer()->get(AppLifecycle::class),
-            new AppLoader(__DIR__ . '/Manifest/_fixtures/test')
-        );
+        $this->appLifecycle = $this->getContainer()->get(AppLifecycle::class);
         $this->context = Context::createDefaultContext();
     }
 
-    public function testRefreshInstallsNewApp(): void
+    public function testInstall(): void
     {
-        $this->appService->refreshApps($this->context);
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/Manifest/_fixtures/test/manifest.xml');
+        $this->appLifecycle->install($manifest, $this->context);
 
         /** @var AppCollection $apps */
         $apps = $this->appRepository->search(new Criteria(), $this->context)->getEntities();
@@ -63,11 +63,28 @@ class AppServiceTest extends TestCase
         static::assertEquals('SwagApp', $apps->first()->getName());
 
         $this->assertDefaultActionButtons();
+        $this->assertDefaultPrivileges($apps->first()->getAclRoleId());
     }
 
-    public function testRefreshUpdatesApp(): void
+    public function testInstallMinimalManifest(): void
     {
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/Manifest/_fixtures/minimal/manifest.xml');
+        $this->appLifecycle->install($manifest, $this->context);
+
+        /** @var AppCollection $apps */
+        $apps = $this->appRepository->search(new Criteria(), $this->context)->getEntities();
+
+        static::assertCount(1, $apps);
+        static::assertEquals('SwagAppMinimal', $apps->first()->getName());
+    }
+
+    public function testUpdate(): void
+    {
+        $id = Uuid::randomHex();
+        $roleId = Uuid::randomHex();
+
         $this->appRepository->create([[
+            'id' => $id,
             'name' => 'SwagApp',
             'path' => __DIR__ . '/Manifest/_fixtures/test',
             'version' => '0.0.1',
@@ -79,8 +96,8 @@ class AppServiceTest extends TestCase
                     'view' => 'detail',
                     'action' => 'test',
                     'label' => 'test',
-                    'url' => 'test.com',
-                ],
+                    'url' => 'test.com'
+                ]
             ],
             'integration' => [
                 'label' => 'test',
@@ -89,11 +106,13 @@ class AppServiceTest extends TestCase
                 'secretAccessKey' => 'test'
             ],
             'aclRole' => [
+                'id' => $roleId,
                 'name' => 'SwagApp'
             ]
         ]], $this->context);
 
-        $this->appService->refreshApps($this->context);
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/Manifest/_fixtures/test/manifest.xml');
+        $this->appLifecycle->update($manifest, $id, $roleId, $this->context);
 
         /** @var AppCollection $apps */
         $apps = $this->appRepository->search(new Criteria(), $this->context)->getEntities();
@@ -106,37 +125,7 @@ class AppServiceTest extends TestCase
         $this->assertDefaultActionButtons();
     }
 
-    public function testRefreshAppIsUntouched(): void
-    {
-        $this->appRepository->create([[
-            'name' => 'SwagApp',
-            'path' => __DIR__ . '/Manifest/_fixtures/test',
-            'version' => '1.0.0',
-            'label' => 'test',
-            'accessToken' => 'test',
-            'integration' => [
-                'label' => 'test',
-                'writeAccess' => false,
-                'accessKey' => 'test',
-                'secretAccessKey' => 'test'
-            ],
-            'aclRole' => [
-                'name' => 'SwagApp'
-            ]
-        ]], $this->context);
-
-        $this->appService->refreshApps($this->context);
-
-        /** @var AppCollection $apps */
-        $apps = $this->appRepository->search(new Criteria(), $this->context)->getEntities();
-
-        static::assertCount(1, $apps);
-        static::assertEquals('SwagApp', $apps->first()->getName());
-        static::assertEquals('1.0.0', $apps->first()->getVersion());
-        static::assertEquals('test', $apps->first()->getTranslation('label'));
-    }
-
-    public function testRefreshDeletesApp(): void
+    public function testDelete(): void
     {
         $appId = Uuid::randomHex();
         $this->appRepository->create([[
@@ -152,8 +141,8 @@ class AppServiceTest extends TestCase
                     'view' => 'detail',
                     'action' => 'test',
                     'label' => 'test',
-                    'url' => 'test.com',
-                ],
+                    'url' => 'test.com'
+                ]
             ],
             'integration' => [
                 'label' => 'test',
@@ -166,7 +155,7 @@ class AppServiceTest extends TestCase
             ]
         ]], $this->context);
 
-        $this->appService->refreshApps($this->context);
+        $this->appLifecycle->delete($appId, $this->context);
 
         $apps = $this->appRepository->searchIds(new Criteria([$appId]), $this->context)->getIds();
         static::assertCount(0, $apps);
@@ -187,5 +176,37 @@ class AppServiceTest extends TestCase
 
         static::assertContains('viewOrder', $actionNames);
         static::assertContains('doStuffWithProducts', $actionNames);
+    }
+
+    private function assertDefaultPrivileges(string $roleId): void
+    {
+        /** @var EntityRepositoryInterface $aclResourceRepository */
+        $aclResourceRepository = $this->getContainer()->get('acl_resource.repository');
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('aclRoleId', $roleId));
+        /** @var AclResourceCollection $privileges */
+        $privileges = $aclResourceRepository->search($criteria, $this->context)->getEntities();
+
+        $this->assertPrivilegesContains('list', 'product', $privileges);
+        $this->assertPrivilegesContains('detail', 'product', $privileges);
+        $this->assertPrivilegesContains('create', 'product', $privileges);
+
+        $this->assertPrivilegesContains('list', 'category', $privileges);
+        $this->assertPrivilegesContains('delete', 'category', $privileges);
+
+        $this->assertPrivilegesContains('list', 'product_manufacturer', $privileges);
+        $this->assertPrivilegesContains('delete', 'product_manufacturer', $privileges);
+    }
+
+    private function assertPrivilegesContains(string $privilege, string $resource, AclResourceCollection $privileges): void
+    {
+        static::assertCount(
+            1,
+            $privileges->filter(function (AclResourceEntity $aclResource) use ($privilege, $resource): bool {
+                return $aclResource->getPrivilege() === $privilege && $aclResource->getResource() === $resource;
+            }),
+            sprintf('AclResourceCollection does not contain Privilege for "%s" for entity "%s"', $privilege, $resource)
+        );
     }
 }

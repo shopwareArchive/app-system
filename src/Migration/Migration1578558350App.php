@@ -24,10 +24,15 @@ class Migration1578558350App extends MigrationStep
                 `license` VARCHAR(255) NULL,
                 `version` VARCHAR(255) NOT NULL,
                 `icon` MEDIUMBLOB NULL,
+                `access_token` VARCHAR(255) NOT NULL,
+                `integration_id` BINARY(16) NOT NULL,
+                `acl_role_id` BINARY(16) NOT NULL,
                 `created_at` DATETIME(3) NOT NULL,
                 `updated_at` DATETIME(3) NULL,
                 PRIMARY KEY (`id`),
-                UNIQUE KEY `uniq.name` (`name`)
+                UNIQUE KEY `uniq.name` (`name`),
+                CONSTRAINT `fk.app.integration_id` FOREIGN KEY (`integration_id`) REFERENCES `integration` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+                CONSTRAINT `fk.app.acl_role_id` FOREIGN KEY (`acl_role_id`) REFERENCES `acl_role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
 

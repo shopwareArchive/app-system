@@ -21,12 +21,15 @@ class ManifestReader extends XmlReader
     {
         /** @var \DOMElement $meta */
         $meta = $xml->getElementsByTagName('meta')->item(0);
-        /** @var \DOMElement $admin */
+        /** @var \DOMElement|null $admin */
         $admin = $xml->getElementsByTagName('admin')->item(0);
+        /** @var \DOMElement|null $permissions */
+        $permissions = $xml->getElementsByTagName('permissions')->item(0);
 
         return [
             'metadata' => $this->parseMetaData($meta),
-            'admin' => $this->parseAdmin($admin),
+            'admin' => $admin === null ? [] : $this->parseAdmin($admin),
+            'permissions' => $permissions === null ? [] : $this->parsePermissions($permissions)
         ];
     }
 
@@ -61,6 +64,14 @@ class ManifestReader extends XmlReader
     }
 
     /**
+     * @return array<string, string>
+     */
+    private function parsePermissions(\DOMElement $permissions): array
+    {
+        return $this->mapTagsByValue($permissions);
+    }
+
+    /**
      * @param  array<string> $translatable
      * @return array<string, string|array<string, string>>
      */
@@ -88,6 +99,24 @@ class ManifestReader extends XmlReader
             }
 
             $values[$child->tagName] = $child->nodeValue;
+        }
+
+        return $values;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function mapTagsByValue(\DOMElement $node): array
+    {
+        $values = [];
+
+        foreach ($node->childNodes as $child) {
+            if (!$child instanceof \DOMElement) {
+                continue;
+            }
+
+            $values[$child->nodeValue] = $child->tagName;
         }
 
         return $values;

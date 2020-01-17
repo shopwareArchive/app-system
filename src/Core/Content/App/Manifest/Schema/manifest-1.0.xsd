@@ -11,6 +11,7 @@
                         <xs:field xpath="@action"/>
                     </xs:unique>
                 </xs:element>
+                <xs:element name="permissions" type="permissions" minOccurs="0"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -29,6 +30,15 @@
         <xs:sequence>
             <xs:element name="action-button" maxOccurs="unbounded" minOccurs="0" type="action-button"/>
         </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="permissions">
+        <xs:choice maxOccurs="unbounded">
+            <xs:element name="list" maxOccurs="unbounded" minOccurs="0" type="xs:string"/>
+            <xs:element name="detail" maxOccurs="unbounded" minOccurs="0" type="xs:string"/>
+            <xs:element name="create" maxOccurs="unbounded" minOccurs="0" type="xs:string"/>
+            <xs:element name="update" maxOccurs="unbounded" minOccurs="0" type="xs:string"/>
+            <xs:element name="delete" maxOccurs="unbounded" minOccurs="0" type="xs:string"/>
+        </xs:choice>
     </xs:complexType>
     <xs:complexType name="action-button">
         <xs:sequence>

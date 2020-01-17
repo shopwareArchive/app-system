@@ -100,6 +100,7 @@ class ActionButtonLoaderTest extends TestCase
             'path' => __DIR__ . '/Manifest/_fixtures/test',
             'version' => '0.0.1',
             'label' => 'test',
+            'accessToken' => 'test',
             'actionButtons' => [
                 [
                     'id' => $this->app1OrderDetailButtonId,
@@ -123,14 +124,24 @@ class ActionButtonLoaderTest extends TestCase
                     'view' => 'index',
                     'action' => 'orderListApp1',
                     'label' => 'Order List App1',
-                    'url' => 'app1.com/order/list',
-                ],
+                    'url' => 'app1.com/order/list'
+                ]
             ],
+            'integration' => [
+                'label' => 'App1',
+                'writeAccess' => false,
+                'accessKey' => 'test',
+                'secretAccessKey' => 'test'
+            ],
+            'aclRole' => [
+                'name' => 'App1'
+            ]
         ], [
             'name' => 'App2',
             'path' => __DIR__ . '/Manifest/_fixtures/test',
             'version' => '0.0.1',
             'label' => 'test',
+            'accessToken' => 'test',
             'actionButtons' => [
                 [
                     'id' => $this->app2OrderDetailButtonId,
@@ -141,6 +152,15 @@ class ActionButtonLoaderTest extends TestCase
                     'url' => 'app2.com/order/detail',
                 ],
             ],
+            'integration' => [
+                'label' => 'App2',
+                'writeAccess' => false,
+                'accessKey' => 'test',
+                'secretAccessKey' => 'test'
+            ],
+            'aclRole' => [
+                'name' => 'App2'
+            ]
         ]], $this->context);
     }
 }

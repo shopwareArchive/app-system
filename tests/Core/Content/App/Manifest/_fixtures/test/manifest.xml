@@ -30,4 +30,9 @@
             <label>Do Stuff</label>
         </action-button>
     </admin>
+    <permissions>
+        <create>product</create>
+        <delete>category</delete>
+        <delete>product_manufacturer</delete>
+    </permissions>
 </manifest>

@@ -55,6 +55,7 @@ class AppDefinition extends EntityDefinition
                     AdminApiSource::class)
             ),
             (new StringField('icon', 'icon'))->addFlags(new WriteProtected(), new Runtime()),
+            (new StringField('access_token', 'accessToken'))->addFlags(new Required(), new WriteProtected(Context::SYSTEM_SCOPE), new ReadProtected(SalesChannelApiSource::class, AdminApiSource::class)),
 
             (new TranslationsAssociationField(AppTranslationDefinition::class, 'app_id'))->addFlags(
                 new Required(),
@@ -64,6 +65,12 @@ class AppDefinition extends EntityDefinition
             new TranslatedField('description'),
 
             new OneToManyAssociationField('actionButtons', ActionButtonDefinition::class, 'app_id'),
+
+            (new FkField('integration_id', 'integrationId', IntegrationDefinition::class))->addFlags(new Required()),
+            new OneToOneAssociationField('integration', 'integration_id', 'id', IntegrationDefinition::class),
+
+            (new FkField('acl_role_id', 'aclRoleId', AclRoleDefinition::class))->addFlags(new Required()),
+            new OneToOneAssociationField('aclRole', 'acl_role_id', 'id', AclRoleDefinition::class),
         ]);
     }
 }
