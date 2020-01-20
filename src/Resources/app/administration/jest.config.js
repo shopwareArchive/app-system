@@ -60,7 +60,7 @@ module.exports = {
         '^src/(.*)$': `${administrationCorePath}/$1`,
     },
 
-    transformIgnorePatterns: ['<rootDir>/node_modules'],
+    transformIgnorePatterns: ['node_modules'],
 
     transform: {
         '^.+\\.js$': 'babel-jest',
