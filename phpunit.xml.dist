@@ -32,8 +32,6 @@
                 <directory suffix="Collection.php">./</directory>
                 <directory suffix="Entity.php">./</directory>
                 <directory suffix="Definition.php">./</directory>
-
-                <file>src/SaasConnect.php</file>
             </exclude>
         </whitelist>
     </filter>
