@@ -20,6 +20,8 @@
 
         <service id="Swag\SaasConnect\Core\Content\App\Api\AppActionController" public="true">
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Action\ActionButtonLoader"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Action\AppActionLoader"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Action\Executor"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
@@ -33,6 +35,18 @@
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Action\ActionButtonLoader">
+            <argument type="service" id="app_action_button.repository"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\Action\Executor">
+            <argument type="service" id="GuzzleHttp\Client"/>
+        </service>
+
+        <service id="GuzzleHttp\Client">
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\Action\AppActionLoader">
+            <argument>%env(APP_URL)%</argument>
             <argument type="service" id="app_action_button.repository"/>
         </service>
 
