@@ -8,16 +8,15 @@
   "scripts": {
     "unit": "jest --config jest.config.js",
     "unit-watch": "jest --config jest.config.js --watch",
-    "e2e-open": "node_modules/.bin/cypress open",
-    "e2e-run": "node_modules/.bin/cypress run",
     "eslint": "eslint --ext .js,.vue src test",
     "eslint-junit": "eslint --ext .js,.vue --format junit src test"
   },
   "devDependencies": {
+    "@babel/core": "^7.8.3",
     "@babel/plugin-proposal-class-properties": "^7.7.4",
     "@babel/plugin-syntax-dynamic-import": "^7.7.4",
+    "@babel/plugin-transform-runtime": "^7.8.3",
     "@babel/preset-env": "^7.7.7",
-    "@shopware-ag/e2e-testsuite-platform": "^1.1.4",
     "babel-core": "^6.26.3",
     "babel-jest": "^24.9.0",
     "babel-plugin-require-context-hook": "^1.0.0",
@@ -27,6 +26,11 @@
     "eslint-plugin-jest": "^23.3.0",
     "html-loader-jest": "^0.2.1",
     "jest": "^24.9.0",
-    "jest-junit": "^10.0.0"
+    "jest-junit": "^10.0.0",
+    "jest-mock-axios": "^3.2.0"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.8.3",
+    "axios": "^0.19.1"
   }
 }
