@@ -2,7 +2,6 @@ import template from './sw-page.html.twig';
 import './sw-page.scss';
 
 const {  Mixin } = Shopware;
-const AppApiService = Shopware.Service('AppApiService');
 
 export default {
     template,
@@ -15,14 +14,20 @@ export default {
     },
 
     computed: {
+        appApiService() {
+            return Shopware.Service('AppApiService');
+        },
+
         params() {
             if(this.isListingPage) {
                 return Object.keys(this.$parent.selection);
-            } else if(this.$route.params.id) {
-                return [this.$route.params.id];
-            } else {
-                return null;
             }
+            
+            if(this.$route.params.id) {
+                return [this.$route.params.id];
+            }
+            
+            return [];
         },
 
         isListingPage() {
@@ -35,30 +40,33 @@ export default {
 
             return parentMixins.find((mixin) => { return mixin === listingMixin; }) !== undefined;
         },
+
+        areActionsAvailable() {
+            return !!this.actions && this.actions.length > 0
+                && this.params.length > 0;
+        },
+    },
+
+    mounted() {
+        if (this.$route.meta.$module) {
+            this.getActionButtons();
+        }
     },
 
     methods: {
-        initPage() {
-            this.$super('initPage');
-
-            if (this.$route.meta.$module) {
-                this.getActionButtons();
-            }
-        },
-
         getActionButtons() {
             const entity = this.module.entity;
 
             const view = Object.keys(this.module.routes).find((routeName) => {
                 const symbol = this.module.routes[routeName].name;
 
-                return new RegExp(`^${symbol}`).test(this.$route.name);
+                return this.$route.name.startsWith(symbol);
             });
 
             if(entity && view) {
                 this.isLoading = true;
 
-                AppApiService.getActionButtonsPerView(entity, view)
+                this.appApiService.getActionButtonsPerView(entity, view)
                     .then((actions) => {
                         this.actions = actions;
                         this.isLoading = false;
@@ -66,6 +74,10 @@ export default {
                     this.isLoading = false;
                 });
             }
+        },
+
+        runAction(actionId) {
+            this.appApiService.runAction(actionId, { ids: this.params });
         },
     },
 };

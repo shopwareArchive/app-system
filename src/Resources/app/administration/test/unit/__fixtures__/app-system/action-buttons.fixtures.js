@@ -1,18 +1,3 @@
-import uuidV4 from 'uuid/v4';
-
-export function createId() {
-    return uuidV4().replace(/-/g, '');
-}
-
-/*
- *   response = {
- *       data: {},
- *       status: 200,
- *       statusText: 'OK',
- *       headers: {},
- *       config: {},
- *   }
- */
 const emptyActionButtonList = {
     status: 200,
     statusText: 'OK',

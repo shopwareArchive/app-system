@@ -2,7 +2,7 @@
     {% parent() %}
     
     {% block sw_page_smart_bar_content_app_actions %}
-        <div class="smart-bar__app_actions" v-if="actions && params && params.length > 0">
+        <div class="smart-bar__app_actions" v-if="areActionsAvailable">
             <sw-context-button>
                 <template slot="button">
                     <sw-button variant="ghost">
@@ -14,8 +14,8 @@
                 <sw-connect-action-button
                     v-for="action in actions"
                     :key="action.id"
-                    :params="params"
-                    :action="action">
+                    :action="action"
+                    @run-app-action="runAction">
                 </sw-connect-action-button>
             </sw-context-button>
         </div>

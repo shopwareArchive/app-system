@@ -1,5 +1,5 @@
 import AppApiService from 'connect/core/service/api/app-api.service';
-import apiResponses, { createId } from '__fixtures__/app-system/action-buttons.fixtures';
+import apiResponses from '__fixtures__/app-system/action-buttons.fixtures';
 
 let httpClient = null;
 
@@ -102,7 +102,7 @@ describe('app-api.service', () => {
     test('run action has no response', (done) => {
         httpClient = Shopware.Application.getContainer('init').httpClient;
         const appApiService = new AppApiService(httpClient, Shopware.Service('loginService'));
-        const actionId = createId();
+        const actionId = Shopware.Utils.createId();
 
         appApiService.runAction(actionId)
             .then((response) => {

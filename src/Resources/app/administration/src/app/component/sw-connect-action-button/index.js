@@ -1,8 +1,6 @@
 import template from './sw-connect-action-button.html.twig';
 import './sw-connect-action-button.scss';
 
-const AppApiService = Shopware.Service('AppApiService');
-
 export default {
     template,
     name: 'sw-connect-action-button',
@@ -11,11 +9,6 @@ export default {
         action: {
             type: Object,
             required: true,
-        },
-        params: {
-            type: Array,
-            required: false,
-            default: null,
         },
     },
 
@@ -49,7 +42,7 @@ export default {
                 return;
             }
 
-            AppApiService.runAction(this.action.id, { 'itemIds': this.params });
+            this.$emit('run-app-action', this.action.id);
         },
     },
 };
