@@ -62,9 +62,9 @@ class ManifestReaderTest extends TestCase
                 ],
             ],
             'permissions' => [
-                'product' => 'create',
-                'category' => 'delete',
-                'product_manufacturer' => 'delete'
+                'product' => ['create', 'delete'],
+                'category' => ['delete'],
+                'product_manufacturer' => ['delete']
             ]
         ], $manifest);
     }

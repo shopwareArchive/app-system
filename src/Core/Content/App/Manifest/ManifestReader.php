@@ -116,7 +116,7 @@ class ManifestReader extends XmlReader
                 continue;
             }
 
-            $values[$child->nodeValue] = $child->tagName;
+            $values[$child->nodeValue][] = $child->tagName;
         }
 
         return $values;

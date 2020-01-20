@@ -67,6 +67,42 @@ class AppService
     }
 
     /**
+     * @return array<string, array<Manifest|string>>
+     */
+    public function getRefreshableApps(Context $context): array
+    {
+        $appsFromFileSystem = $this->appLoader->load();
+
+        $appsFromDb = $this->getRegisteredApps($context);
+
+        $refreshable = [
+            'install' => [],
+            'update' => [],
+            'delete' => []
+        ];
+
+        foreach ($appsFromFileSystem as $manifest) {
+            if (!array_key_exists($manifest->getMetadata()['name'], $appsFromDb)) {
+                $refreshable['install'][] = $manifest;
+                continue;
+            }
+
+            $app = $appsFromDb[$manifest->getMetadata()['name']];
+            if (version_compare($manifest->getMetadata()['version'], $app['version']) > 0) {
+                $refreshable['update'][] = $manifest;
+            }
+
+            unset($appsFromDb[$manifest->getMetadata()['name']]);
+        }
+
+        foreach ($appsFromDb as $appName => $meta) {
+            $refreshable['delete'][] = $appName;
+        }
+
+        return $refreshable;
+    }
+
+    /**
      * @return array<string, array<string, string>>
      */
     private function getRegisteredApps(Context $context): array
@@ -85,25 +121,6 @@ class AppService
         }
 
         return $appData;
-    }
-
-    private function updateApp(Manifest $manifest, Context $context, ?string $id = null): void
-    {
-        $metadata = $manifest->getMetadata();
-        $metadata['path'] = $manifest->getPath();
-
-        if ($id) {
-            $metadata['id'] = $id;
-        }
-
-        // ToDo handle import and saving of icons
-        unset($metadata['icon']);
-
-        $appWrittenEvent = $this->appRepository->upsert([$metadata], $context);
-        /** @var EntityWrittenEvent $appEvents */
-        $appEvents = $appWrittenEvent->getEventByEntityName(AppDefinition::ENTITY_NAME);
-        $appId = $appEvents->getIds()[0];
-        $this->updateActions($manifest->getAdmin()['actionButtons'], $appId, $context);
     }
 
     /**

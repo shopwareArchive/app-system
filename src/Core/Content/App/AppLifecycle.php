@@ -48,20 +48,26 @@ class AppLifecycle
     public function install(Manifest $manifest, Context $context): void
     {
         $metadata = $manifest->getMetadata();
-        $metadata['path'] = $manifest->getPath();
-        $metadata['id'] = $appId = Uuid::randomHex();
+        $appId = Uuid::randomHex();
         $roleId = Uuid::randomHex();
-
         $metadata = $this->enrichInstallMetadata($manifest, $metadata, $roleId);
 
-        $appId = $this->updateMetadata($metadata, $appId, $roleId, $context);
-        $this->addActionButtons($manifest->getAdmin()['actionButtons'] ?? [], $appId, $context);
-        $this->addPrivileges($manifest->getPermissions(), $roleId);
+        $this->updateApp($manifest, $metadata, $appId, $roleId, $context);
     }
 
     public function update(Manifest $manifest, string $id, string $roleId, Context $context): void
     {
         $metadata = $manifest->getMetadata();
+        $this->updateApp($manifest, $metadata, $id, $roleId, $context);
+    }
+
+    public function delete(string $appId, Context $context): void
+    {
+        $this->appRepository->delete([['id' => $appId]], $context);
+    }
+
+    private function updateApp(Manifest $manifest, array $metadata, string $id, string $roleId, Context $context): void
+    {
         $metadata['path'] = $manifest->getPath();
         $metadata['id'] = $id;
 
@@ -70,12 +76,7 @@ class AppLifecycle
         $this->updatePrivileges($manifest->getPermissions(), $roleId);
     }
 
-    public function delete(string $appId, Context $context): void
-    {
-        $this->appRepository->delete([['id' => $appId]], $context);
-    }
-
-    private function updateMetadata(array $metadata, string $id, string $roleId, Context $context): string
+    private function updateMetadata(array $metadata, string $id, string $roleId, Context $context): void
     {
         // ToDo handle import and saving of icons
         unset($metadata['icon']);
@@ -83,8 +84,6 @@ class AppLifecycle
         $context->scope(Context::SYSTEM_SCOPE, function (Context $context) use ($metadata): void {
             $this->appRepository->upsert([$metadata], $context);
         });
-
-        return $id;
     }
 
     private function updateActions(array $actionButtons, string $appId, Context $context): void
@@ -176,16 +175,20 @@ class AppLifecycle
 
     private function generatePrivileges(array $permissions, string $roleId): string
     {
-        $privileges = [];
+        $privilegeValues = [];
 
-        foreach ($permissions as $resource => $privilege) {
-            $privileges[] = sprintf('("%s", "%s", UNHEX("%s"), NOW())', $resource, $privilege, $roleId);
+        foreach ($permissions as $resource => $privileges) {
+            $grantedPrivileges = $privileges;
 
-            foreach ($this->privilegeDependence[$privilege] as $dependedPrivilege) {
-                $privileges[] = sprintf('("%s", "%s", UNHEX("%s"), NOW())', $resource, $dependedPrivilege, $roleId);
+            foreach ($privileges as $privilege) {
+                $grantedPrivileges = array_merge($grantedPrivileges, $this->privilegeDependence[$privilege]);
+            }
+
+            foreach (array_unique($grantedPrivileges) as $privilege) {
+                $privilegeValues[] = sprintf('("%s", "%s", UNHEX("%s"), NOW())', $resource, $privilege, $roleId);
             }
         }
 
-        return implode(', ', $privileges);
+        return implode(', ', $privilegeValues);
     }
 }
