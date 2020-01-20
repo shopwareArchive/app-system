@@ -1,27 +1,27 @@
-const { ApiService } = Shopware.Classes;
-
 const serviceName = 'AppApiService';
 
-export default class AppApiService extends ApiService {
+export default class AppApiService {
     static get name() {
         return serviceName;
     }
 
     /**
-     * @param {axios} httpClient 
-     * @param {*} loginService 
+     * @param {AxiosInstance} httpClient 
+     * @param {LoginService} loginService 
      */
     constructor(httpClient, loginService) {
-        super(httpClient, loginService, 'app-system', 'aplication/json');
+        this.httpClient = httpClient;
+        this.loginSerice = loginService;
+
         this.name = serviceName;
     }
 
     get basicHeaders() {
-        const basicHeader = this.getBasicHeaders();
-
-        // ToDo fetch language id of admin locale
-
-        return basicHeader;
+        return {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            Authorization: `Bearer ${this.loginSerice.getToken()}`,
+        };
     }
 
     /**
@@ -32,14 +32,21 @@ export default class AppApiService extends ApiService {
      */
     getActionButtonsPerView(entity, view) {
         return this.httpClient
-            .get(`${this.apiEndpoint}/action-button/${entity}/${view}`,
+            .get(`app-system/action-button/${entity}/${view}`,
                 {
                     headers: this.basicHeaders,
                 }
-            )
-            .then((response) => {
-                return ApiService.handleResponse(response);
+            ).then(({ data }) => {
+                return this.getActionbuttonsFromRequest(data);
             });
+    }
+
+    getActionbuttonsFromRequest(data) {
+        if (!!data && !!data.actions) {
+            return data.actions;    
+        }
+
+        return [];
     }
 
     /**
@@ -48,16 +55,16 @@ export default class AppApiService extends ApiService {
      * @param {string} id
      * @param {Object} requirements
      */
-    runAction(id, requirements) {
+    runAction(id, params = {}) {
         return this.httpClient
             .post(
-                `${this.apiEndpoint}/action-button/run/${id}`,
+                `app-system/action-button/run/${id}`,
+                params,
                 {
                     headers: this.basicHeaders,
-                    data: requirements,
                 }
-            ).then((response) => {
-                return ApiService.handleResponse(response);
+            ).then(({ data }) => {
+                return data;
             });
     }
 }

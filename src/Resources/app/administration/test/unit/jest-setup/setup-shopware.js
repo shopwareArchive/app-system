@@ -1,3 +1,5 @@
+// import axios from 'axios';
+
 const adminContext = {
     apiContext: {
         host: '',
@@ -18,6 +20,8 @@ const adminContext = {
 };
 
 module.exports = (() => {
+    jest.mock('axios');
+
     require('babel-plugin-require-context-hook/register')();
     const Shopware = require('src/core/shopware');
     global.Shopware = Shopware;
