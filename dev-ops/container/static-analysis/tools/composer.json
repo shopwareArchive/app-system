@@ -1,8 +1,0 @@
-{
-  "require": {
-    "vimeo/psalm": "^3.8",
-    "phpstan/phpstan": "^0.12.4",
-    "friendsofphp/php-cs-fixer": "^2.16",
-    "shopware/psh": "^1.4.0"
-  }
-}

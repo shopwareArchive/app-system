@@ -18,12 +18,7 @@ cache:
 
 Build-Analysis-Container:
     stage: Build
-    only:
-        refs:
-            - master
-        changes:
-            - dev-ops/container/static-analysis/*
-            - dev-ops/container/static-analysis/**/*
+    when: manual
     image: docker
     services:
         -   name: docker:18.09.7-dind
@@ -32,7 +27,7 @@ Build-Analysis-Container:
         - export IMAGE_NAME="${REPOSITORY_HOST}/shopware/shopware-cloud/connect/php-static-analysis"
         - apk add git bash
         - docker login gitlab.shopware.com:5005 -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
-        - docker build dev-ops/container/static-analysis -t "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"
+        - docker build dev-ops/tools -t "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"
         - docker tag "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}" "${IMAGE_NAME}:latest"
         - docker push "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"
         - docker push "${IMAGE_NAME}:latest"
