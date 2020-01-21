@@ -41,7 +41,7 @@ class ActionButtonLoader
 
     private function formatCollection(ActionButtonCollection $actionButtons): array
     {
-        return array_map(function (ActionButtonEntity $button): array {
+        return array_values(array_map(function (ActionButtonEntity $button): array {
             return [
                 'app' => $button->getApp()->getName(),
                 'id' => $button->getId(),
@@ -50,7 +50,7 @@ class ActionButtonLoader
                 'url' => $button->getUrl(),
                 'openNewTab' => $button->isOpenNewTab()
             ];
-        }, $actionButtons->getElements());
+        }, $actionButtons->getElements()));
     }
 
     private function mapTranslatedLabels(ActionButtonEntity $button): array

@@ -17,11 +17,13 @@ class AppActionControllerTest extends TestCase
 
     public function testGetActionsPerViewEmpty(): void
     {
-        $url = '/api/v' . PlatformRequest::API_VERSION . '/app-system/action-button/product/listing';
+        $url = '/api/v' . PlatformRequest::API_VERSION . '/app-system/action-button/product/index';
         $this->getBrowser()->request('GET', $url);
+        $response = json_decode($this->getBrowser()->getResponse()->getContent(), true);
 
         static::assertEquals(200, $this->getBrowser()->getResponse()->getStatusCode());
-        static::assertEquals([], json_decode($this->getBrowser()->getResponse()->getContent(), true));
+        static::assertArrayHasKey('actions', $response);
+        static::assertEmpty($response['actions']);
     }
 
     public function testGetActionsPerView(): void
@@ -32,9 +34,11 @@ class AppActionControllerTest extends TestCase
 
         static::assertEquals(200, $this->getBrowser()->getResponse()->getStatusCode());
 
-        $result = array_values(json_decode($this->getBrowser()->getResponse()->getContent(), true));
-        static::assertCount(1, $result);
+        $result = json_decode($this->getBrowser()->getResponse()->getContent(), true);
+        static::assertArrayHasKey('actions', $result);
 
+        $result = $result['actions'];
+        static::assertCount(1, $result);
         static::assertTrue(Uuid::isValid($result[0]['id']));
         unset($result[0]['id']);
 

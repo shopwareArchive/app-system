@@ -47,7 +47,7 @@ class ManifestTest extends TestCase
                 ],
                 'action' => 'doStuffWithProducts',
                 'entity' => 'product',
-                'view' => 'listing',
+                'view' => 'index',
                 'url' => 'https://swag-test.com/do-stuff',
             ]
         ], $manifest->getAdmin()['actionButtons']);

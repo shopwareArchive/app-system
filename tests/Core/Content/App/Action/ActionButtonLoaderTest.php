@@ -120,7 +120,7 @@ class ActionButtonLoaderTest extends TestCase
                 [
                     'id' => $this->app1OrderListButtonId,
                     'entity' => 'order',
-                    'view' => 'listing',
+                    'view' => 'index',
                     'action' => 'orderListApp1',
                     'label' => 'Order List App1',
                     'url' => 'app1.com/order/list'

@@ -30,7 +30,9 @@ class AppActionController extends AbstractController
      */
     public function getActionsPerView(string $entity, string $view, Context $context): Response
     {
-        return new JsonResponse($this->actionButtonLoader->loadActionButtonsForView($entity, $view, $context));
+        return new JsonResponse([
+            'actions' => $this->actionButtonLoader->loadActionButtonsForView($entity, $view, $context),
+        ]);
     }
 
     /**
