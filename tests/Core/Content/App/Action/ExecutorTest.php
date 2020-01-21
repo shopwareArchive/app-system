@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swag\SaasConnect\Test\Core\Content\App\Action;
 
@@ -16,10 +16,9 @@ use Swag\SaasConnect\Test\AppSystemTestBehaviour;
 
 class ExecutorTest extends \PHPUnit\Framework\TestCase
 {
-    const SCHEMA_LOCATION = __DIR__ . '/../../../../../appActionEndpointSchema.json';
-
     use IntegrationTestBehaviour;
     use AppSystemTestBehaviour;
+    const SCHEMA_LOCATION = __DIR__ . '/../../../../../appActionEndpointSchema.json';
 
     /**
      * @var MockHandler
@@ -31,7 +30,7 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
      */
     private $executor;
 
-    public function setUp():void
+    public function setUp(): void
     {
         $this->appServerMock = $this->getContainer()->get(MockHandler::class);
         $this->executor = $this->getContainer()->get(Executor::class);
@@ -103,7 +102,7 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
         /** @var Request $request */
         $request = $this->appServerMock->getLastRequest();
 
-        static::assertEquals($targetUrl, (string)$request->getUri());
+        static::assertEquals($targetUrl, (string) $request->getUri());
     }
 
     public function testContentIsCorrect(): void
@@ -130,19 +129,19 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
         $request = $this->appServerMock->getLastRequest();
 
         static::assertEquals('POST', $request->getMethod());
-        $body = $request->getBody();
+        $body = $request->getBody()->getContents();
         static::assertJson($body);
         $data = json_decode($body, true);
 
         $expectedSource = [
             'url' => $shopUrl,
             'appVersion' => $appVersion,
-            'apiKey' => ''
+            'apiKey' => '',
         ];
         $expectedData = [
             'ids' => $affectedIds,
             'action' => $actionName,
-            'entity' => $entity
+            'entity' => $entity,
         ];
 
         static::assertEquals($expectedSource, $data['source']);
@@ -150,7 +149,6 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
         static::assertNotEmpty($data['meta']['timestamp']);
         static::assertTrue(Uuid::isValid($data['meta']['reference']));
     }
-
 
     private function parseSchemaErrors(ValidationResult $result): string
     {
@@ -160,6 +158,7 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
             $message .= sprintf("Validation error at '%s' : %s \n", implode(',', $validationError->dataPointer()), $validationError->keyword());
             $message .= json_encode($validationError->keywordArgs(), JSON_PRETTY_PRINT);
         }
+
         return $message;
     }
 

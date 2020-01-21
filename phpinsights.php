@@ -66,6 +66,7 @@ return [
         \PHP_CodeSniffer\Standards\Generic\Sniffs\Commenting\TodoSniff::class,
         \NunoMaduro\PhpInsights\Domain\Insights\ForbiddenNormalClasses::class,
         \SlevomatCodingStandard\Sniffs\Classes\SuperfluousInterfaceNamingSniff::class,
+        \SlevomatCodingStandard\Sniffs\Classes\SuperfluousExceptionNamingSniff::class,
     ],
 
     'config' => [

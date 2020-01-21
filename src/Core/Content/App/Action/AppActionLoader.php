@@ -1,5 +1,4 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace Swag\SaasConnect\Core\Content\App\Action;
 
@@ -35,20 +34,19 @@ class AppActionLoader
         $criteria = new Criteria([$actionId]);
         $criteria->addAssociation('app');
 
-        $actionButton = $this->actionButtonRepo->search($criteria, $context);
+        /** @var ActionButtonEntity | null $actionButton */
+        $actionButton = $this->actionButtonRepo->search($criteria, $context)->first();
 
-        if ($actionButton->count() === 0) {
+        if ($actionButton === null) {
             throw new ActionNotFoundException();
         }
-        /** @var ActionButtonEntity $action */
-        $action = $actionButton->first();
 
         return new AppAction(
-            $action->getUrl(),
+            $actionButton->getUrl(),
             $this->url,
-            $action->getApp()->getVersion(),
-            $action->getEntity(),
-            $action->getAction(),
+            $actionButton->getApp()->getVersion(),
+            $actionButton->getEntity(),
+            $actionButton->getAction(),
             $ids
         );
     }

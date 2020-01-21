@@ -1,5 +1,4 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace Swag\SaasConnect\Test\Core\Content\App\Action;
 
@@ -47,7 +46,7 @@ class AppActionLoaderTest extends TestCase
                 'ids' => $ids,
                 'entity' => $action->getEntity(),
                 'action' => $action->getAction(),
-            ]
+            ],
         ];
 
         static::assertEquals($expected, $result->asPayload());

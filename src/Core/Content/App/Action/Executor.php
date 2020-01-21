@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swag\SaasConnect\Core\Content\App\Action;
 
@@ -22,7 +22,7 @@ class Executor
         $payload = $action->asPayload();
         $payload['meta'] = [
             'timestamp' => (new \DateTime())->getTimestamp(),
-            'reference' => Uuid::randomHex()
+            'reference' => Uuid::randomHex(),
         ];
 
         $this->guzzleClient->postAsync($action->getTargetUrl(), ['json' => $payload]);

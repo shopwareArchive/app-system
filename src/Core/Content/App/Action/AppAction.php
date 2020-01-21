@@ -1,5 +1,4 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace Swag\SaasConnect\Core\Content\App\Action;
 
@@ -8,9 +7,10 @@ use Swag\SaasConnect\Core\Content\App\Exception\InvalidArgumentException;
 
 class AppAction
 {
-    const VERSION_VALIDATE_REGEX = '/^[0-9]+\.[0-9]+\.[0-9]+$/';
+    private const VERSION_VALIDATE_REGEX = '/^[0-9]+\.[0-9]+\.[0-9]+$/';
+
     /**
-     * @var array
+     * @var array<string>
      */
     private $ids;
 
@@ -42,14 +42,45 @@ class AppAction
     /**
      * @param array<string> $ids
      */
-    public function __construct(string $targetUrl, string $shopUrl, string $appVersion, string $entity, string $action, array $ids)
-    {
+    public function __construct(
+        string $targetUrl,
+        string $shopUrl,
+        string $appVersion,
+        string $entity,
+        string $action,
+        array $ids
+    ) {
         $this->setAction($action);
         $this->setAppVersion($appVersion);
         $this->setEntity($entity);
         $this->setIds($ids);
         $this->setShopUrl($shopUrl);
         $this->setTargetUrl($targetUrl);
+    }
+
+    public function getTargetUrl(): string
+    {
+        return $this->targetUrl;
+    }
+
+    /**
+     * @return array<string, array<string, string | array<string>>>
+     */
+    public function asPayload(): array
+    {
+        return [
+            'source' => [
+                'url' => $this->shopUrl,
+                'appVersion' => $this->appVersion,
+                /* @Todo add integration key: SAAS-221 */
+                'apiKey' => '',
+            ],
+            'data' => [
+                'ids' => $this->ids,
+                'entity' => $this->entity,
+                'action' => $this->action,
+            ],
+        ];
     }
 
     /**
@@ -103,27 +134,5 @@ class AppAction
             throw new InvalidArgumentException(sprintf('%s is not a valid url', $shopUrl));
         }
         $this->shopUrl = $shopUrl;
-    }
-
-    public function getTargetUrl(): string
-    {
-        return $this->targetUrl;
-    }
-
-    public function asPayload(): array
-    {
-        return [
-            'source' => [
-                'url' => $this->shopUrl,
-                'appVersion' => $this->appVersion,
-                /** @Todo add integration key: SAAS-221 */
-                'apiKey' => '',
-            ],
-            'data' => [
-                'ids' => $this->ids,
-                'entity' => $this->entity,
-                'action' => $this->action,
-            ]
-        ];
     }
 }

@@ -81,7 +81,7 @@ class AppActionControllerTest extends TestCase
 
         $ids = [Uuid::randomHex()];
         $postData = [
-            'ids' => $ids
+            'ids' => $ids,
         ];
 
         $appServerMock->append(new Response(200));
@@ -96,16 +96,15 @@ class AppActionControllerTest extends TestCase
         static::assertJson($body);
         $data = json_decode($body, true);
 
-
         $expectedSource = [
             'url' => getenv('APP_URL'),
             'appVersion' => $action->getApp()->getVersion(),
-            'apiKey' => ''
+            'apiKey' => '',
         ];
         $expectedData = [
             'ids' => $ids,
             'action' => $action->getAction(),
-            'entity' => $action->getEntity()
+            'entity' => $action->getEntity(),
         ];
 
         static::assertEquals($expectedSource, $data['source']);
@@ -146,11 +145,10 @@ class AppActionControllerTest extends TestCase
         static::assertJson($body);
         $data = json_decode($body, true);
 
-
         $expectedData = [
             'ids' => [],
             'action' => $action->getAction(),
-            'entity' => $action->getEntity()
+            'entity' => $action->getEntity(),
         ];
 
         static::assertEquals($expectedData, $data['data']);

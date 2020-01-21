@@ -5,7 +5,6 @@ namespace Swag\SaasConnect\Core\Content\App\Api;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Swag\SaasConnect\Core\Content\App\Action\ActionButtonLoader;
-use Swag\SaasConnect\Core\Content\App\Action\ActionRequestLoader;
 use Swag\SaasConnect\Core\Content\App\Action\AppActionLoader;
 use Swag\SaasConnect\Core\Content\App\Action\Executor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,9 +33,11 @@ class AppActionController extends AbstractController
      */
     private $appActionFactory;
 
-
-    public function __construct(ActionButtonLoader $actionButtonLoader, AppActionLoader $appActionFactory, Executor $executor)
-    {
+    public function __construct(
+        ActionButtonLoader $actionButtonLoader,
+        AppActionLoader $appActionFactory,
+        Executor $executor
+    ) {
         $this->actionButtonLoader = $actionButtonLoader;
         $this->executor = $executor;
         $this->appActionFactory = $appActionFactory;
