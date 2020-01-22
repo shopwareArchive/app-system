@@ -1,0 +1,15 @@
+{% block sw_connect_action_button %}
+    <component
+        :is="openInNewTab ? 'a' : 'div'"
+        class="sw-connect-action-button sw-context-menu-item sw-context-menu-item--icon"
+        @click="runAction"
+        v-bind="linkData">
+
+        <img class="sw-connect-action-button__icon" :src="action.icon">
+
+        <span class="sw-context-menu-item__text">
+            {{ buttonLabel }}
+            <sw-icon v-if="openInNewTab" name="default-action-external" size="12px"></sw-icon>
+        </span>
+    </component>
+{% endblock %}
