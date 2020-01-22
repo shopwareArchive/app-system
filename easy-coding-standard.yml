@@ -35,12 +35,12 @@ services:
     PhpCsFixerCustomFixers\Fixer\SingleSpaceAfterStatementFixer: ~
 
 parameters:
-    exclude_files:
-        - 'src/Recovery/*'
     skip:
         PhpCsFixer\Fixer\ClassNotation\SelfAccessorFixer: ~
         PhpCsFixer\Fixer\LanguageConstruct\ExplicitIndirectVariableFixer: ~
         PhpCsFixer\Fixer\PhpTag\BlankLineAfterOpeningTagFixer: ~
+#       Checked by PhpInsights: DocCommentSpacingSniff which can be configured
+        PhpCsFixer\Fixer\Phpdoc\PhpdocSeparationFixer: ~
         PhpCsFixer\Fixer\Phpdoc\PhpdocSummaryFixer: ~
         PhpCsFixer\Fixer\StringNotation\ExplicitStringVariableFixer: ~
         PHP_CodeSniffer\Standards\Generic\Sniffs\CodeAnalysis\AssignmentInConditionSniff: ~

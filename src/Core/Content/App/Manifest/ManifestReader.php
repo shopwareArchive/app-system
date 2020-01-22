@@ -61,7 +61,7 @@ class ManifestReader extends XmlReader
     }
 
     /**
-     * @param array<string> $translatable
+     * @param  array<string> $translatable
      * @return array<string, string|array<string, string>>
      */
     private function mapTagValues(\DOMElement $node, array $translatable = []): array

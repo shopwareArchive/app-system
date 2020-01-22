@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 return [
     /*
@@ -61,7 +59,6 @@ return [
 
     'remove' => [
         \NunoMaduro\PhpInsights\Domain\Sniffs\ForbiddenSetterSniff::class,
-        \ObjectCalisthenics\Sniffs\NamingConventions\ElementNameMinimalLengthSniff::class,
         \PHP_CodeSniffer\Standards\Generic\Sniffs\CodeAnalysis\EmptyStatementSniff::class,
         \SlevomatCodingStandard\Sniffs\ControlStructures\DisallowEmptySniff::class,
         \SlevomatCodingStandard\Sniffs\ControlStructures\DisallowShortTernaryOperatorSniff::class,
@@ -69,9 +66,6 @@ return [
         \PHP_CodeSniffer\Standards\Generic\Sniffs\Commenting\TodoSniff::class,
         \NunoMaduro\PhpInsights\Domain\Insights\ForbiddenNormalClasses::class,
         \SlevomatCodingStandard\Sniffs\Classes\SuperfluousInterfaceNamingSniff::class,
-        \PHP_CodeSniffer\Standards\Generic\Sniffs\Formatting\SpaceAfterNotSniff::class,
-        \SlevomatCodingStandard\Sniffs\TypeHints\DeclareStrictTypesSniff::class,
-        \SlevomatCodingStandard\Sniffs\Commenting\DocCommentSpacingSniff::class,
     ],
 
     'config' => [
@@ -91,6 +85,21 @@ return [
         ],
         \SlevomatCodingStandard\Sniffs\TypeHints\TypeHintDeclarationSniff::class => [
             'allAnnotationsAreUseful' => true,
+        ],
+        \SlevomatCodingStandard\Sniffs\TypeHints\DeclareStrictTypesSniff::class => [
+            'newlinesCountAfterDeclare' => 2,
+            'newlinesCountBetweenOpenTagAndDeclare' => 0,
+        ],
+        \SlevomatCodingStandard\Sniffs\Commenting\DocCommentSpacingSniff::class => [
+            'linesCountBetweenAnnotationsGroups' => 1,
+            'linesCountBetweenDifferentAnnotationsTypes' => 0,
+            'annotationsGroups' => ['@psalm-suppress', '@method', '@param, @return'],
+        ],
+        \PHP_CodeSniffer\Standards\Generic\Sniffs\Formatting\SpaceAfterNotSniff::class => [
+            'spacing' => 0,
+        ],
+        \ObjectCalisthenics\Sniffs\NamingConventions\ElementNameMinimalLengthSniff::class => [
+            'allowedShortNames' => ['i', 'id', 'e', 'io'],
         ],
     ],
 ];
