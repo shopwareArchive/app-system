@@ -19,7 +19,13 @@ cache:
 
 Build-Analysis-Container:
     stage: Build
-    when: manual
+    only:
+        refs:
+            - merge_requests
+            - master
+        changes:
+            - dev-ops/tools/*
+            - dev-ops/tools/**/*
     image: docker
     services:
         -   name: docker:18.09.7-dind
@@ -34,6 +40,10 @@ Build-Analysis-Container:
 
 EasyCodingStandard:
     stage: Static analysis
+    only:
+        refs:
+            - merge_requests
+            - master
     image: "${IMAGE_NAME}:latest"
     script:
         - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
@@ -42,6 +52,10 @@ EasyCodingStandard:
 
 Psalm:
     stage: Static analysis
+    only:
+        refs:
+            - merge_requests
+            - master
     image: "${IMAGE_NAME}:latest"
     script:
         - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
@@ -50,6 +64,10 @@ Psalm:
 
 Phpstan:
     stage: Static analysis
+    only:
+        refs:
+            - merge_requests
+            - master
     image: "${IMAGE_NAME}:latest"
     script:
         - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
@@ -57,6 +75,10 @@ Phpstan:
 
 PhpInsights:
     stage: Static analysis
+    only:
+        refs:
+            - merge_requests
+            - master
     image: "${IMAGE_NAME}:latest"
     script:
         - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
@@ -64,6 +86,10 @@ PhpInsights:
 
 Eslint Administration:
     stage: Static analysis
+    only:
+        refs:
+            - merge_requests
+            - master
     image: shopware/development:latest
     before_script:
         - zip -rq plugin.zip .
@@ -83,6 +109,10 @@ Eslint Administration:
 
 Unit:
     stage: Unit
+    only:
+        refs:
+            - merge_requests
+            - master
     image: shopware/development:latest
     services:
         -   name: mysql:5.7
@@ -121,6 +151,10 @@ Unit:
 
 Jest (Administration):
     stage: Unit
+    only:
+        refs:
+            - merge_requests
+            - master
     image: shopware/development:latest
     services:
         -   name: mysql:5.7
