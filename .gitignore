@@ -1,10 +1,21 @@
+# ignore ide settings
 .idea/
 .vscode
-build
+
+# ignore test output
 .phpunit.result.cache
+**/e2e/artifacts
+
+# ignore dependency folders
 vendor
-.php_cs.cache
 /composer.lock
 node_modules
+package-lock.json
+
+#ignore bundle output
 src/Resources/public/**
 !src/Resources/public/.gitkeep
+build
+
+#ignore caches
+.php_cs.cache

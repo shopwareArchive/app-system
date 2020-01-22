@@ -53,7 +53,7 @@ export default class AppApiService {
      * Run an action on the server
      * 
      * @param {string} id
-     * @param {Object} requirements
+     * @param {Object} params
      */
     runAction(id, params = {}) {
         return this.httpClient
