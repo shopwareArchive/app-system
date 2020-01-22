@@ -5,8 +5,11 @@ namespace Swag\SaasConnect\Core\Content\App\Api;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Swag\SaasConnect\Core\Content\App\Action\ActionButtonLoader;
+use Swag\SaasConnect\Core\Content\App\Action\AppActionLoader;
+use Swag\SaasConnect\Core\Content\App\Action\Executor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -20,9 +23,24 @@ class AppActionController extends AbstractController
      */
     private $actionButtonLoader;
 
-    public function __construct(ActionButtonLoader $actionButtonLoader)
-    {
+    /**
+     * @var Executor
+     */
+    private $executor;
+
+    /**
+     * @var AppActionLoader
+     */
+    private $appActionFactory;
+
+    public function __construct(
+        ActionButtonLoader $actionButtonLoader,
+        AppActionLoader $appActionFactory,
+        Executor $executor
+    ) {
         $this->actionButtonLoader = $actionButtonLoader;
+        $this->executor = $executor;
+        $this->appActionFactory = $appActionFactory;
     }
 
     /**
@@ -38,8 +56,14 @@ class AppActionController extends AbstractController
     /**
      * @Route("api/v{version}/app-system/action-button/run/{id}", name="api.app_system.action_button.run", methods={"POST"})
      */
-    public function runAction(): Response
+    public function runAction(string $id, Request $request, Context $context): Response
     {
+        $entityIds = $request->get('ids', []);
+
+        $action = $this->appActionFactory->loadAppAction($id, $entityIds, $context);
+
+        $this->executor->execute($action);
+
         return new JsonResponse();
     }
 }

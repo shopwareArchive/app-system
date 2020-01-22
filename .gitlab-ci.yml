@@ -130,8 +130,9 @@ Unit:
         - /entrypoint supervisord > /dev/null 2>&1 &
     script:
         - ./psh.phar init
-        - php bin/console plugin:install --activate SaasConnect
+        - composer install -d custom/plugins/SaasConnect
         - composer dump-autoload -d custom/plugins/SaasConnect
+        - php bin/console plugin:install --activate SaasConnect
         - ./psh.phar init-test-databases
         - php -d pcov.enabled=1 -d pcov.directory=$CI_PROJECT_DIR
             vendor/bin/phpunit
