@@ -4,7 +4,7 @@ build
 .phpunit.result.cache
 vendor
 .php_cs.cache
-composer.lock
+/composer.lock
 node_modules
 src/Resources/public/**
 !src/Resources/public/.gitkeep

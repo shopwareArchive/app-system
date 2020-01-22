@@ -5,6 +5,7 @@ variables:
     WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/development/public
     REPOSITORY_HOST: "gitlab.shopware.com:5005"
     PLATFORM_BRANCH: "6.1"
+    IMAGE_NAME: "${REPOSITORY_HOST}/shopware/shopware-cloud/connect/php-static-analysis"
 
 stages:
     - Build
@@ -20,37 +21,42 @@ Build-Analysis-Container:
     stage: Build
     only:
         refs:
+            - merge_requests
             - master
         changes:
-            - dev-ops/container/static-analysis/*
-            - dev-ops/container/static-analysis/**/*
+            - dev-ops/tools/*
+            - dev-ops/tools/**/*
     image: docker
     services:
         -   name: docker:18.09.7-dind
             alias: docker
     script:
-        - export IMAGE_NAME="${REPOSITORY_HOST}/shopware/shopware-cloud/connect/php-static-analysis"
         - apk add git bash
-        - docker login gitlab.shopware.com:5005 -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
-        - docker build dev-ops/container/static-analysis -t "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"
+        - docker login "${REPOSITORY_HOST}" -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
+        - docker build dev-ops/tools -t "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"
         - docker tag "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}" "${IMAGE_NAME}:latest"
         - docker push "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"
         - docker push "${IMAGE_NAME}:latest"
 
-Cs-Fixer:
+EasyCodingStandard:
     stage: Static analysis
-    image: gitlab.shopware.com:5005/shopware/shopware-cloud/connect/php-static-analysis:latest
+    only:
+        refs:
+            - merge_requests
+            - master
+    image: "${IMAGE_NAME}:latest"
     script:
         - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
-        - php-cs-fixer fix --dry-run -v --allow-risky=yes --format=junit src | tee php-cs-fixer.xml
-    artifacts:
-        reports:
-            junit: php-cs-fixer.xml
+        - ecs check .
 
 
 Psalm:
     stage: Static analysis
-    image: gitlab.shopware.com:5005/shopware/shopware-cloud/connect/php-static-analysis:latest
+    only:
+        refs:
+            - merge_requests
+            - master
+    image: "${IMAGE_NAME}:latest"
     script:
         - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
         - psalm --output-format=compact
@@ -58,13 +64,32 @@ Psalm:
 
 Phpstan:
     stage: Static analysis
-    image: gitlab.shopware.com:5005/shopware/shopware-cloud/connect/php-static-analysis:latest
+    only:
+        refs:
+            - merge_requests
+            - master
+    image: "${IMAGE_NAME}:latest"
     script:
         - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
         - phpstan analyze --configuration phpstan.neon src
 
+PhpInsights:
+    stage: Static analysis
+    only:
+        refs:
+            - merge_requests
+            - master
+    image: "${IMAGE_NAME}:latest"
+    script:
+        - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
+        - phpinsights --no-interaction
+
 Eslint Administration:
     stage: Static analysis
+    only:
+        refs:
+            - merge_requests
+            - master
     image: shopware/development:latest
     before_script:
         - zip -rq plugin.zip .
@@ -84,6 +109,10 @@ Eslint Administration:
 
 Unit:
     stage: Unit
+    only:
+        refs:
+            - merge_requests
+            - master
     image: shopware/development:latest
     services:
         -   name: mysql:5.7
@@ -122,6 +151,10 @@ Unit:
 
 Jest (Administration):
     stage: Unit
+    only:
+        refs:
+            - merge_requests
+            - master
     image: shopware/development:latest
     services:
         -   name: mysql:5.7

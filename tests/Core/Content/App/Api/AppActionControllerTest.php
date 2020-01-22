@@ -47,12 +47,12 @@ class AppActionControllerTest extends TestCase
                 'app' => 'SwagApp',
                 'label' => [
                     'en-GB' => 'View Order',
-                    'de-DE' => 'Zeige Bestellung'
+                    'de-DE' => 'Zeige Bestellung',
                 ],
                 'action' => 'viewOrder',
                 'url' => 'https://swag-test.com/your-order',
-                'openNewTab' => true
-            ]
+                'openNewTab' => true,
+            ],
         ], $result);
     }
 

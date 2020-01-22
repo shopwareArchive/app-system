@@ -77,9 +77,9 @@ class AppServiceTest extends TestCase
                     'view' => 'detail',
                     'action' => 'test',
                     'label' => 'test',
-                    'url' => 'test.com'
-                ]
-            ]
+                    'url' => 'test.com',
+                ],
+            ],
         ]], $this->context);
 
         $this->appService->refreshApps($this->context);
@@ -101,7 +101,7 @@ class AppServiceTest extends TestCase
             'name' => 'SwagApp',
             'path' => __DIR__ . '/Manifest/_fixtures/test',
             'version' => '1.0.0',
-            'label' => 'test'
+            'label' => 'test',
         ]], $this->context);
 
         $this->appService->refreshApps($this->context);
@@ -130,9 +130,9 @@ class AppServiceTest extends TestCase
                     'view' => 'detail',
                     'action' => 'test',
                     'label' => 'test',
-                    'url' => 'test.com'
-                ]
-            ]
+                    'url' => 'test.com',
+                ],
+            ],
         ]], $this->context);
 
         $this->appService->refreshApps($this->context);

@@ -9,8 +9,14 @@ class ManifestReader extends XmlReader
 {
     private const FALLBACK_LOCALE = 'en-GB';
 
+    /**
+     * @var string
+     */
     protected $xsdFile = __DIR__ . '/Schema/manifest-1.0.xsd';
 
+    /**
+     * @return array<string, array<string, string|array<string, string>|array<array<string, string|int|bool|array<string, string>|null>>>>
+     */
     protected function parseFile(\DOMDocument $xml): array
     {
         /** @var \DOMElement $meta */
@@ -20,10 +26,13 @@ class ManifestReader extends XmlReader
 
         return [
             'metadata' => $this->parseMetaData($meta),
-            'admin' => $this->parseAdmin($admin)
+            'admin' => $this->parseAdmin($admin),
         ];
     }
 
+    /**
+     * @return array<string, string|array<string, string>>
+     */
     private function parseMetaData(\DOMElement $meta): array
     {
         return $this->mapTagValues(
@@ -32,6 +41,9 @@ class ManifestReader extends XmlReader
         );
     }
 
+    /**
+     * @return array<string, array<array<string, string|int|bool|array<string, string>|null>>>
+     */
     private function parseAdmin(\DOMElement $admin): array
     {
         $actionButtons = [];
@@ -44,10 +56,14 @@ class ManifestReader extends XmlReader
         }
 
         return [
-            'actionButtons' => $actionButtons
+            'actionButtons' => $actionButtons,
         ];
     }
 
+    /**
+     * @param  array<string> $translatable
+     * @return array<string, string|array<string, string>>
+     */
     private function mapTagValues(\DOMElement $node, array $translatable = []): array
     {
         $values = [];
@@ -77,6 +93,9 @@ class ManifestReader extends XmlReader
         return $values;
     }
 
+    /**
+     * @return array<string, string|int|bool|null>
+     */
     private function mapAttributeValues(\DOMElement $node): array
     {
         $values = [];

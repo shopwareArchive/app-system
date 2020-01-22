@@ -2,9 +2,6 @@
 
 namespace Swag\SaasConnect\Core\Content\App;
 
-use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
-use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonDefinition;
-use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationDefinition;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
@@ -16,10 +13,13 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Runtime;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\WriteProtected;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslatedField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslationsAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
+use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonDefinition;
+use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationDefinition;
 
 class AppDefinition extends EntityDefinition
 {
@@ -50,14 +50,20 @@ class AppDefinition extends EntityDefinition
             new StringField('copyright', 'copyright'),
             new StringField('license', 'license'),
             (new StringField('version', 'version'))->addFlags(new Required()),
-            (new BlobField('icon', 'iconRaw'))->addFlags(new ReadProtected(SalesChannelApiSource::class, AdminApiSource::class)),
+            (new BlobField('icon', 'iconRaw'))->addFlags(
+                new ReadProtected(SalesChannelApiSource::class,
+                    AdminApiSource::class)
+            ),
             (new StringField('icon', 'icon'))->addFlags(new WriteProtected(), new Runtime()),
 
-            (new TranslationsAssociationField(AppTranslationDefinition::class, 'app_id'))->addFlags(new Required(), new CascadeDelete()),
+            (new TranslationsAssociationField(AppTranslationDefinition::class, 'app_id'))->addFlags(
+                new Required(),
+                new CascadeDelete()
+            ),
             new TranslatedField('label'),
             new TranslatedField('description'),
 
-            new OneToManyAssociationField('actionButtons', ActionButtonDefinition::class, 'app_id')
+            new OneToManyAssociationField('actionButtons', ActionButtonDefinition::class, 'app_id'),
         ]);
     }
 }

@@ -15,6 +15,8 @@ class SaasConnect extends Plugin
         }
 
         $connection = $this->container->get(Connection::class);
-        $connection->executeQuery('DROP TABLE IF EXISTS `app_action_button_translation`, `app_action_button`, `app_translation`, `app`');
+        $connection->executeQuery('
+            DROP TABLE IF EXISTS `app_action_button_translation`, `app_action_button`, `app_translation`, `app`
+        ');
     }
 }

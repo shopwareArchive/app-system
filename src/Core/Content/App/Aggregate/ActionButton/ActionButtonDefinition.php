@@ -49,7 +49,7 @@ class ActionButtonDefinition extends EntityDefinition
             new TranslationsAssociationField(ActionButtonTranslationDefinition::class, 'app_action_button_id'),
 
             (new FkField('app_id', 'appId', AppDefinition::class))->addFlags(new Required()),
-            new ManyToOneAssociationField('app', 'app_id', AppDefinition::class)
+            new ManyToOneAssociationField('app', 'app_id', AppDefinition::class),
         ]);
     }
 }

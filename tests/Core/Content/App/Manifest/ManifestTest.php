@@ -16,16 +16,16 @@ class ManifestTest extends TestCase
             'name' => 'SwagApp',
             'label' => [
                 'en-GB' => 'Swag App Test',
-                'de-DE' => 'Swag App Test'
+                'de-DE' => 'Swag App Test',
             ],
             'description' => [
                 'en-GB' => 'Test for App System',
-                'de-DE' => 'Test für das App System'
+                'de-DE' => 'Test für das App System',
             ],
             'author' => 'shopware AG',
             'copyright' => '(c) by shopware AG',
             'version' => '1.0.0',
-            'icon' => 'icon.png'
+            'icon' => 'icon.png',
         ], $manifest->getMetadata());
 
         static::assertCount(2, $manifest->getAdmin()['actionButtons']);
@@ -39,7 +39,7 @@ class ManifestTest extends TestCase
                 'entity' => 'order',
                 'view' => 'detail',
                 'url' => 'https://swag-test.com/your-order',
-                'openNewTab' => true
+                'openNewTab' => true,
             ],
             [
                 'label' => [
@@ -49,7 +49,7 @@ class ManifestTest extends TestCase
                 'entity' => 'product',
                 'view' => 'index',
                 'url' => 'https://swag-test.com/do-stuff',
-            ]
+            ],
         ], $manifest->getAdmin()['actionButtons']);
     }
 }

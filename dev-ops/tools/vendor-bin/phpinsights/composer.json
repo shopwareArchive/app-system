@@ -1,0 +1,5 @@
+{
+    "require": {
+        "nunomaduro/phpinsights": "^1.11"
+    }
+}

@@ -23,7 +23,7 @@ class AppLoader implements AppLoaderInterface
     }
 
     /**
-     * @return Manifest[]
+     * @return array<Manifest>
      */
     public function load(): array
     {
