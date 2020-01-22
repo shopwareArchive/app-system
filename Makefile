@@ -4,7 +4,7 @@ GROUP_ID := $(shell id -g)
 TOOLS_BIN := dev-ops/tools/vendor/bin
 
 # TARGETS
-.PHONY: help static-analysis test cs-fixer-all init install-tools administration-unit administration-lint
+.PHONY: help static-analysis test ecs-dry ecs-fix init install-tools administration-unit administration-lint
 
 .DEFAULT_GOAL := help
 
