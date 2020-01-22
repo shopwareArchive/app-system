@@ -8,9 +8,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonCollection;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonEntity;
-use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButtonTranslation\ActionButtonTranslationCollection;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButtonTranslation\ActionButtonTranslationEntity;
-use Swag\SaasConnect\Core\Content\App\AppEntity;
 
 class ActionButtonLoader
 {
@@ -24,14 +22,15 @@ class ActionButtonLoader
         $this->actionButtonRepository = $actionButtonRepository;
     }
 
+    /**
+     * @return array<array<string|array|bool>>
+     */
     public function loadActionButtonsForView(string $entity, string $view, Context $context): array
     {
         $criteria = new Criteria();
-        $criteria->addFilter(
-            new EqualsFilter('entity', $entity),
-            new EqualsFilter('view', $view)
-        )->addAssociation('app')
-        ->addAssociation('translations.language.locale');
+        $criteria->addFilter(new EqualsFilter('entity', $entity), new EqualsFilter('view', $view))
+            ->addAssociation('app')
+            ->addAssociation('translations.language.locale');
 
         /** @var ActionButtonCollection $actionButtons */
         $actionButtons = $this->actionButtonRepository->search($criteria, $context)->getEntities();
@@ -39,6 +38,9 @@ class ActionButtonLoader
         return $this->formatCollection($actionButtons);
     }
 
+    /**
+     * @return array<array<string|array|bool>>
+     */
     private function formatCollection(ActionButtonCollection $actionButtons): array
     {
         return array_values(array_map(function (ActionButtonEntity $button): array {
@@ -48,11 +50,14 @@ class ActionButtonLoader
                 'label' => $this->mapTranslatedLabels($button),
                 'action' => $button->getAction(),
                 'url' => $button->getUrl(),
-                'openNewTab' => $button->isOpenNewTab()
+                'openNewTab' => $button->isOpenNewTab(),
             ];
         }, $actionButtons->getElements()));
     }
 
+    /**
+     * @return array<string, string>
+     */
     private function mapTranslatedLabels(ActionButtonEntity $button): array
     {
         $labels = [];

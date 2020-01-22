@@ -6,8 +6,6 @@ use Shopware\Core\Framework\Adapter\Console\ShopwareStyle;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Swag\SaasConnect\Core\Content\App\AppCollection;
-use Swag\SaasConnect\Core\Content\App\AppEntity;
 use Swag\SaasConnect\Core\Content\App\AppService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

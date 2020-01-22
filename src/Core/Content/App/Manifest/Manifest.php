@@ -10,20 +10,27 @@ class Manifest
     private $path;
 
     /**
-     * @var array
+     * @var array<string, string|array<string, string>>
      */
     private $metadata;
 
     /**
-     * @var array
+     * @var array<string, array<array<string, string|int|bool|array<string, string>|null>>>
      */
     private $admin = [];
 
+    /**
+     * @param array<string, array<string, string|array<string, string>|array<array<string, string|int|bool|array<string, string>|null>>>> $data
+     */
     private function __construct(string $path, array $data)
     {
         $this->path = $path;
-        $this->metadata = $data['metadata'];
-        $this->admin = $data['admin'];
+        /** @var array<string, string|array<string, string>> $metadata */
+        $metadata = $data['metadata'];
+        $this->metadata = $metadata;
+        /** @var array<string, array<array<string, string|int|bool|array<string, string>|null>>> $admin */
+        $admin = $data['admin'];
+        $this->admin = $admin;
     }
 
     public static function createFromXmlFile(string $xmlFile): self
@@ -39,11 +46,17 @@ class Manifest
         return $this->path;
     }
 
+    /**
+     * @return array<string, string|array<string, string>>
+     */
     public function getMetadata(): array
     {
         return $this->metadata;
     }
 
+    /**
+     * @return array<string, array<array<string, string|int|bool|array<string, string>|null>>>
+     */
     public function getAdmin(): array
     {
         return $this->admin;

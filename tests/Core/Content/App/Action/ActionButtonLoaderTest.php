@@ -75,21 +75,21 @@ class ActionButtonLoaderTest extends TestCase
                 'app' => 'App1',
                 'id' => $this->app1OrderDetailButtonId,
                 'label' => [
-                    'en-GB' => 'Order Detail App1'
+                    'en-GB' => 'Order Detail App1',
                 ],
                 'action' => 'orderDetailApp1',
                 'url' => 'app1.com/order/detail',
-                'openNewTab' => false
+                'openNewTab' => false,
             ], [
                 'app' => 'App2',
                 'id' => $this->app2OrderDetailButtonId,
                 'label' => [
-                    'en-GB' => 'Order Detail App2'
+                    'en-GB' => 'Order Detail App2',
                 ],
                 'action' => 'orderDetailApp2',
                 'url' => 'app2.com/order/detail',
-                'openNewTab' => false
-            ]
+                'openNewTab' => false,
+            ],
         ], $loadedActionButtons);
     }
 
@@ -107,7 +107,7 @@ class ActionButtonLoaderTest extends TestCase
                     'view' => 'detail',
                     'action' => 'orderDetailApp1',
                     'label' => 'Order Detail App1',
-                    'url' => 'app1.com/order/detail'
+                    'url' => 'app1.com/order/detail',
                 ],
                 [
                     'id' => $this->app1ProductDetailButtonId,
@@ -115,7 +115,7 @@ class ActionButtonLoaderTest extends TestCase
                     'view' => 'detail',
                     'action' => 'productDetailApp1',
                     'label' => 'Product Detail App1',
-                    'url' => 'app1.com/product/detail'
+                    'url' => 'app1.com/product/detail',
                 ],
                 [
                     'id' => $this->app1OrderListButtonId,
@@ -123,9 +123,9 @@ class ActionButtonLoaderTest extends TestCase
                     'view' => 'index',
                     'action' => 'orderListApp1',
                     'label' => 'Order List App1',
-                    'url' => 'app1.com/order/list'
-                ]
-            ]
+                    'url' => 'app1.com/order/list',
+                ],
+            ],
         ], [
             'name' => 'App2',
             'path' => __DIR__ . '/Manifest/_fixtures/test',
@@ -138,9 +138,9 @@ class ActionButtonLoaderTest extends TestCase
                     'view' => 'detail',
                     'action' => 'orderDetailApp2',
                     'label' => 'Order Detail App2',
-                    'url' => 'app2.com/order/detail'
+                    'url' => 'app2.com/order/detail',
                 ],
-            ]
+            ],
         ]], $this->context);
     }
 }

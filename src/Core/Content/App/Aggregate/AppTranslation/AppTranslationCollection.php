@@ -10,7 +10,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
  * @method void                             add(AppTranslationEntity $entity)
  * @method void                             set(string $key, AppTranslationEntity $entity)
  * @method \Generator<AppTranslationEntity> getIterator()
- * @method AppTranslationEntity[]           getElements()
+ * @method array<AppTranslationEntity>           getElements()
  * @method AppTranslationEntity|null        get(string $key)
  * @method AppTranslationEntity|null        first()
  * @method AppTranslationEntity|null        last()

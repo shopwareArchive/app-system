@@ -10,7 +10,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
  * @method void                  add(ActionButtonEntity $entity)
  * @method void                  set(string $key, ActionButtonEntity $entity)
  * @method \Generator<ActionButtonEntity> getIterator()
- * @method ActionButtonEntity[]           getElements()
+ * @method array<ActionButtonEntity>           getElements()
  * @method ActionButtonEntity|null        get(string $key)
  * @method ActionButtonEntity|null        first()
  * @method ActionButtonEntity|null        last()

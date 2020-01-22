@@ -4,7 +4,6 @@ namespace Swag\SaasConnect\Core\Content\App;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonCollection;
 use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationCollection;
 

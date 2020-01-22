@@ -11,7 +11,7 @@ use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 interface AppLoaderInterface
 {
     /**
-     * @return Manifest[]
+     * @return array<Manifest>
      */
     public function load(): array;
 }

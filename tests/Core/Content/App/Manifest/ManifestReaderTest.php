@@ -26,16 +26,16 @@ class ManifestReaderTest extends TestCase
                 'name' => 'SwagApp',
                 'label' => [
                     'en-GB' => 'Swag App Test',
-                    'de-DE' => 'Swag App Test'
+                    'de-DE' => 'Swag App Test',
                 ],
                 'description' => [
                     'en-GB' => 'Test for App System',
-                    'de-DE' => 'Test für das App System'
+                    'de-DE' => 'Test für das App System',
                 ],
                 'author' => 'shopware AG',
                 'copyright' => '(c) by shopware AG',
                 'version' => '1.0.0',
-                'icon' => 'icon.png'
+                'icon' => 'icon.png',
             ],
             'admin' => [
                 'actionButtons' => [
@@ -43,12 +43,12 @@ class ManifestReaderTest extends TestCase
                         'action' => 'viewOrder',
                         'label' => [
                             'en-GB' => 'View Order',
-                            'de-DE' => 'Zeige Bestellung'
+                            'de-DE' => 'Zeige Bestellung',
                         ],
                         'entity' => 'order',
                         'view' => 'detail',
                         'url' => 'https://swag-test.com/your-order',
-                        'openNewTab' => true
+                        'openNewTab' => true,
                     ],
                     [
                         'action' => 'doStuffWithProducts',
@@ -58,9 +58,9 @@ class ManifestReaderTest extends TestCase
                         'entity' => 'product',
                         'view' => 'index',
                         'url' => 'https://swag-test.com/do-stuff',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ], $manifest);
     }
 }

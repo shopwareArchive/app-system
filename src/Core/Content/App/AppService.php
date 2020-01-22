@@ -43,15 +43,20 @@ class AppService
         $appsFromDb = $this->getRegisteredApps($context);
 
         foreach ($appsFromFileSystem as $manifest) {
+            /** @var string $appName */
+            $appName = $manifest->getMetadata()['name'];
             // install
-            if (!array_key_exists($manifest->getMetadata()['name'], $appsFromDb)) {
+            if (!array_key_exists($appName, $appsFromDb)) {
                 $this->updateApp($manifest, $context);
+
                 continue;
             }
 
-            $app = $appsFromDb[$manifest->getMetadata()['name']];
+            $app = $appsFromDb[$appName];
             // update
-            if (version_compare($manifest->getMetadata()['version'], $app['version']) > 0) {
+            /** @var string $currentVersion */
+            $currentVersion = $manifest->getMetadata()['version'];
+            if (version_compare($currentVersion, $app['version']) > 0) {
                 $this->updateApp($manifest, $context, $app['id']);
             }
 
@@ -61,6 +66,9 @@ class AppService
         $this->deleteNotFoundApps($appsFromDb, $context);
     }
 
+    /**
+     * @return array<string, array<string, string>>
+     */
     private function getRegisteredApps(Context $context): array
     {
         /** @var AppCollection $apps */
@@ -71,7 +79,7 @@ class AppService
         foreach ($apps as $app) {
             $appData[$app->getName()] = [
                 'id' => $app->getId(),
-                'version' => $app->getVersion()
+                'version' => $app->getVersion(),
             ];
         }
 
@@ -97,19 +105,25 @@ class AppService
         $this->updateActions($manifest->getAdmin()['actionButtons'], $appId, $context);
     }
 
+    /**
+     * @param array<string, array<string, string>> $toBeDeleted
+     */
     private function deleteNotFoundApps(array $toBeDeleted, Context $context): void
     {
         if (empty($toBeDeleted)) {
             return;
         }
 
-        $toBeDeletedIds = array_map(function (array $app) {
+        $toBeDeletedIds = array_map(static function (array $app) {
             return ['id' => $app['id']];
         }, $toBeDeleted);
 
         $this->appRepository->delete(array_values($toBeDeletedIds), $context);
     }
 
+    /**
+     * @param array<array<string, string|int|bool|array<string, string>|null>> $actionButtons
+     */
     private function updateActions(array $actionButtons, string $appId, Context $context): void
     {
         $this->deleteExistingActions($appId, $context);
@@ -124,11 +138,11 @@ class AppService
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('appId', $appId));
 
-        /** @var string[] $ids */
+        /** @var array<string> $ids */
         $ids = $this->actionButtonRepository->searchIds($criteria, $context)->getIds();
 
         if (!empty($ids)) {
-            $ids = array_map(function (string $id): array {
+            $ids = array_map(static function (string $id): array {
                 return ['id' => $id];
             }, $ids);
 
@@ -136,9 +150,12 @@ class AppService
         }
     }
 
+    /**
+     * @param array<array<string, string|int|bool|array<string, string>|null>> $actionButtons
+     */
     private function addActionButtons(array $actionButtons, string $appId, Context $context): void
     {
-        $actionButtons = array_map(function ($actionButton) use ($appId): array {
+        $actionButtons = array_map(static function ($actionButton) use ($appId): array {
             $actionButton['appId'] = $appId;
 
             return $actionButton;
