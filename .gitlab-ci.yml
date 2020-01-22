@@ -5,6 +5,7 @@ variables:
     WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/development/public
     REPOSITORY_HOST: "gitlab.shopware.com:5005"
     PLATFORM_BRANCH: "6.1"
+    IMAGE_NAME: "${REPOSITORY_HOST}/shopware/shopware-cloud/connect/php-static-analysis"
 
 stages:
     - Build
@@ -24,7 +25,6 @@ Build-Analysis-Container:
         -   name: docker:18.09.7-dind
             alias: docker
     script:
-        - export IMAGE_NAME="${REPOSITORY_HOST}/shopware/shopware-cloud/connect/php-static-analysis"
         - apk add git bash
         - docker login "${REPOSITORY_HOST}" -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
         - docker build dev-ops/tools -t "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"
@@ -34,7 +34,7 @@ Build-Analysis-Container:
 
 EasyCodingStandard:
     stage: Static analysis
-    image: gitlab.shopware.com:5005/shopware/shopware-cloud/connect/php-static-analysis:latest
+    image: "${IMAGE_NAME}:latest"
     script:
         - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
         - ecs check .
@@ -42,7 +42,7 @@ EasyCodingStandard:
 
 Psalm:
     stage: Static analysis
-    image: gitlab.shopware.com:5005/shopware/shopware-cloud/connect/php-static-analysis:latest
+    image: "${IMAGE_NAME}:latest"
     script:
         - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
         - psalm --output-format=compact
@@ -50,14 +50,14 @@ Psalm:
 
 Phpstan:
     stage: Static analysis
-    image: gitlab.shopware.com:5005/shopware/shopware-cloud/connect/php-static-analysis:latest
+    image: "${IMAGE_NAME}:latest"
     script:
         - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
         - phpstan analyze --configuration phpstan.neon src
 
 PhpInsights:
     stage: Static analysis
-    image: gitlab.shopware.com:5005/shopware/shopware-cloud/connect/php-static-analysis:latest
+    image: "${IMAGE_NAME}:latest"
     script:
         - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
         - phpinsights --no-interaction
