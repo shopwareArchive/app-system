@@ -26,21 +26,18 @@ Build-Analysis-Container:
     script:
         - export IMAGE_NAME="${REPOSITORY_HOST}/shopware/shopware-cloud/connect/php-static-analysis"
         - apk add git bash
-        - docker login gitlab.shopware.com:5005 -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
+        - docker login "${REPOSITORY_HOST}" -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
         - docker build dev-ops/tools -t "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"
         - docker tag "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}" "${IMAGE_NAME}:latest"
         - docker push "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"
         - docker push "${IMAGE_NAME}:latest"
 
-Cs-Fixer:
+EasyCodingStandard:
     stage: Static analysis
     image: gitlab.shopware.com:5005/shopware/shopware-cloud/connect/php-static-analysis:latest
     script:
         - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
-        - php-cs-fixer fix --dry-run -v --allow-risky=yes --format=junit src | tee php-cs-fixer.xml
-    artifacts:
-        reports:
-            junit: php-cs-fixer.xml
+        - ecs check .
 
 
 Psalm:
@@ -57,6 +54,13 @@ Phpstan:
     script:
         - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
         - phpstan analyze --configuration phpstan.neon src
+
+PhpInsights:
+    stage: Static analysis
+    image: gitlab.shopware.com:5005/shopware/shopware-cloud/connect/php-static-analysis:latest
+    script:
+        - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
+        - phpinsights --no-interaction
 
 Eslint Administration:
     stage: Static analysis
