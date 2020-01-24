@@ -67,15 +67,16 @@ class ApiRequestContextResolverDecorator implements RequestContextResolverInterf
         return $roleId ? Uuid::fromBytesToHex($roleId) : null;
     }
 
+    /**
+     * @return array<string, string>
+     */
     private function fetchPermissions(string $roleId): array
     {
-        $permissions = $this->connection->executeQuery(
+        return $this->connection->executeQuery(
             'SELECT `resource`, `privilege`
             FROM `acl_resource`
             WHERE `acl_role_id` = :roleId',
             ['roleId' => Uuid::fromHexToBytes($roleId)]
         )->fetchAll(FetchMode::ASSOCIATIVE);
-
-        return $permissions;
     }
 }

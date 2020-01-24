@@ -12,6 +12,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonEntity;
 use Swag\SaasConnect\Core\Content\App\AppCollection;
 use Swag\SaasConnect\Core\Content\App\AppLifecycle;
+use Swag\SaasConnect\Core\Content\App\AppLifecycleIterator;
 use Swag\SaasConnect\Core\Content\App\AppLoader;
 use Swag\SaasConnect\Core\Content\App\AppService;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
@@ -46,10 +47,13 @@ class AppServiceTest extends TestCase
         $this->actionButtonRepository = $this->getContainer()->get('app_action_button.repository');
 
         $this->appService = new AppService(
-            $this->appRepository,
-            $this->getContainer()->get(AppLifecycle::class),
-            new AppLoader(__DIR__ . '/Manifest/_fixtures/test')
+            new AppLifecycleIterator(
+                $this->appRepository,
+                new AppLoader(__DIR__ . '/Manifest/_fixtures/test')
+            ),
+            $this->getContainer()->get(AppLifecycle::class)
         );
+
         $this->context = Context::createDefaultContext();
     }
 
@@ -87,11 +91,11 @@ class AppServiceTest extends TestCase
                 'label' => 'test',
                 'writeAccess' => false,
                 'accessKey' => 'test',
-                'secretAccessKey' => 'test'
+                'secretAccessKey' => 'test',
             ],
             'aclRole' => [
-                'name' => 'SwagApp'
-            ]
+                'name' => 'SwagApp',
+            ],
         ]], $this->context);
 
         $this->appService->refreshApps($this->context);
@@ -119,11 +123,11 @@ class AppServiceTest extends TestCase
                 'label' => 'test',
                 'writeAccess' => false,
                 'accessKey' => 'test',
-                'secretAccessKey' => 'test'
+                'secretAccessKey' => 'test',
             ],
             'aclRole' => [
-                'name' => 'SwagApp'
-            ]
+                'name' => 'SwagApp',
+            ],
         ]], $this->context);
 
         $this->appService->refreshApps($this->context);
@@ -160,11 +164,11 @@ class AppServiceTest extends TestCase
                 'label' => 'test',
                 'writeAccess' => false,
                 'accessKey' => 'test',
-                'secretAccessKey' => 'test'
+                'secretAccessKey' => 'test',
             ],
             'aclRole' => [
-                'name' => 'SwagApp'
-            ]
+                'name' => 'SwagApp',
+            ],
         ]], $this->context);
 
         $this->appService->refreshApps($this->context);
@@ -193,18 +197,18 @@ class AppServiceTest extends TestCase
                         'view' => 'detail',
                         'action' => 'test',
                         'label' => 'test',
-                        'url' => 'test.com'
-                    ]
+                        'url' => 'test.com',
+                    ],
                 ],
                 'integration' => [
                     'label' => 'test',
                     'writeAccess' => false,
                     'accessKey' => 'test',
-                    'secretAccessKey' => 'test'
+                    'secretAccessKey' => 'test',
                 ],
                 'aclRole' => [
-                    'name' => 'SwagApp'
-                ]
+                    'name' => 'SwagApp',
+                ],
             ],
             [
                 'name' => 'SwagApp',
@@ -218,39 +222,37 @@ class AppServiceTest extends TestCase
                         'view' => 'detail',
                         'action' => 'test',
                         'label' => 'test',
-                        'url' => 'test.com'
-                    ]
+                        'url' => 'test.com',
+                    ],
                 ],
                 'integration' => [
                     'label' => 'test',
                     'writeAccess' => false,
                     'accessKey' => 'test',
-                    'secretAccessKey' => 'test'
+                    'secretAccessKey' => 'test',
                 ],
                 'aclRole' => [
-                    'name' => 'SwagApp'
-                ]
-            ]
+                    'name' => 'SwagApp',
+                ],
+            ],
         ], $this->context);
 
         $appService = new AppService(
-            $this->appRepository,
-            $this->getContainer()->get(AppLifecycle::class),
-            new AppLoader(__DIR__ . '/Manifest/_fixtures')
+            new AppLifecycleIterator(
+                $this->appRepository,
+                new AppLoader(__DIR__ . '/Manifest/_fixtures')
+            ),
+            $this->getContainer()->get(AppLifecycle::class)
         );
-        $refreshableApps = $appService->getRefreshableApps($this->context);
+        $refreshableApps = $appService->getRefreshableAppInfo($this->context);
 
-        static::assertArrayHasKey('install', $refreshableApps);
-        static::assertArrayHasKey('update', $refreshableApps);
-        static::assertArrayHasKey('delete', $refreshableApps);
+        static::assertCount(1, $refreshableApps->getToBeInstalled());
+        static::assertCount(1, $refreshableApps->getToBeUpdated());
+        static::assertCount(1, $refreshableApps->getToBeDeleted());
 
-        static::assertCount(1, $refreshableApps['install']);
-        static::assertCount(1, $refreshableApps['update']);
-        static::assertCount(1, $refreshableApps['delete']);
-
-        static::assertInstanceOf(Manifest::class, $refreshableApps['install'][0]);
-        static::assertInstanceOf(Manifest::class, $refreshableApps['update'][0]);
-        static::assertEquals('Test', $refreshableApps['delete'][0]);
+        static::assertInstanceOf(Manifest::class, $refreshableApps->getToBeInstalled()[0]);
+        static::assertInstanceOf(Manifest::class, $refreshableApps->getToBeUpdated()[0]);
+        static::assertEquals('Test', $refreshableApps->getToBeDeleted()[0]);
     }
 
     private function assertDefaultActionButtons(): void

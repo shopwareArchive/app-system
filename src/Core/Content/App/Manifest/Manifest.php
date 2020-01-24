@@ -2,51 +2,65 @@
 
 namespace Swag\SaasConnect\Core\Content\App\Manifest;
 
+use Shopware\Core\System\SystemConfig\Exception\XmlParsingException;
+use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Admin;
+use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Metadata;
+use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Permissions;
+use Symfony\Component\Config\Util\XmlUtils;
+
 class Manifest
 {
+    private const XSD_FILE = __DIR__ . '/Schema/manifest-1.0.xsd';
+
     /**
      * @var string
      */
     private $path;
 
     /**
-     * @var array<string, string|array<string, string>>
+     * @var Metadata
      */
     private $metadata;
 
     /**
-     * @var array<string, array<array<string, string|int|bool|array<string, string>|null>>>
+     * @var Admin|null
      */
-    private $admin = [];
+    private $admin;
 
     /**
-     * @var array<string, string>
+     * @var Permissions|null
      */
-    private $permissions = [];
+    private $permissions;
 
-    /**
-     * @param array<string, array<string, string|array<string, string>|array<array<string, string|int|bool|array<string, string>|null>>>> $data
-     */
-    private function __construct(string $path, array $data)
+    private function __construct(string $path, Metadata $metadata, ?Admin $admin, ?Permissions $permissions)
     {
         $this->path = $path;
-        /** @var array<string, string|array<string, string>> $metadata */
-        $metadata = $data['metadata'];
         $this->metadata = $metadata;
-        /** @var array<string, array<array<string, string|int|bool|array<string, string>|null>>> $admin */
-        $admin = $data['admin'];
         $this->admin = $admin;
-        /** @var array<string, string> $permissions */
-        $permissions = $data['permissions'];
         $this->permissions = $permissions;
     }
 
     public static function createFromXmlFile(string $xmlFile): self
     {
-        $reader = new ManifestReader();
-        $data = $reader->read($xmlFile);
+        try {
+            $doc = XmlUtils::loadFile($xmlFile, self::XSD_FILE);
+        } catch (\Exception $e) {
+            throw new XmlParsingException($xmlFile, $e->getMessage());
+        }
 
-        return new self(dirname($xmlFile), $data);
+        /** @var \DOMElement $meta */
+        $meta = $doc->getElementsByTagName('meta')->item(0);
+        $metadata = Metadata::fromXml($meta);
+
+        /** @var \DOMElement|null $admin */
+        $admin = $doc->getElementsByTagName('admin')->item(0);
+        $admin = $admin === null ? null : Admin::fromXml($admin);
+
+        /** @var \DOMElement|null $permissions */
+        $permissions = $doc->getElementsByTagName('permissions')->item(0);
+        $permissions = $permissions === null ? null : Permissions::fromXml($permissions);
+
+        return new self(dirname($xmlFile), $metadata, $admin, $permissions);
     }
 
     public function getPath(): string
@@ -54,26 +68,17 @@ class Manifest
         return $this->path;
     }
 
-    /**
-     * @return array<string, string|array<string, string>>
-     */
-    public function getMetadata(): array
+    public function getMetadata(): Metadata
     {
         return $this->metadata;
     }
 
-    /**
-     * @return array<string, array<array<string, string|int|bool|array<string, string>|null>>>
-     */
-    public function getAdmin(): array
+    public function getAdmin(): ?Admin
     {
         return $this->admin;
     }
 
-    /**
-     * @return array<string, string>
-     */
-    public function getPermissions(): array
+    public function getPermissions(): ?Permissions
     {
         return $this->permissions;
     }

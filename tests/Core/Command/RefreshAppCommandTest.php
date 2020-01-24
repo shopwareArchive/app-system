@@ -6,8 +6,10 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Swag\SaasConnect\Core\Command\AppPrinter;
 use Swag\SaasConnect\Core\Command\RefreshAppCommand;
 use Swag\SaasConnect\Core\Content\App\AppLifecycle;
+use Swag\SaasConnect\Core\Content\App\AppLifecycleIterator;
 use Swag\SaasConnect\Core\Content\App\AppLoader;
 use Swag\SaasConnect\Core\Content\App\AppService;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -125,11 +127,11 @@ class RefreshAppCommandTest extends TestCase
                 'label' => 'test',
                 'writeAccess' => false,
                 'accessKey' => 'test',
-                'secretAccessKey' => 'test'
+                'secretAccessKey' => 'test',
             ],
             'aclRole' => [
-                'name' => 'SwagApp'
-            ]
+                'name' => 'SwagApp',
+            ],
         ]], Context::createDefaultContext());
 
         $commandTester = new CommandTester($this->createCommand(__DIR__ . '/_fixtures/withPermissions'));
@@ -166,11 +168,11 @@ class RefreshAppCommandTest extends TestCase
                 'label' => 'test',
                 'writeAccess' => false,
                 'accessKey' => 'test',
-                'secretAccessKey' => 'test'
+                'secretAccessKey' => 'test',
             ],
             'aclRole' => [
-                'name' => 'SwagApp'
-            ]
+                'name' => 'SwagApp',
+            ],
         ]], Context::createDefaultContext());
 
         $commandTester = new CommandTester($this->createCommand(__DIR__ . '/_fixtures/withPermissions'));
@@ -207,11 +209,13 @@ class RefreshAppCommandTest extends TestCase
     {
         return new RefreshAppCommand(
             new AppService(
-                $this->appRepository,
-                $this->getContainer()->get(AppLifecycle::class),
-                new AppLoader($appFolder)
+                new AppLifecycleIterator(
+                    $this->getContainer()->get('app.repository'),
+                    new AppLoader($appFolder)
+                ),
+                $this->getContainer()->get(AppLifecycle::class)
             ),
-            $this->appRepository
+            new AppPrinter($this->appRepository)
         );
     }
 }

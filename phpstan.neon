@@ -1,8 +1,6 @@
 parameters:
     checkMissingIterableValueType: false
     level: 8
-    excludes_analyse:
-        - test/TestBootstrap.php
     ignoreErrors:
         # Happens a lot for nullable props in DAL entities for associations
         - '#Cannot call method .*\|null\.$#'

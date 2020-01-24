@@ -5,7 +5,6 @@ namespace Swag\SaasConnect\Core\Content\App;
 use Shopware\Core\Framework\Api\Acl\Role\AclRoleEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\System\Integration\IntegrationEntity;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonCollection;
 use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationCollection;

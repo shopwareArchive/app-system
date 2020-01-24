@@ -9,8 +9,12 @@
     </parameters>
     <services>
         <service id="Swag\SaasConnect\Core\Content\App\AppService">
-            <argument type="service" id="app.repository"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\AppLifecycleIterator"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\AppLifecycle"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\AppLifecycleIterator">
+            <argument type="service" id="app.repository"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\AppLoader"/>
         </service>
 
@@ -42,9 +46,13 @@
 
         <service id="Swag\SaasConnect\Core\Command\RefreshAppCommand">
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\AppService"/>
-            <argument type="service" id="app.repository"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Command\AppPrinter"/>
 
             <tag name="console.command"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Command\AppPrinter">
+            <argument type="service" id="app.repository"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Action\ActionButtonLoader">

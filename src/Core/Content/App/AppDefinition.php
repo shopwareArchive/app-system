@@ -2,10 +2,13 @@
 
 namespace Swag\SaasConnect\Core\Content\App;
 
+use Shopware\Core\Framework\Api\Acl\Role\AclRoleDefinition;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BlobField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ReadProtected;
@@ -14,10 +17,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Runtime;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\WriteProtected;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslatedField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslationsAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
+use Shopware\Core\System\Integration\IntegrationDefinition;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonDefinition;
 use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationDefinition;
 
@@ -55,7 +60,11 @@ class AppDefinition extends EntityDefinition
                     AdminApiSource::class)
             ),
             (new StringField('icon', 'icon'))->addFlags(new WriteProtected(), new Runtime()),
-            (new StringField('access_token', 'accessToken'))->addFlags(new Required(), new WriteProtected(Context::SYSTEM_SCOPE), new ReadProtected(SalesChannelApiSource::class, AdminApiSource::class)),
+            (new StringField('access_token', 'accessToken'))->addFlags(
+                new Required(),
+                new WriteProtected(Context::SYSTEM_SCOPE),
+                new ReadProtected(SalesChannelApiSource::class, AdminApiSource::class)
+            ),
 
             (new TranslationsAssociationField(AppTranslationDefinition::class, 'app_id'))->addFlags(
                 new Required(),

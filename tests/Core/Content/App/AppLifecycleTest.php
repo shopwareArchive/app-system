@@ -14,8 +14,6 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonEntity;
 use Swag\SaasConnect\Core\Content\App\AppCollection;
 use Swag\SaasConnect\Core\Content\App\AppLifecycle;
-use Swag\SaasConnect\Core\Content\App\AppLoader;
-use Swag\SaasConnect\Core\Content\App\AppService;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 
 class AppLifecycleTest extends TestCase
@@ -96,23 +94,28 @@ class AppLifecycleTest extends TestCase
                     'view' => 'detail',
                     'action' => 'test',
                     'label' => 'test',
-                    'url' => 'test.com'
-                ]
+                    'url' => 'test.com',
+                ],
             ],
             'integration' => [
                 'label' => 'test',
                 'writeAccess' => false,
                 'accessKey' => 'test',
-                'secretAccessKey' => 'test'
+                'secretAccessKey' => 'test',
             ],
             'aclRole' => [
                 'id' => $roleId,
-                'name' => 'SwagApp'
-            ]
+                'name' => 'SwagApp',
+            ],
         ]], $this->context);
 
+        $app = [
+            'id' => $id,
+            'roleId' => $roleId,
+        ];
+
         $manifest = Manifest::createFromXmlFile(__DIR__ . '/Manifest/_fixtures/test/manifest.xml');
-        $this->appLifecycle->update($manifest, $id, $roleId, $this->context);
+        $this->appLifecycle->update($manifest, $app, $this->context);
 
         /** @var AppCollection $apps */
         $apps = $this->appRepository->search(new Criteria(), $this->context)->getEntities();
@@ -141,21 +144,25 @@ class AppLifecycleTest extends TestCase
                     'view' => 'detail',
                     'action' => 'test',
                     'label' => 'test',
-                    'url' => 'test.com'
-                ]
+                    'url' => 'test.com',
+                ],
             ],
             'integration' => [
                 'label' => 'test',
                 'writeAccess' => false,
                 'accessKey' => 'test',
-                'secretAccessKey' => 'test'
+                'secretAccessKey' => 'test',
             ],
             'aclRole' => [
-                'name' => 'SwagApp'
-            ]
+                'name' => 'SwagApp',
+            ],
         ]], $this->context);
 
-        $this->appLifecycle->delete($appId, $this->context);
+        $app = [
+            'id' => $appId,
+        ];
+
+        $this->appLifecycle->delete('Test', $app, $this->context);
 
         $apps = $this->appRepository->searchIds(new Criteria([$appId]), $this->context)->getIds();
         static::assertCount(0, $apps);

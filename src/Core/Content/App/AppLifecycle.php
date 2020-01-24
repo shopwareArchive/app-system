@@ -10,8 +10,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
+use Swag\SaasConnect\Core\Content\App\Manifest\Xml\ActionButton;
+use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Permissions;
 
-class AppLifecycle
+class AppLifecycle implements AppLifecycleInterface
 {
     /**
      * @var EntityRepositoryInterface
@@ -24,7 +26,7 @@ class AppLifecycle
     private $actionButtonRepository;
 
     /**
-     * @var array
+     * @var array<string, array<string>>
      */
     private $privilegeDependence;
 
@@ -33,6 +35,9 @@ class AppLifecycle
      */
     private $connection;
 
+    /**
+     * @param array<string, array<string>> $privilegeDependence
+     */
     public function __construct(
         EntityRepositoryInterface $appRepository,
         EntityRepositoryInterface $actionButtonRepository,
@@ -47,7 +52,7 @@ class AppLifecycle
 
     public function install(Manifest $manifest, Context $context): void
     {
-        $metadata = $manifest->getMetadata();
+        $metadata = $manifest->getMetadata()->toArray();
         $appId = Uuid::randomHex();
         $roleId = Uuid::randomHex();
         $metadata = $this->enrichInstallMetadata($manifest, $metadata, $roleId);
@@ -55,28 +60,42 @@ class AppLifecycle
         $this->updateApp($manifest, $metadata, $appId, $roleId, $context);
     }
 
-    public function update(Manifest $manifest, string $id, string $roleId, Context $context): void
+    /**
+     * @param array<string, string> $app
+     */
+    public function update(Manifest $manifest, array $app, Context $context): void
     {
-        $metadata = $manifest->getMetadata();
-        $this->updateApp($manifest, $metadata, $id, $roleId, $context);
+        $metadata = $manifest->getMetadata()->toArray();
+        $this->updateApp($manifest, $metadata, $app['id'], $app['roleId'], $context);
     }
 
-    public function delete(string $appId, Context $context): void
+    /**
+     * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter
+     *
+     * @param array<string, string> $app
+     */
+    public function delete(string $appName, array $app, Context $context): void
     {
-        $this->appRepository->delete([['id' => $appId]], $context);
+        $this->appRepository->delete([['id' => $app['id']]], $context);
     }
 
+    /**
+     * @param array<string, string|array<string, string|bool>> $metadata
+     */
     private function updateApp(Manifest $manifest, array $metadata, string $id, string $roleId, Context $context): void
     {
         $metadata['path'] = $manifest->getPath();
         $metadata['id'] = $id;
 
-        $this->updateMetadata($metadata, $id, $roleId, $context);
-        $this->updateActions($manifest->getAdmin()['actionButtons'] ?? [], $id, $context);
+        $this->updateMetadata($metadata, $context);
+        $this->updateActions($manifest->getAdmin() ? $manifest->getAdmin()->getActionButtons() : [], $id, $context);
         $this->updatePrivileges($manifest->getPermissions(), $roleId);
     }
 
-    private function updateMetadata(array $metadata, string $id, string $roleId, Context $context): void
+    /**
+     * @param array<string, string|array<string, string|bool>> $metadata
+     */
+    private function updateMetadata(array $metadata, Context $context): void
     {
         // ToDo handle import and saving of icons
         unset($metadata['icon']);
@@ -86,16 +105,19 @@ class AppLifecycle
         });
     }
 
+    /**
+     * @param array<ActionButton> $actionButtons
+     */
     private function updateActions(array $actionButtons, string $appId, Context $context): void
     {
         $this->deleteExistingActions($appId, $context);
         $this->addActionButtons($actionButtons, $appId, $context);
     }
 
-    private function updatePrivileges(array $privileges, string $roleId): void
+    private function updatePrivileges(?Permissions $permissions, string $roleId): void
     {
         $this->deleteExistingPrivileges($roleId);
-        $this->addPrivileges($privileges, $roleId);
+        $this->addPrivileges($permissions, $roleId);
     }
 
     private function deleteExistingActions(string $appId, Context $context): void
@@ -103,11 +125,11 @@ class AppLifecycle
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('appId', $appId));
 
-        /** @var string[] $ids */
+        /** @var array<string> $ids */
         $ids = $this->actionButtonRepository->searchIds($criteria, $context)->getIds();
 
         if (!empty($ids)) {
-            $ids = array_map(function (string $id): array {
+            $ids = array_map(static function (string $id): array {
                 return ['id' => $id];
             }, $ids);
 
@@ -115,13 +137,17 @@ class AppLifecycle
         }
     }
 
+    /**
+     * @param array<ActionButton> $actionButtons
+     */
     private function addActionButtons(array $actionButtons, string $appId, Context $context): void
     {
         if (empty($actionButtons)) {
             return;
         }
 
-        $actionButtons = array_map(function ($actionButton) use ($appId): array {
+        $actionButtons = array_map(static function (ActionButton $actionButton) use ($appId): array {
+            $actionButton = $actionButton->toArray();
             $actionButton['appId'] = $appId;
 
             return $actionButton;
@@ -130,19 +156,23 @@ class AppLifecycle
         $this->actionButtonRepository->create($actionButtons, $context);
     }
 
+    /**
+     * @param  array<string, string|array<string, string>> $metadata
+     * @return array<string,                               string|array<string, string|bool>>
+     */
     private function enrichInstallMetadata(Manifest $manifest, array $metadata, string $roleId): array
     {
         $secret = AccessKeyHelper::generateSecretAccessKey();
 
         $metadata['integration'] = [
-            'label' => $manifest->getMetadata()['name'],
+            'label' => $manifest->getMetadata()->getName(),
             'writeAccess' => true,
             'accessKey' => AccessKeyHelper::generateAccessKey('integration'),
-            'secretAccessKey' => $secret
+            'secretAccessKey' => $secret,
         ];
         $metadata['aclRole'] = [
             'id' => $roleId,
-            'name' => $manifest->getMetadata()['name'],
+            'name' => $manifest->getMetadata()->getName(),
         ];
         $metadata['accessToken'] = $secret;
 
@@ -157,13 +187,13 @@ class AppLifecycle
         );
     }
 
-    private function addPrivileges(array $privileges, string $roleId): void
+    private function addPrivileges(?Permissions $permissions, string $roleId): void
     {
-        $payload = $this->generatePrivileges($privileges, $roleId);
-
-        if (empty($payload)) {
+        if (!$permissions || empty($permissions->getPermissions())) {
             return;
         }
+
+        $payload = $this->generatePrivileges($permissions->getPermissions(), $roleId);
 
         $this->connection->executeQuery(
             sprintf(
@@ -173,6 +203,9 @@ class AppLifecycle
         );
     }
 
+    /**
+     * @param array<string, array<string>> $permissions
+     */
     private function generatePrivileges(array $permissions, string $roleId): string
     {
         $privilegeValues = [];

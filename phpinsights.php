@@ -48,6 +48,7 @@ return [
     'exclude' => [
         'tests',
         '*Entity.php',
+        '*Definition.php',
         'Migration*.php',
     ],
 
@@ -94,7 +95,7 @@ return [
         \SlevomatCodingStandard\Sniffs\Commenting\DocCommentSpacingSniff::class => [
             'linesCountBetweenAnnotationsGroups' => 1,
             'linesCountBetweenDifferentAnnotationsTypes' => 0,
-            'annotationsGroups' => ['@psalm-suppress', '@method', '@param, @return'],
+            'annotationsGroups' => ['@psalm-suppress, @phpcsSuppress', '@method', '@param, @return'],
         ],
         \PHP_CodeSniffer\Standards\Generic\Sniffs\Formatting\SpaceAfterNotSniff::class => [
             'spacing' => 0,
