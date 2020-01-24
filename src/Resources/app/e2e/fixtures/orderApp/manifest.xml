@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="../../../../../../../src/Core/Content/App/Manifest/Schema/manifest-1.0.xsd">
+    <meta>
+        <name>E2E_Order</name>
+        <label>E2E_Order_label_en</label>
+        <label lang="de-DE">E2E_Order_label_de</label>
+        <description>Test for app system</description>
+        <description lang="de-DE">Test für das Appsystem</description>
+        <author>shopware AG</author>
+        <copyright>(c) by shopware AG</copyright>
+        <version>1.0.0</version>
+        <icon>icon.png</icon>
+    </meta>
+    <admin>
+        <action-button
+            action="viewOrder"
+            entity="order"
+            view="detail"
+            url="https://swag-test.com/your-order"
+            openNewTab="false">
+            <label>Action order detail</label>
+            <label lang="de-DE">Aktion Bestellübersicht</label>
+        </action-button>
+        <action-button
+            action="viewOrderExtern"
+            entity="order"
+            view="detail"
+            url="https://swag-test.com/your-order"
+            openNewTab="true">
+            <label>Action order detail external</label>
+            <label lang="de-DE">Aktion Bestellübersicht extern</label>
+        </action-button>
+        <action-button
+            action="doStuffWithOrders"
+            entity="order"
+            view="index"
+            url="https://swag-test.com/do-stuff">
+            <label>Do Stuff with orders</label>
+        </action-button>
+    </admin>
+</manifest>

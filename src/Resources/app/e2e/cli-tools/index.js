@@ -1,0 +1,67 @@
+import express from 'express';
+import jsonBody from 'body/json.js';
+import { join } from 'path';
+import AppService from './actions/app-service.js';
+import resetDB from './actions/reset-db.js';
+import clearCache from './actions/clear-cache.js';
+import cypressEnv from '../cypress.env.json';
+
+const projectRoot = join(process.env.PWD, '../../../../../../../../');
+const e2eRoot = join(process.env.PWD, '../');
+const appService = new AppService(
+    projectRoot,
+    e2eRoot
+);
+
+const proxyPort = cypressEnv.cliProxy.port;
+const server = express();
+
+server.post('/install-e2e-apps', function (req, res) {
+    jsonBody(req, res, function(err, body) {
+        if (err) {
+            res.statusCode = 400;
+            res.send(JSON.stringify(err));
+            return;
+        }
+
+        appService.installApps(body.apps).then(() => {
+            res.statusCode = 204;
+            res.send();
+        }).catch((err) => {
+            res.statusCode = 400;
+            res.send(JSON.stringify(err));
+        });
+    });
+});
+
+server.delete('/remove-e2e-apps', function (req, res) {
+    appService.removeApps().then(() => {
+        res.statusCode = 204;
+        res.send();
+    }).catch((cause) => {
+        res.statusCode = 400;
+        res.send(JSON.stringify(cause));
+    });
+});
+
+server.delete('/cleanup', function (req, res) {
+    resetDB(projectRoot)
+        .then((stdout) => {
+            clearCache(projectRoot);
+            return stdout;
+        }).then((stdout) => {
+            res.statusCode = 200;
+            res.send(JSON.stringify(stdout));
+        }).catch((cause) => {
+            res.statusCode = 400;
+            res.send(JSON.stringify(cause));
+        });
+});
+
+server.listen(proxyPort, () => {
+    // eslint-disable-next-line
+    console.log(`
+CLI Proxy server for e2e system commands started.
+Listening at port: ${proxyPort}
+`);
+});

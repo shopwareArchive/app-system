@@ -13,6 +13,7 @@ module.exports = {
         'no-multiple-empty-lines': ['error', { max: 1 }],
         'padded-blocks': ['error', 'never'],
         'semi': ['error', 'always'],
+        'no-useless-return': ['error'],
 
         'import/no-useless-path-segments': ['warn', { noUselessIndex: true }],
         'max-len': [ 'warn', 125, { 'ignoreRegExpLiterals': true } ],

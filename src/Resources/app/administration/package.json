@@ -2,7 +2,7 @@
   "name": "saasconnect",
   "version": "1.0.0",
   "description": "Saas Connect Administration plugin ",
-  "author": "Shopware Ag",
+  "author": "shopware AG",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -21,7 +21,6 @@
     "babel-jest": "^24.9.0",
     "babel-plugin-require-context-hook": "^1.0.0",
     "eslint": "^6.8.0",
-    "eslint-plugin-cypress": "^2.8.1",
     "eslint-plugin-import": "^2.20.0",
     "eslint-plugin-jest": "^23.3.0",
     "html-loader-jest": "^0.2.1",

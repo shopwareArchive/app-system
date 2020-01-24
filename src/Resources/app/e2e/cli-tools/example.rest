@@ -1,0 +1,16 @@
+POST http://127.0.0.1:8005/install-e2e-apps
+content-type: application/json
+
+{
+    "apps": [
+        "productApp",
+        "orderApp"
+    ]
+}
+
+###
+DELETE http://127.0.0.1:8005/remove-e2e-apps
+content-type: application/json
+
+###
+DELETE http://127.0.0.1:8005/cleanup
