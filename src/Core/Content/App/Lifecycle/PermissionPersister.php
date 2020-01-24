@@ -72,7 +72,12 @@ class PermissionPersister
             }
 
             foreach (array_unique($grantedPrivileges) as $privilege) {
-                $privilegeValues[] = sprintf('("%s", "%s", UNHEX("%s"), NOW())', $resource, $privilege, $roleId);
+                $privilegeValues[] = sprintf(
+                    '(%s, %s, UNHEX("%s"), NOW())',
+                    $this->connection->quote($resource),
+                    $this->connection->quote($privilege),
+                    $roleId
+                );
             }
         }
 
