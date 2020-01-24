@@ -3,10 +3,10 @@
 namespace Swag\SaasConnect\Test;
 
 use Shopware\Core\Framework\Context;
-use Swag\SaasConnect\Core\Content\App\AppLifecycle;
-use Swag\SaasConnect\Core\Content\App\AppLifecycleIterator;
-use Swag\SaasConnect\Core\Content\App\AppLoader;
 use Swag\SaasConnect\Core\Content\App\AppService;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycleIterator;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 trait AppSystemTestBehaviour

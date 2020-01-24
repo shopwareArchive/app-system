@@ -1,10 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Swag\SaasConnect\Core\Content\App;
+namespace Swag\SaasConnect\Core\Content\App\Lifecycle;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Swag\SaasConnect\Core\Content\App\AppCollection;
+use Swag\SaasConnect\Core\Content\App\AppEntity;
 
 class AppLifecycleIterator
 {

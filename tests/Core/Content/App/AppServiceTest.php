@@ -11,10 +11,10 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonEntity;
 use Swag\SaasConnect\Core\Content\App\AppCollection;
-use Swag\SaasConnect\Core\Content\App\AppLifecycle;
-use Swag\SaasConnect\Core\Content\App\AppLifecycleIterator;
-use Swag\SaasConnect\Core\Content\App\AppLoader;
 use Swag\SaasConnect\Core\Content\App\AppService;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycleIterator;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 
 class AppServiceTest extends TestCase

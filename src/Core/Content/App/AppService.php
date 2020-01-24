@@ -3,6 +3,9 @@
 namespace Swag\SaasConnect\Core\Content\App;
 
 use Shopware\Core\Framework\Context;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycleIterator;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\RefreshableAppDryRun;
 
 class AppService
 {

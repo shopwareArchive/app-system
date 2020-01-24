@@ -42,5 +42,7 @@ parameters:
 #       Checked by PhpInsights: DocCommentSpacingSniff which can be configured
         PhpCsFixer\Fixer\Phpdoc\PhpdocSeparationFixer: ~
         PhpCsFixer\Fixer\Phpdoc\PhpdocSummaryFixer: ~
+#       Doesn't work with generic array syntax
+        PhpCsFixer\Fixer\Phpdoc\PhpdocAlignFixer: ~
         PhpCsFixer\Fixer\StringNotation\ExplicitStringVariableFixer: ~
         PHP_CodeSniffer\Standards\Generic\Sniffs\CodeAnalysis\AssignmentInConditionSniff: ~

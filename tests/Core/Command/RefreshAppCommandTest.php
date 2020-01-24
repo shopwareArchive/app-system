@@ -8,10 +8,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\SaasConnect\Core\Command\AppPrinter;
 use Swag\SaasConnect\Core\Command\RefreshAppCommand;
-use Swag\SaasConnect\Core\Content\App\AppLifecycle;
-use Swag\SaasConnect\Core\Content\App\AppLifecycleIterator;
-use Swag\SaasConnect\Core\Content\App\AppLoader;
 use Swag\SaasConnect\Core\Content\App\AppService;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycleIterator;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class RefreshAppCommandTest extends TestCase
