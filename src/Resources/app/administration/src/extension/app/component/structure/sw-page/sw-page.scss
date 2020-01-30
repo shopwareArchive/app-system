@@ -1,3 +1,13 @@
+@import "~scss/variables";
+
 .smart-bar__app_actions {
-    margin-left: 8px;
+    margin-right: 8px;
+
+    & >.sw-context-button >.sw-button {
+        padding: 11px;
+
+        .sw-icon {
+            color: $color-menu-start;
+        }
+    }
 }

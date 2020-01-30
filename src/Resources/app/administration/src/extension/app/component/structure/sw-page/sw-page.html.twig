@@ -1,13 +1,10 @@
 {% block sw_page_smart_bar_content_actions %}
-    {% parent() %}
-    
     {% block sw_page_smart_bar_content_app_actions %}
         <div class="smart-bar__app_actions" v-if="areActionsAvailable">
             <sw-context-button>
                 <template slot="button">
-                    <sw-button variant="ghost">
-                        <p>{{ $tc('sw-saas-connect.component.sw-connect-action-button.label') }}</p>
-                        <sw-icon name="small-arrow-medium-down" size="16"></sw-icon>
+                    <sw-button>
+                        <sw-icon name="small-more" size="16"></sw-icon>
                     </sw-button>
                 </template>
 
@@ -20,4 +17,6 @@
             </sw-context-button>
         </div>
     {% endblock %}
+
+    {% parent() %}
 {% endblock %}
