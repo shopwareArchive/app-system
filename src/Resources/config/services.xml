@@ -9,13 +9,38 @@
     </parameters>
     <services>
         <service id="Swag\SaasConnect\Core\Content\App\AppService">
-            <argument type="service" id="app.repository"/>
-            <argument type="service" id="app_action_button.repository"/>
-            <argument type="service" id="Swag\SaasConnect\Core\Content\App\AppLoader"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycleIterator"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle"/>
         </service>
 
-        <service id="Swag\SaasConnect\Core\Content\App\AppLoader">
+        <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycleIterator">
+            <argument type="service" id="app.repository"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle">
+            <argument type="service" id="app.repository"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\ActionButtonPersister"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\PermissionPersister"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\ActionButtonPersister">
+            <argument type="service" id="app_action_button.repository"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\PermissionPersister">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument>%acl_resource_privileges%</argument>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader">
             <argument>%saas_connect.app_dir%</argument>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Framework\Routing\ApiRequestContextResolverDecorator"
+                 decorates="Shopware\Core\Framework\Routing\ApiRequestContextResolver">
+            <argument type="service" id="Swag\SaasConnect\Core\Framework\Routing\ApiRequestContextResolverDecorator.inner"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Api\AppActionController" public="true">
@@ -29,9 +54,13 @@
 
         <service id="Swag\SaasConnect\Core\Command\RefreshAppCommand">
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\AppService"/>
-            <argument type="service" id="app.repository"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Command\AppPrinter"/>
 
             <tag name="console.command"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Command\AppPrinter">
+            <argument type="service" id="app.repository"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Action\ActionButtonLoader">

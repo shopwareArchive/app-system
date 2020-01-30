@@ -2,8 +2,10 @@
 
 namespace Swag\SaasConnect\Core\Content\App;
 
+use Shopware\Core\Framework\Api\Acl\Role\AclRoleEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
+use Shopware\Core\System\Integration\IntegrationEntity;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonCollection;
 use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationCollection;
 
@@ -70,6 +72,31 @@ class AppEntity extends Entity
      * @var string|null
      */
     protected $description;
+
+    /**
+     * @var string
+     */
+    protected $accessToken;
+
+    /**
+     * @var string
+     */
+    protected $integrationId;
+
+    /**
+     * @var IntegrationEntity|null
+     */
+    protected $integration;
+
+    /**
+     * @var string
+     */
+    protected $aclRoleId;
+
+    /**
+     * @var AclRoleEntity|null
+     */
+    protected $aclRole;
 
     /**
      * @var \DateTimeInterface
@@ -204,6 +231,56 @@ class AppEntity extends Entity
     public function setDescription(?string $description): void
     {
         $this->description = $description;
+    }
+
+    public function getAccessToken(): string
+    {
+        return $this->accessToken;
+    }
+
+    public function setAccessToken(string $accessToken): void
+    {
+        $this->accessToken = $accessToken;
+    }
+
+    public function getIntegrationId(): string
+    {
+        return $this->integrationId;
+    }
+
+    public function setIntegrationId(string $integrationId): void
+    {
+        $this->integrationId = $integrationId;
+    }
+
+    public function getIntegration(): ?IntegrationEntity
+    {
+        return $this->integration;
+    }
+
+    public function setIntegration(?IntegrationEntity $integration): void
+    {
+        $this->integration = $integration;
+    }
+
+    public function getAclRoleId(): string
+    {
+        return $this->aclRoleId;
+    }
+
+    public function setAclRoleId(string $aclRoleId): void
+    {
+        $this->aclRoleId = $aclRoleId;
+    }
+
+    public function getAclRole(): ?AclRoleEntity
+    {
+        return $this->aclRole;
+    }
+
+    public function setAclRole(?AclRoleEntity $aclRole): void
+    {
+        $this->aclRole = $aclRole;
     }
 
     public function getCreatedAt(): \DateTimeInterface

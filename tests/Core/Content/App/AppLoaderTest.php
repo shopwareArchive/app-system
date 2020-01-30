@@ -3,7 +3,7 @@
 namespace Swag\SaasConnect\Test\Core\Content\App;
 
 use PHPUnit\Framework\TestCase;
-use Swag\SaasConnect\Core\Content\App\AppLoader;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 
 class AppLoaderTest extends TestCase
