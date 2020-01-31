@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:noNamespaceSchemaLocation="../../../../../../../src/Core/Content/App/Manifest/Schema/manifest-1.0.xsd">
+          xsi:noNamespaceSchemaLocation="../../../../../../../../src/Core/Content/App/Manifest/Schema/manifest-1.0.xsd">
     <meta>
         <name>SwagApp</name>
         <label>Swag App Test</label>
@@ -12,30 +12,6 @@
         <version>1.0.0</version>
         <icon>icon.png</icon>
     </meta>
-    <admin>
-        <action-button
-            action="viewOrder"
-            entity="order"
-            view="detail"
-            url="https://swag-test.com/your-order"
-            openNewTab="true">
-            <label>View Order</label>
-            <label lang="de-DE">Zeige Bestellung</label>
-        </action-button>
-        <action-button
-            action="doStuffWithProducts"
-            entity="product"
-            view="index"
-            url="https://swag-test.com/do-stuff">
-            <label>Do Stuff</label>
-        </action-button>
-    </admin>
-    <permissions>
-        <create>product</create>
-        <delete>product</delete>
-        <delete>category</delete>
-        <delete>product_manufacturer</delete>
-    </permissions>
     <custom-fields>
         <custom-field-set>
             <name>custom_field_test</name>
@@ -45,7 +21,18 @@
                 <product/>
                 <customer/>
             </related-entities>
-            <fields/>
+            <fields>
+                <float name="test_float_field">
+                    <label>Test float field</label>
+                    <label lang="de-DE">Test Kommazahlenfeld</label>
+                    <help-text>This is an float field.</help-text>
+                    <position>2</position>
+                    <steps>2.2</steps>
+                    <min>0.5</min>
+                    <max>1.6</max>
+                    <placeholder>Enter an float...</placeholder>
+                </float>
+            </fields>
         </custom-field-set>
     </custom-fields>
 </manifest>

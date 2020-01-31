@@ -109,15 +109,7 @@ class Metadata extends XmlElement
 
             // translated
             if (in_array($child->tagName, ['label', 'description'], true)) {
-                if (!array_key_exists($child->tagName, $values)) {
-                    $values[$child->tagName] = [];
-                }
-
-                // psalm would fail if it can't infer type from nested array
-                /** @var array<string, string> $tagValues */
-                $tagValues = $values[$child->tagName];
-                $tagValues[self::getLocaleCodeFromElement($child)] = $child->nodeValue;
-                $values[$child->tagName] = $tagValues;
+                $values = self::mapTranslatedTag($child, $values);
 
                 continue;
             }
