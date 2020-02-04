@@ -44,7 +44,9 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
             '1.0.0',
             'product',
             'detail',
-            [Uuid::randomHex()]
+            [Uuid::randomHex()],
+            'I am  not secret',
+            'I am secret'
         );
 
         $this->appServerMock->append(new Response(200));
@@ -72,7 +74,9 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
             '1.0.0',
             'product',
             'detail',
-            []
+            [],
+            'I am  not secret',
+            'I am secret'
         );
 
         $this->appServerMock->append(new Response(500));
@@ -93,7 +97,9 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
             '1.0.0',
             'product',
             'detail',
-            []
+            [],
+            'I am  not secret',
+            'I am secret'
         );
 
         $this->appServerMock->append(new Response(200));
@@ -113,13 +119,17 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
         $entity = 'product';
         $actionName = 'detail';
         $affectedIds = [Uuid::randomHex(), Uuid::randomHex()];
+        $accessKey = 'i am not secret';
+        $secretKey = 'i am secret';
         $action = new AppAction(
             $targetUrl,
             $shopUrl,
             $appVersion,
             $entity,
             $actionName,
-            $affectedIds
+            $affectedIds,
+            $accessKey,
+            $secretKey
         );
 
         $this->appServerMock->append(new Response(200));
@@ -136,7 +146,8 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
         $expectedSource = [
             'url' => $shopUrl,
             'appVersion' => $appVersion,
-            'apiKey' => '',
+            'apiKey' => $accessKey,
+            'secretKey' => $secretKey,
         ];
         $expectedData = [
             'ids' => $affectedIds,

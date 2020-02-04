@@ -18,9 +18,13 @@
                 "apiKey": {
                     "type": "string",
                     "description": "The apiKey to authenticate the application with the api"
+                },
+                "secretKey": {
+                    "type": "string",
+                    "description": "The secret key to authenticate the application with the api"
                 }
             },
-            "required": ["url","appVersion", "apiKey"]
+            "required": ["url","appVersion", "apiKey", "secretKey"]
         },
         "data": {
             "type": "object",

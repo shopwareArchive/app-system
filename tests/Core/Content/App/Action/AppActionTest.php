@@ -23,14 +23,17 @@ class AppActionTest extends TestCase
             $appVersion,
             $entity,
             $action,
-            $ids
+            $ids,
+            'i am not secret',
+            'i am secret'
         );
 
         $expected = [
             'source' => [
                 'url' => $shopUrl,
                 'appVersion' => $appVersion,
-                'apiKey' => '',
+                'apiKey' => 'i am not secret',
+                'secretKey' => 'i am secret',
             ],
             'data' => [
                 'ids' => $ids,
@@ -57,7 +60,9 @@ class AppActionTest extends TestCase
             $appVersion,
             $entity,
             $action,
-            $ids
+            $ids,
+            'i am not secret',
+            'i am secret'
         );
     }
 
@@ -76,7 +81,9 @@ class AppActionTest extends TestCase
             $appVersion,
             $entity,
             $action,
-            $ids
+            $ids,
+            'i am not secret',
+            'i am secret'
         );
     }
 
@@ -95,7 +102,9 @@ class AppActionTest extends TestCase
             $appVersion,
             $entity,
             $action,
-            $ids
+            $ids,
+            'i am not secret',
+            'i am secret'
         );
     }
 
@@ -114,7 +123,9 @@ class AppActionTest extends TestCase
             $appVersion,
             $entity,
             $action,
-            $ids
+            $ids,
+            'i am not secret',
+            'i am secret'
         );
     }
 
@@ -133,7 +144,9 @@ class AppActionTest extends TestCase
             $appVersion,
             $entity,
             $action,
-            $ids
+            $ids,
+            'i am not secret',
+            'i am secret'
         );
     }
 
@@ -152,7 +165,51 @@ class AppActionTest extends TestCase
             $appVersion,
             $entity,
             $action,
-            $ids
+            $ids,
+            'i am not secret',
+            'i am secret'
+        );
+    }
+
+    public function testInvalidAccessKey(): void
+    {
+        static::expectException(InvalidArgumentException::class);
+        $targetUrl = 'https://my-server.com/action';
+        $shopUrl = 'https://my-shop.com';
+        $appVersion = '1.0.0';
+        $entity = 'product';
+        $action = 'detail';
+        $ids = [Uuid::randomHex()];
+        new AppAction(
+            $targetUrl,
+            $shopUrl,
+            $appVersion,
+            $entity,
+            $action,
+            $ids,
+            '',
+            'i am secret'
+        );
+    }
+
+    public function testInvalidSecretKey(): void
+    {
+        static::expectException(InvalidArgumentException::class);
+        $targetUrl = 'https://my-server.com/action';
+        $shopUrl = 'https://my-shop.com';
+        $appVersion = '1.0.0';
+        $entity = 'product';
+        $action = 'detail';
+        $ids = [Uuid::randomHex()];
+        new AppAction(
+            $targetUrl,
+            $shopUrl,
+            $appVersion,
+            $entity,
+            $action,
+            $ids,
+            'i am not secret',
+            ''
         );
     }
 }

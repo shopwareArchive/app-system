@@ -33,6 +33,7 @@ class AppActionLoader
     {
         $criteria = new Criteria([$actionId]);
         $criteria->addAssociation('app');
+        $criteria->addAssociation('app.integration');
 
         /** @var ActionButtonEntity | null $actionButton */
         $actionButton = $this->actionButtonRepo->search($criteria, $context)->first();
@@ -47,7 +48,9 @@ class AppActionLoader
             $actionButton->getApp()->getVersion(),
             $actionButton->getEntity(),
             $actionButton->getAction(),
-            $ids
+            $ids,
+            $actionButton->getApp()->getIntegration()->getAccessKey(),
+            $actionButton->getApp()->getAccessToken()
         );
     }
 }

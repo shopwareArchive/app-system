@@ -71,7 +71,8 @@ class AppActionControllerTest extends TestCase
 
         $criteria = (new Criteria())
             ->setLimit(1)
-            ->addAssociation('app');
+            ->addAssociation('app')
+            ->addAssociation('app.integration');
 
         $action = $actionRepo->search($criteria, Context::createDefaultContext());
         /** @var ActionButtonEntity $action */
@@ -99,7 +100,8 @@ class AppActionControllerTest extends TestCase
         $expectedSource = [
             'url' => getenv('APP_URL'),
             'appVersion' => $action->getApp()->getVersion(),
-            'apiKey' => '',
+            'apiKey' => $action->getApp()->getIntegration()->getAccessKey(),
+            'secretKey' => $action->getApp()->getAccessToken(),
         ];
         $expectedData = [
             'ids' => $ids,
