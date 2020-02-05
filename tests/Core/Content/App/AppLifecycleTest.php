@@ -11,6 +11,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetCollection;
+use Shopware\Core\System\CustomField\Aggregate\CustomFieldSetRelation\CustomFieldSetRelationEntity;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonEntity;
 use Swag\SaasConnect\Core\Content\App\AppCollection;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle;
@@ -62,6 +64,7 @@ class AppLifecycleTest extends TestCase
 
         $this->assertDefaultActionButtons();
         $this->assertDefaultPrivileges($apps->first()->getAclRoleId());
+        $this->assertDefaultCustomFields($apps->first()->getId());
     }
 
     public function testInstallMinimalManifest(): void
@@ -103,6 +106,11 @@ class AppLifecycleTest extends TestCase
                 'accessKey' => 'test',
                 'secretAccessKey' => 'test',
             ],
+            'customFieldSets' => [
+                [
+                    'name' => 'test',
+                ],
+            ],
             'aclRole' => [
                 'id' => $roleId,
                 'name' => 'SwagApp',
@@ -126,6 +134,8 @@ class AppLifecycleTest extends TestCase
         static::assertNotEquals('test', $apps->first()->getTranslation('label'));
 
         $this->assertDefaultActionButtons();
+        $this->assertDefaultPrivileges($apps->first()->getAclRoleId());
+        $this->assertDefaultCustomFields($id);
     }
 
     public function testDelete(): void
@@ -215,5 +225,38 @@ class AppLifecycleTest extends TestCase
             }),
             sprintf('AclResourceCollection does not contain Privilege for "%s" for entity "%s"', $privilege, $resource)
         );
+    }
+
+    private function assertDefaultCustomFields(string $appId): void
+    {
+        /** @var EntityRepositoryInterface $customFieldSetRepository */
+        $customFieldSetRepository = $this->getContainer()->get('custom_field_set.repository');
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('appId', $appId));
+        $criteria->addAssociation('relations');
+
+        /** @var CustomFieldSetCollection $customFieldSets */
+        $customFieldSets = $customFieldSetRepository->search($criteria, $this->context)->getEntities();
+
+        static::assertCount(1, $customFieldSets);
+
+        $customFieldSet = $customFieldSets->first();
+        static::assertEquals('custom_field_test', $customFieldSet->getName());
+        static::assertCount(2, $customFieldSet->getRelations());
+
+        $relatedEntities = array_map(function (CustomFieldSetRelationEntity $relation) {
+            return $relation->getEntityName();
+        }, $customFieldSet->getRelations()->getElements());
+        static::assertContains('product', $relatedEntities);
+        static::assertContains('customer', $relatedEntities);
+
+        static::assertEquals([
+            'label' => [
+                'en-GB' => 'Custom field test',
+                'de-DE' => 'Zusatzfeld Test',
+            ],
+            'translated' => true,
+        ], $customFieldSet->getConfig());
     }
 }

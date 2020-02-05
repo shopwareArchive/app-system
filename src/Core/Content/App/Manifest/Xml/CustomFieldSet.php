@@ -43,6 +43,26 @@ class CustomFieldSet extends XmlElement
     }
 
     /**
+     * @return array<string, string|array<string>|array<string, string|bool|array<string, string>>>
+     */
+    public function toEntityArray(string $appId): array
+    {
+        $relations = array_map(static function (string $entity) {
+            return ['entityName' => $entity];
+        }, $this->relatedEntities);
+
+        return [
+            'name' => $this->name,
+            'config' => [
+                'label' => $this->label,
+                'translated' => true,
+            ],
+            'relations' => $relations,
+            'appId' => $appId,
+        ];
+    }
+
+    /**
      * @return array<string, string>
      */
     public function getLabel(): array

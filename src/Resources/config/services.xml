@@ -22,10 +22,15 @@
             <argument type="service" id="app.repository"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\ActionButtonPersister"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\PermissionPersister"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\CustomFieldPersister"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\ActionButtonPersister">
             <argument type="service" id="app_action_button.repository"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\CustomFieldPersister">
+            <argument type="service" id="custom_field_set.repository"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\PermissionPersister">
@@ -93,6 +98,10 @@
 
         <service id="Swag\SaasConnect\Core\Content\App\Aggregate\ActionButtonTranslation\ActionButtonTranslationDefinition">
             <tag name="shopware.entity.definition" entity="app_action_button_translation"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetExtension">
+            <tag name="shopware.entity.extension"/>
         </service>
     </services>
 </container>
