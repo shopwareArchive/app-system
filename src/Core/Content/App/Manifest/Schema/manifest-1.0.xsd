@@ -12,6 +12,7 @@
                     </xs:unique>
                 </xs:element>
                 <xs:element name="permissions" type="permissions" minOccurs="0"/>
+                <xs:element name="custom-fields" type="custom-fields" minOccurs="0"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -40,6 +41,11 @@
             <xs:element name="delete" maxOccurs="unbounded" minOccurs="0" type="xs:string"/>
         </xs:choice>
     </xs:complexType>
+    <xs:complexType name="custom-fields">
+        <xs:sequence>
+            <xs:element name="custom-field-set" maxOccurs="unbounded" minOccurs="0" type="custom-field-set"/>
+        </xs:sequence>
+    </xs:complexType>
     <xs:complexType name="action-button">
         <xs:sequence>
             <xs:element name="label" maxOccurs="unbounded" type="translatableString"/>
@@ -50,6 +56,106 @@
         <xs:attribute type="xs:string" name="url" use="required"/>
         <xs:attribute type="xs:boolean" name="openNewTab" default="false"/>
     </xs:complexType>
+    <xs:complexType name="custom-field-set">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="label" maxOccurs="unbounded" type="translatableString"/>
+            <xs:element name="related-entities" type="entity-list"/>
+            <xs:element name="fields" maxOccurs="unbounded" type="custom-field-list"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="custom-field-list">
+        <xs:choice maxOccurs="unbounded">
+            <xs:element name="int" type="custom-field-int-type" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element name="float" type="custom-field-float-type" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element name="text" type="custom-field-text-type" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element name="text-area" type="custom-field-text-area-type" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element name="bool" type="custom-field-bool-type" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element name="datetime" type="custom-field-datetime-type" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element name="single-select" type="custom-field-single-select-type" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element name="multi-select" type="custom-field-multi-select-type" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element name="color-picker" type="custom-field-color-picker-type" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element name="media-selection" type="custom-field-media-type" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:group name="custom-field-type">
+        <xs:choice>
+            <xs:element name="label" maxOccurs="unbounded" type="translatableString"/>
+            <xs:element name="help-text" type="translatableString" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="required" type="xs:boolean" minOccurs="0" default="false"/>
+            <xs:element name="position" type="xs:int" minOccurs="0" default="1"/>
+        </xs:choice>
+    </xs:group>
+    <xs:complexType name="custom-field-int-type">
+        <xs:choice maxOccurs="unbounded">
+            <xs:group ref="custom-field-type"/>
+            <xs:element name="placeholder" type="translatableString" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="steps" type="xs:int" minOccurs="0" default="1"/>
+            <xs:element name="min" type="xs:int" minOccurs="0"/>
+            <xs:element name="max" type="xs:int" minOccurs="0"/>
+        </xs:choice>
+        <xs:attribute type="xs:string" name="name" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="custom-field-float-type">
+        <xs:choice maxOccurs="unbounded">
+            <xs:group ref="custom-field-type"/>
+            <xs:element name="placeholder" type="translatableString" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="steps" type="xs:float" minOccurs="0" default="0.1"/>
+            <xs:element name="min" type="xs:float" minOccurs="0"/>
+            <xs:element name="max" type="xs:float" minOccurs="0"/>
+        </xs:choice>
+        <xs:attribute type="xs:string" name="name" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="custom-field-text-type">
+        <xs:choice maxOccurs="unbounded">
+            <xs:group ref="custom-field-type"/>
+            <xs:element name="placeholder" type="translatableString" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
+        <xs:attribute type="xs:string" name="name" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="custom-field-text-area-type">
+        <xs:choice maxOccurs="unbounded">
+            <xs:group ref="custom-field-type"/>
+        </xs:choice>
+        <xs:attribute type="xs:string" name="name" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="custom-field-bool-type">
+        <xs:choice maxOccurs="unbounded">
+            <xs:group ref="custom-field-type"/>
+        </xs:choice>
+        <xs:attribute type="xs:string" name="name" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="custom-field-datetime-type">
+        <xs:choice maxOccurs="unbounded">
+            <xs:group ref="custom-field-type"/>
+        </xs:choice>
+        <xs:attribute type="xs:string" name="name" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="custom-field-single-select-type">
+        <xs:choice maxOccurs="unbounded">
+            <xs:group ref="custom-field-type"/>
+            <xs:element name="placeholder" type="translatableString" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="options" type="option-collection"/>
+        </xs:choice>
+        <xs:attribute type="xs:string" name="name" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="custom-field-multi-select-type">
+        <xs:complexContent>
+            <xs:extension base="custom-field-single-select-type"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="custom-field-color-picker-type">
+        <xs:choice maxOccurs="unbounded">
+            <xs:group ref="custom-field-type"/>
+        </xs:choice>
+        <xs:attribute type="xs:string" name="name" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="custom-field-media-type">
+        <xs:choice maxOccurs="unbounded">
+            <xs:group ref="custom-field-type"/>
+        </xs:choice>
+        <xs:attribute type="xs:string" name="name" use="required"/>
+    </xs:complexType>
     <xs:simpleType name="entity">
         <xs:restriction base="xs:string">
             <xs:enumeration value="product"/>
@@ -57,10 +163,48 @@
             <xs:enumeration value="catalogue"/>
         </xs:restriction>
     </xs:simpleType>
+    <xs:complexType name="option-collection">
+        <xs:sequence>
+            <xs:element name="option" type="option" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="option">
+        <xs:sequence>
+            <xs:element name="name" type="translatableString" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="value" use="required"/>
+    </xs:complexType>
     <xs:simpleType name="view">
         <xs:restriction base="xs:string">
             <xs:enumeration value="detail"/>
             <xs:enumeration value="index"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="entity-list">
+        <xs:choice maxOccurs="unbounded">
+            <xs:element name="product" type="empty" minOccurs="0"/>
+            <xs:element name="category" type="empty" minOccurs="0"/>
+            <xs:element name="customer" type="empty" minOccurs="0"/>
+            <xs:element name="customer_address" type="empty" minOccurs="0"/>
+            <xs:element name="media" type="empty" minOccurs="0"/>
+            <xs:element name="product_manufacturer" type="empty" minOccurs="0"/>
+            <xs:element name="sales_channel" type="empty" minOccurs="0"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="empty">
+        <xs:complexContent>
+            <xs:restriction base="xs:anyType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:simpleType name="custom-field-entities">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="product"/>
+            <xs:enumeration value="catalogue"/>
+            <xs:enumeration value="customer"/>
+            <xs:enumeration value="customer_address"/>
+            <xs:enumeration value="product_manufacturer"/>
+            <xs:enumeration value="media"/>
+            <xs:enumeration value="sales_channel"/>
         </xs:restriction>
     </xs:simpleType>
     <xs:complexType name="translatableString">

@@ -1,0 +1,44 @@
+<?php declare(strict_types=1);
+
+namespace Swag\SaasConnect\Test\Core\Content\App\Manifest\Xml\CustomFieldTypes;
+
+use PHPUnit\Framework\TestCase;
+use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
+use Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFieldSet;
+use Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFieldTypes\MultiSelectField;
+
+class MultiSelectFieldTest extends TestCase
+{
+    public function testCreateFromXml(): void
+    {
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/_fixtures/multi-select-field.xml');
+
+        static::assertNotNull($manifest->getCustomFields());
+        static::assertCount(1, $manifest->getCustomFields()->getCustomFieldSets());
+
+        /** @var CustomFieldSet $customFieldSet */
+        $customFieldSet = $manifest->getCustomFields()->getCustomFieldSets()[0];
+
+        static::assertCount(1, $customFieldSet->getFields());
+
+        $multiSelectField = $customFieldSet->getFields()[0];
+        static::assertInstanceOf(MultiSelectField::class, $multiSelectField);
+        static::assertEquals('test_multi_select_field', $multiSelectField->getName());
+        static::assertEquals([
+            'en-GB' => 'Test multi-select field',
+        ], $multiSelectField->getLabel());
+        static::assertEquals([], $multiSelectField->getHelpText());
+        static::assertEquals(1, $multiSelectField->getPosition());
+        static::assertEquals(['en-GB' => 'Choose your options...'], $multiSelectField->getPlaceholder());
+        static::assertFalse($multiSelectField->getRequired());
+        static::assertEquals([
+            'first' => [
+                'en-GB' => 'First',
+                'de-DE' => 'Erster',
+            ],
+            'second' => [
+                'en-GB' => 'Second',
+            ],
+        ], $multiSelectField->getOptions());
+    }
+}

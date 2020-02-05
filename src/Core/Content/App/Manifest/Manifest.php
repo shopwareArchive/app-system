@@ -4,6 +4,7 @@ namespace Swag\SaasConnect\Core\Content\App\Manifest;
 
 use Shopware\Core\System\SystemConfig\Exception\XmlParsingException;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Admin;
+use Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFields;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Metadata;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Permissions;
 use Symfony\Component\Config\Util\XmlUtils;
@@ -32,12 +33,23 @@ class Manifest
      */
     private $permissions;
 
-    private function __construct(string $path, Metadata $metadata, ?Admin $admin, ?Permissions $permissions)
-    {
+    /**
+     * @var CustomFields|null
+     */
+    private $customFields;
+
+    private function __construct(
+        string $path,
+        Metadata $metadata,
+        ?Admin $admin,
+        ?Permissions $permissions,
+        ?CustomFields $customFields
+    ) {
         $this->path = $path;
         $this->metadata = $metadata;
         $this->admin = $admin;
         $this->permissions = $permissions;
+        $this->customFields = $customFields;
     }
 
     public static function createFromXmlFile(string $xmlFile): self
@@ -60,7 +72,11 @@ class Manifest
         $permissions = $doc->getElementsByTagName('permissions')->item(0);
         $permissions = $permissions === null ? null : Permissions::fromXml($permissions);
 
-        return new self(dirname($xmlFile), $metadata, $admin, $permissions);
+        /** @var \DOMElement|null $customFields */
+        $customFields = $doc->getElementsByTagName('custom-fields')->item(0);
+        $customFields = $customFields === null ? null : CustomFields::fromXml($customFields);
+
+        return new self(dirname($xmlFile), $metadata, $admin, $permissions, $customFields);
     }
 
     public function getPath(): string
@@ -81,5 +97,10 @@ class Manifest
     public function getPermissions(): ?Permissions
     {
         return $this->permissions;
+    }
+
+    public function getCustomFields(): ?CustomFields
+    {
+        return $this->customFields;
     }
 }
