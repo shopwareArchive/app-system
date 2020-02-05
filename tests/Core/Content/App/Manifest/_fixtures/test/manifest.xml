@@ -32,9 +32,12 @@
     </admin>
     <permissions>
         <create>product</create>
+        <update>product</update>
         <delete>product</delete>
         <delete>category</delete>
+        <create>product_manufacturer</create>
         <delete>product_manufacturer</delete>
+        <create>tax</create>
     </permissions>
     <custom-fields>
         <custom-field-set>
