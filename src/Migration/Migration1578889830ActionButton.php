@@ -14,7 +14,7 @@ class Migration1578889830ActionButton extends MigrationStep
 
     public function update(Connection $connection): void
     {
-        $connection->executeQuery('
+        $connection->executeUpdate('
             CREATE TABLE `app_action_button` (
                 `id` BINARY(16) NOT NULL,
                 `entity` VARCHAR(255) NOT NULL,
@@ -31,7 +31,7 @@ class Migration1578889830ActionButton extends MigrationStep
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
 
-        $connection->executeQuery('
+        $connection->executeUpdate('
             CREATE TABLE `app_action_button_translation` (
                 `label` VARCHAR(255) NOT NULL,
                 `created_at` DATETIME(3) NOT NULL,

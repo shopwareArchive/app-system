@@ -14,7 +14,7 @@ class Migration1578558350App extends MigrationStep
 
     public function update(Connection $connection): void
     {
-        $connection->executeQuery('
+        $connection->executeUpdate('
             CREATE TABLE `app` (
                 `id` BINARY(16) NOT NULL,
                 `name` VARCHAR(255) NOT NULL,
@@ -36,7 +36,7 @@ class Migration1578558350App extends MigrationStep
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
 
-        $connection->executeQuery('
+        $connection->executeUpdate('
             CREATE TABLE `app_translation` (
                 `app_id` BINARY(16) NOT NULL,
                 `language_id` BINARY(16) NOT NULL,

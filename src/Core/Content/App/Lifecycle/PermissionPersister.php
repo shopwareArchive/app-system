@@ -35,7 +35,7 @@ class PermissionPersister
 
     private function deleteExistingPrivileges(string $roleId): void
     {
-        $this->connection->executeQuery(
+        $this->connection->executeUpdate(
             'DELETE FROM `acl_resource` WHERE `acl_role_id` = :roleId',
             ['roleId' => Uuid::fromHexToBytes($roleId)]
         );
@@ -49,7 +49,7 @@ class PermissionPersister
 
         $payload = $this->generatePrivileges($permissions->getPermissions(), $roleId);
 
-        $this->connection->executeQuery(
+        $this->connection->executeUpdate(
             sprintf(
                 'INSERT INTO `acl_resource` (`resource`, `privilege`, `acl_role_id`, `created_at`) VALUES %s;',
                 $payload
