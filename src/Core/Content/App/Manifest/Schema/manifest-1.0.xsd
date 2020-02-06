@@ -116,6 +116,7 @@
     <xs:complexType name="custom-field-text-area-type">
         <xs:choice maxOccurs="unbounded">
             <xs:group ref="custom-field-type"/>
+            <xs:element name="placeholder" type="translatableString" minOccurs="0" maxOccurs="unbounded"/>
         </xs:choice>
         <xs:attribute type="xs:string" name="name" use="required"/>
     </xs:complexType>

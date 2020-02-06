@@ -43,13 +43,17 @@ class CustomFieldSet extends XmlElement
     }
 
     /**
-     * @return array<string, string|array<string>|array<string, string|bool|array<string, string>>>
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration
      */
     public function toEntityArray(string $appId): array
     {
         $relations = array_map(static function (string $entity) {
             return ['entityName' => $entity];
         }, $this->relatedEntities);
+
+        $customFields = array_map(static function (CustomFieldType $field) {
+            return $field->toEntityPayload();
+        }, $this->fields);
 
         return [
             'name' => $this->name,
@@ -59,6 +63,7 @@ class CustomFieldSet extends XmlElement
             ],
             'relations' => $relations,
             'appId' => $appId,
+            'customFields' => $customFields,
         ];
     }
 

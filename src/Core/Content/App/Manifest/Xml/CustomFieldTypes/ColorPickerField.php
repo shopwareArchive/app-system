@@ -18,4 +18,19 @@ class ColorPickerField extends CustomFieldType
     {
         return new self(self::parse($element));
     }
+
+    /**
+     * @return array<string, string|array<string, string>>
+     */
+    protected function toEntityArray(): array
+    {
+        return [
+            'type' => 'text',
+            'config' => [
+                'type' => 'colorpicker',
+                'componentName' => 'sw-field',
+                'customFieldType' => 'colorpicker',
+            ],
+        ];
+    }
 }

@@ -18,4 +18,18 @@ class MediaSelectionField extends CustomFieldType
     {
         return new self(self::parse($element));
     }
+
+    /**
+     * @return array<string, string|array<string, string>>
+     */
+    protected function toEntityArray(): array
+    {
+        return [
+            'type' => 'text',
+            'config' => [
+                'componentName' => 'sw-media-field',
+                'customFieldType' => 'media',
+            ],
+        ];
+    }
 }

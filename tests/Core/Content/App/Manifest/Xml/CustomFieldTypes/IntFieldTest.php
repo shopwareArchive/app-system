@@ -3,12 +3,17 @@
 namespace Swag\SaasConnect\Test\Core\Content\App\Manifest\Xml\CustomFieldTypes;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFieldSet;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFieldTypes\IntField;
+use Swag\SaasConnect\Test\CustomFieldTypeTestBehaviour;
 
 class IntFieldTest extends TestCase
 {
+    use IntegrationTestBehaviour;
+    use CustomFieldTypeTestBehaviour;
+
     public function testCreateFromXml(): void
     {
         $manifest = Manifest::createFromXmlFile(__DIR__ . '/_fixtures/int-field.xml');
@@ -35,5 +40,35 @@ class IntFieldTest extends TestCase
         static::assertEquals(1, $intField->getMax());
         static::assertEquals(['en-GB' => 'Enter an int...'], $intField->getPlaceholder());
         static::assertTrue($intField->getRequired());
+    }
+
+    public function testToEntityArray(): void
+    {
+        $intField = $this->importCustomField(__DIR__ . '/_fixtures/int-field.xml');
+
+        static::assertEquals('test_int_field', $intField->getName());
+        static::assertEquals('int', $intField->getType());
+        static::assertTrue($intField->isActive());
+        static::assertEquals([
+            'type' => 'number',
+            'label' => [
+                'en-GB' => 'Test int field',
+                'de-DE' => 'Test Ganzzahlenfeld',
+            ],
+            'helpText' => [
+                'en-GB' => 'This is an int field.',
+            ],
+            'placeholder' => [
+                'en-GB' => 'Enter an int...',
+            ],
+            'componentName' => 'sw-field',
+            'customFieldType' => 'number',
+            'customFieldPosition' => 1,
+            'numberType' => 'int',
+            'min' => 0,
+            'max' => 1,
+            'step' => 2,
+            'validation' => 'required',
+        ], $intField->getConfig());
     }
 }

@@ -3,12 +3,17 @@
 namespace Swag\SaasConnect\Test\Core\Content\App\Manifest\Xml\CustomFieldTypes;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFieldSet;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFieldTypes\MultiSelectField;
+use Swag\SaasConnect\Test\CustomFieldTypeTestBehaviour;
 
 class MultiSelectFieldTest extends TestCase
 {
+    use IntegrationTestBehaviour;
+    use CustomFieldTypeTestBehaviour;
+
     public function testCreateFromXml(): void
     {
         $manifest = Manifest::createFromXmlFile(__DIR__ . '/_fixtures/multi-select-field.xml');
@@ -40,5 +45,41 @@ class MultiSelectFieldTest extends TestCase
                 'en-GB' => 'Second',
             ],
         ], $multiSelectField->getOptions());
+    }
+
+    public function testToEntityArray(): void
+    {
+        $multiSelectField = $this->importCustomField(__DIR__ . '/_fixtures/multi-select-field.xml');
+
+        static::assertEquals('test_multi_select_field', $multiSelectField->getName());
+        static::assertEquals('select', $multiSelectField->getType());
+        static::assertTrue($multiSelectField->isActive());
+        static::assertEquals([
+            'label' => [
+                'en-GB' => 'Test multi-select field',
+            ],
+            'helpText' => [],
+            'placeholder' => [
+                'en-GB' => 'Choose your options...',
+            ],
+            'componentName' => 'sw-multi-select',
+            'customFieldType' => 'select',
+            'customFieldPosition' => 1,
+            'options' => [
+                [
+                    'label' => [
+                        'en-GB' => 'First',
+                        'de-DE' => 'Erster',
+                    ],
+                    'value' => 'first',
+                ],
+                [
+                    'label' => [
+                        'en-GB' => 'Second',
+                    ],
+                    'value' => 'second',
+                ],
+            ],
+        ], $multiSelectField->getConfig());
     }
 }

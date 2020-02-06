@@ -9,7 +9,7 @@ class TextField extends CustomFieldType
     /**
      * @var array<string, string>
      */
-    protected $placeholder;
+    protected $placeholder = [];
 
     /**
      * @param array<string, string|int|float|bool|array<string, string>> $data
@@ -32,5 +32,21 @@ class TextField extends CustomFieldType
     public function getPlaceholder(): array
     {
         return $this->placeholder;
+    }
+
+    /**
+     * @return array<string, string|array<string, string|array<string, string>>>
+     */
+    protected function toEntityArray(): array
+    {
+        return [
+            'type' => 'text',
+            'config' => [
+                'type' => 'text',
+                'placeholder' => $this->placeholder,
+                'componentName' => 'sw-field',
+                'customFieldType' => 'text',
+            ],
+        ];
     }
 }
