@@ -40,6 +40,16 @@ class AppAction
     private $shopUrl;
 
     /**
+     * @var string
+     */
+    private $accessKey;
+
+    /**
+     * @var string
+     */
+    private $secretAccessKey;
+
+    /**
      * @param array<string> $ids
      */
     public function __construct(
@@ -48,7 +58,9 @@ class AppAction
         string $appVersion,
         string $entity,
         string $action,
-        array $ids
+        array $ids,
+        string $accessKey,
+        string $secretAccessKey
     ) {
         $this->setAction($action);
         $this->setAppVersion($appVersion);
@@ -56,6 +68,8 @@ class AppAction
         $this->setIds($ids);
         $this->setShopUrl($shopUrl);
         $this->setTargetUrl($targetUrl);
+        $this->setAccessKey($accessKey);
+        $this->setSecretAccessKey($secretAccessKey);
     }
 
     public function getTargetUrl(): string
@@ -72,8 +86,8 @@ class AppAction
             'source' => [
                 'url' => $this->shopUrl,
                 'appVersion' => $this->appVersion,
-                /* @Todo add integration key: SAAS-221 */
-                'apiKey' => '',
+                'apiKey' => $this->accessKey,
+                'secretKey' => $this->secretAccessKey,
             ],
             'data' => [
                 'ids' => $this->ids,
@@ -134,5 +148,21 @@ class AppAction
             throw new InvalidArgumentException(sprintf('%s is not a valid url', $shopUrl));
         }
         $this->shopUrl = $shopUrl;
+    }
+
+    private function setAccessKey(string $accessKey): void
+    {
+        if ($accessKey === '') {
+            throw new InvalidArgumentException('access key must not be empty');
+        }
+        $this->accessKey = $accessKey;
+    }
+
+    private function setSecretAccessKey(string $secretAccessKey): void
+    {
+        if ($secretAccessKey === '') {
+            throw new InvalidArgumentException('secret access key must not be empty');
+        }
+        $this->secretAccessKey = $secretAccessKey;
     }
 }

@@ -27,7 +27,8 @@ class AppActionLoaderTest extends TestCase
 
         $criteria = (new Criteria())
             ->setLimit(1)
-            ->addAssociation('app');
+            ->addAssociation('app')
+            ->addAssociation('app.integration');
 
         $actionCollection = $actionRepo->search($criteria, Context::createDefaultContext());
         /** @var ActionButtonEntity $action */
@@ -40,7 +41,8 @@ class AppActionLoaderTest extends TestCase
             'source' => [
                 'url' => getenv('APP_URL'),
                 'appVersion' => $action->getApp()->getVersion(),
-                'apiKey' => '',
+                'apiKey' => $action->getApp()->getIntegration()->getAccessKey(),
+                'secretKey' => $action->getApp()->getAccessToken(),
             ],
             'data' => [
                 'ids' => $ids,

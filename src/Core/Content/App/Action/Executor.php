@@ -3,6 +3,7 @@
 namespace Swag\SaasConnect\Core\Content\App\Action;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ServerException;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class Executor
@@ -25,6 +26,10 @@ class Executor
             'reference' => Uuid::randomHex(),
         ];
 
-        $this->guzzleClient->postAsync($action->getTargetUrl(), ['json' => $payload]);
+        try {
+            $this->guzzleClient->post($action->getTargetUrl(), ['json' => $payload]);
+        } catch (ServerException $e) {
+            // ignore failing requests
+        }
     }
 }
