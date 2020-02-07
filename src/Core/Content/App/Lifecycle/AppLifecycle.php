@@ -7,6 +7,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
+use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Module;
 
 class AppLifecycle implements AppLifecycleInterface
 {
@@ -78,6 +79,15 @@ class AppLifecycle implements AppLifecycleInterface
     {
         $metadata['path'] = $manifest->getPath();
         $metadata['id'] = $id;
+        $metadata['modules'] = array_reduce(
+            $manifest->getAdmin() ? $manifest->getAdmin()->getModules() : [],
+            static function (array $modules, Module $module) {
+                $modules[] = $module->toArray();
+
+                return $modules;
+            },
+            []
+        );
 
         $this->updateMetadata($metadata, $context);
         $this->actionButtonPersister->updateActions($manifest, $id, $context);

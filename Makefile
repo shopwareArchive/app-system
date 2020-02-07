@@ -14,7 +14,7 @@ help:
 static-analysis: | install-tools vendor ## runs psalm and phpstan
 	$(TOOLS_BIN)/psalm --output-format=compact
 	$(TOOLS_BIN)/phpstan analyze --configuration phpstan.neon src
-	$(TOOLS_BIN)/phpinsights --no-interaction
+	$(TOOLS_BIN)/phpinsights --no-interaction --min-quality=100 --min-complexity=75 --min-architecture=100 --min-style=100
 
 test: ## runs phpunit
 	composer dump-autoload

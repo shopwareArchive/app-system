@@ -50,6 +50,11 @@ class AppEntity extends Entity
     protected $version;
 
     /**
+     * @var array
+     */
+    protected $modules;
+
+    /**
      * @var object|null
      */
     protected $iconRaw;
@@ -187,6 +192,16 @@ class AppEntity extends Entity
     public function setVersion(string $version): void
     {
         $this->version = $version;
+    }
+
+    public function getModules(): array
+    {
+        return $this->modules;
+    }
+
+    public function setModules(array $modules): void
+    {
+        $this->modules = $modules;
     }
 
     public function getIconRaw(): ?object

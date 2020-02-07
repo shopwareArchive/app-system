@@ -50,6 +50,7 @@ return [
         '*Entity.php',
         '*Definition.php',
         'Migration*.php',
+        'AppAction.php',
     ],
 
     'add' => [

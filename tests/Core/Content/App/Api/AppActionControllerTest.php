@@ -166,4 +166,44 @@ class AppActionControllerTest extends TestCase
 
         static::assertEquals(404, $this->getBrowser()->getResponse()->getStatusCode());
     }
+
+    public function testGetModules(): void
+    {
+        $this->loadAppsFromDir(__DIR__ . '/../Manifest/_fixtures/test');
+        $url = '/api/v' . PlatformRequest::API_VERSION . '/app-system/modules';
+        $this->getBrowser()->request('GET', $url);
+
+        static::assertEquals(200, $this->getBrowser()->getResponse()->getStatusCode());
+
+        $result = json_decode($this->getBrowser()->getResponse()->getContent(), true);
+
+        static::assertEquals([
+            'modules' => [
+                [
+                    'name' => 'SwagApp',
+                    'label' => [
+                        'en-GB' => 'Swag App Test',
+                        'de-DE' => 'Swag App Test',
+                    ],
+                    'modules' => [
+                        [
+                            'label' => [
+                                'en-GB' => 'My first own module',
+                                'de-DE' => 'Mein erstes eigenes Modul',
+                            ],
+                            'source' => 'https://test.com',
+                            'name' => 'first-module',
+                        ],
+                        [
+                            'label' => [
+                                'en-GB' => 'My second module',
+                            ],
+                            'source' => 'https://test.com/second',
+                            'name' => 'second-module',
+                        ],
+                    ],
+                ],
+            ],
+        ], $result);
+    }
 }

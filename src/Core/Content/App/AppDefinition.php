@@ -16,6 +16,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Runtime;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\WriteProtected;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\JsonField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\ListField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
@@ -66,6 +68,8 @@ class AppDefinition extends EntityDefinition
                 new WriteProtected(Context::SYSTEM_SCOPE),
                 new ReadProtected(SalesChannelApiSource::class, AdminApiSource::class)
             ),
+
+            new ListField('modules', 'modules', JsonField::class),
 
             (new TranslationsAssociationField(AppTranslationDefinition::class, 'app_id'))->addFlags(
                 new Required(),

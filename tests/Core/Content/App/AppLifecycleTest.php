@@ -15,6 +15,7 @@ use Shopware\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetColl
 use Shopware\Core\System\CustomField\Aggregate\CustomFieldSetRelation\CustomFieldSetRelationEntity;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonEntity;
 use Swag\SaasConnect\Core\Content\App\AppCollection;
+use Swag\SaasConnect\Core\Content\App\AppEntity;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 
@@ -63,6 +64,7 @@ class AppLifecycleTest extends TestCase
         static::assertEquals('SwagApp', $apps->first()->getName());
 
         $this->assertDefaultActionButtons();
+        $this->assertDefaultModules($apps->first());
         $this->assertDefaultPrivileges($apps->first()->getAclRoleId());
         $this->assertDefaultCustomFields($apps->first()->getId());
     }
@@ -91,6 +93,14 @@ class AppLifecycleTest extends TestCase
             'version' => '0.0.1',
             'label' => 'test',
             'accessToken' => 'test',
+            'modules' => [
+                [
+                    'label' => [
+                        'en-GB' => 'will be overwritten',
+                    ],
+                    'source' => 'https://example.com',
+                ],
+            ],
             'actionButtons' => [
                 [
                     'entity' => 'order',
@@ -134,6 +144,7 @@ class AppLifecycleTest extends TestCase
         static::assertNotEquals('test', $apps->first()->getTranslation('label'));
 
         $this->assertDefaultActionButtons();
+        $this->assertDefaultModules($apps->first());
         $this->assertDefaultPrivileges($apps->first()->getAclRoleId());
         $this->assertDefaultCustomFields($id);
     }
@@ -193,6 +204,28 @@ class AppLifecycleTest extends TestCase
 
         static::assertContains('viewOrder', $actionNames);
         static::assertContains('doStuffWithProducts', $actionNames);
+    }
+
+    private function assertDefaultModules(AppEntity $app): void
+    {
+        static::assertCount(2, $app->getModules());
+
+        static::assertEquals([
+            'label' => [
+                'en-GB' => 'My first own module',
+                'de-DE' => 'Mein erstes eigenes Modul',
+            ],
+            'source' => 'https://test.com',
+            'name' => 'first-module',
+        ], $app->getModules()[0]);
+
+        static::assertEquals([
+            'label' => [
+                'en-GB' => 'My second module',
+            ],
+            'source' => 'https://test.com/second',
+            'name' => 'second-module',
+        ], $app->getModules()[1]);
     }
 
     private function assertDefaultPrivileges(string $roleId): void
