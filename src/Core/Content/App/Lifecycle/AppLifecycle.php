@@ -31,16 +31,23 @@ class AppLifecycle implements AppLifecycleInterface
      */
     private $customFieldPersister;
 
+    /**
+     * @var AppLoaderInterface
+     */
+    private $appLoader;
+
     public function __construct(
         EntityRepositoryInterface $appRepository,
         ActionButtonPersister $actionButtonPersister,
         PermissionPersister $permissionPersister,
-        CustomFieldPersister $customFieldPersister
+        CustomFieldPersister $customFieldPersister,
+        AppLoaderInterface $appLoader
     ) {
         $this->appRepository = $appRepository;
         $this->actionButtonPersister = $actionButtonPersister;
         $this->permissionPersister = $permissionPersister;
         $this->customFieldPersister = $customFieldPersister;
+        $this->appLoader = $appLoader;
     }
 
     public function install(Manifest $manifest, Context $context): void
@@ -77,6 +84,7 @@ class AppLifecycle implements AppLifecycleInterface
      */
     private function updateApp(Manifest $manifest, array $metadata, string $id, string $roleId, Context $context): void
     {
+        unset($metadata['icon']);
         $metadata['path'] = $manifest->getPath();
         $metadata['id'] = $id;
         $metadata['modules'] = array_reduce(
@@ -88,6 +96,7 @@ class AppLifecycle implements AppLifecycleInterface
             },
             []
         );
+        $metadata['iconRaw'] = $this->appLoader->getIcon($manifest);
 
         $this->updateMetadata($metadata, $context);
         $this->actionButtonPersister->updateActions($manifest, $id, $context);
@@ -96,13 +105,10 @@ class AppLifecycle implements AppLifecycleInterface
     }
 
     /**
-     * @param array<string, string|array<string, string|bool>> $metadata
+     * @param array<string, string|array<string, string|bool>|null> $metadata
      */
     private function updateMetadata(array $metadata, Context $context): void
     {
-        // ToDo handle import and saving of icons
-        unset($metadata['icon']);
-
         $context->scope(Context::SYSTEM_SCOPE, function (Context $context) use ($metadata): void {
             $this->appRepository->upsert([$metadata], $context);
         });

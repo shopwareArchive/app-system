@@ -14,4 +14,6 @@ interface AppLoaderInterface
      * @return array<Manifest>
      */
     public function load(): array;
+
+    public function getIcon(Manifest $app): ?string;
 }

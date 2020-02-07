@@ -62,6 +62,10 @@ class AppLifecycleTest extends TestCase
 
         static::assertCount(1, $apps);
         static::assertEquals('SwagApp', $apps->first()->getName());
+        static::assertEquals(
+            base64_encode(file_get_contents(__DIR__ . '/Manifest/_fixtures/test/icon.png')),
+            $apps->first()->getIcon()
+        );
 
         $this->assertDefaultActionButtons();
         $this->assertDefaultModules($apps->first());
@@ -140,6 +144,10 @@ class AppLifecycleTest extends TestCase
 
         static::assertCount(1, $apps);
         static::assertEquals('SwagApp', $apps->first()->getName());
+        static::assertEquals(
+            base64_encode(file_get_contents(__DIR__ . '/Manifest/_fixtures/test/icon.png')),
+            $apps->first()->getIcon()
+        );
         static::assertEquals('1.0.0', $apps->first()->getVersion());
         static::assertNotEquals('test', $apps->first()->getTranslation('label'));
 

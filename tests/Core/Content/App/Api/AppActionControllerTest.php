@@ -57,6 +57,7 @@ class AppActionControllerTest extends TestCase
                 'action' => 'viewOrder',
                 'url' => 'https://swag-test.com/your-order',
                 'openNewTab' => true,
+                'icon' => base64_encode(file_get_contents(__DIR__ . '/../Manifest/_fixtures/test/icon.png')),
             ],
         ], $result);
     }

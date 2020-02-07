@@ -64,8 +64,7 @@ return [
         \PHP_CodeSniffer\Standards\Generic\Sniffs\CodeAnalysis\EmptyStatementSniff::class,
         \SlevomatCodingStandard\Sniffs\ControlStructures\DisallowEmptySniff::class,
         \SlevomatCodingStandard\Sniffs\ControlStructures\DisallowShortTernaryOperatorSniff::class,
-        // ToDo remove this once we are ready to release
-        \PHP_CodeSniffer\Standards\Generic\Sniffs\Commenting\TodoSniff::class,
+        \PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\NoSilencedErrorsSniff::class,
         \NunoMaduro\PhpInsights\Domain\Insights\ForbiddenNormalClasses::class,
         \SlevomatCodingStandard\Sniffs\Classes\SuperfluousInterfaceNamingSniff::class,
         \SlevomatCodingStandard\Sniffs\Classes\SuperfluousExceptionNamingSniff::class,

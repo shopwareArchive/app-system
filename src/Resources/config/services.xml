@@ -23,6 +23,7 @@
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\ActionButtonPersister"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\PermissionPersister"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\CustomFieldPersister"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\ActionButtonPersister">
@@ -87,6 +88,10 @@
         <service id="Swag\SaasConnect\Core\Content\App\Action\AppActionLoader">
             <argument>%env(APP_URL)%</argument>
             <argument type="service" id="app_action_button.repository"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\Subscriber\AppLoadedSubscriber">
+            <tag name="kernel.event_subscriber"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\AppDefinition">

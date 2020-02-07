@@ -42,4 +42,20 @@ class AppLoader implements AppLoaderInterface
 
         return $manifests;
     }
+
+    public function getIcon(Manifest $app): ?string
+    {
+        if (!$app->getMetadata()->getIcon()) {
+            return null;
+        }
+
+        $iconPath = sprintf('%s/%s', $app->getPath(), $app->getMetadata()->getIcon() ?: '');
+        $icon = @file_get_contents($iconPath);
+
+        if (!$icon) {
+            return null;
+        }
+
+        return $icon;
+    }
 }
