@@ -1,6 +1,6 @@
-const serviceName = 'AppApiService';
+const serviceName = 'AppActionButtonService';
 
-export default class AppApiService {
+export default class AppActionButtonService {
     static get name() {
         return serviceName;
     }
@@ -11,7 +11,7 @@ export default class AppApiService {
      */
     constructor(httpClient, loginService) {
         this.httpClient = httpClient;
-        this.loginSerice = loginService;
+        this.loginService = loginService;
 
         this.name = serviceName;
     }
@@ -20,7 +20,7 @@ export default class AppApiService {
         return {
             'Content-Type': 'application/json',
             Accept: 'application/json',
-            Authorization: `Bearer ${this.loginSerice.getToken()}`,
+            Authorization: `Bearer ${this.loginService.getToken()}`,
         };
     }
 

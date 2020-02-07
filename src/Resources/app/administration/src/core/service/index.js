@@ -1,9 +1,9 @@
-import AppApiService from './api/app-api.service';
+import AppActionButtonService from './api/app-action-button.service';
 
 function installServices(Shopware) {
-    Shopware.Application.addServiceProvider(AppApiService.name, () => {
+    Shopware.Application.addServiceProvider(AppActionButtonService.name, () => {
         const init = Shopware.Application.getContainer('init');
-        return new AppApiService(init.httpClient, Shopware.Service('loginService'));
+        return new AppActionButtonService(init.httpClient, Shopware.Service('loginService'));
     });
 }
 
