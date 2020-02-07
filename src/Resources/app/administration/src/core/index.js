@@ -1,15 +1,19 @@
 import installServices from './service';
 import extendAdministration from '../extension';
-import { installComponents } from '../app';
+import { installComponents, addStateModules, initializeAppModules } from '../app';
 import { installModules } from '../module';
 import { installSnippets } from '../snippets';
 
 function install(Shopware) {
     installServices(Shopware);
-    extendAdministration(Shopware);
-    installComponents(Shopware);
+    addStateModules(Shopware);
     installSnippets(Shopware);
+
+    installComponents(Shopware);
     installModules(Shopware);
+    extendAdministration(Shopware);
+
+    initializeAppModules();
 }
 
 export default {

@@ -4,7 +4,12 @@
 
         },
         "module": {
-
+            "sw-my-apps": {
+                "general": {
+                    "mainMenuItemGeneral": "Meine Apps",
+                    "moduleDescription": "Modul zum Anzeigen appspezifischer Inhalte"
+                }
+            }
         },
         "extension": {
             "component": {

@@ -1,6 +1,6 @@
 const productId = global.ProductFixtureService.createUuid();
 
-describe('action buttons in listing pages', () => {
+describe('action buttons in administration', () => {
     before(() => {
         cy.removeE2EApps()
             .cleanUpPreviousState()

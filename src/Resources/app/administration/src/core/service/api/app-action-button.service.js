@@ -35,7 +35,7 @@ export default class AppActionButtonService {
             .get(`app-system/action-button/${entity}/${view}`,
                 {
                     headers: this.basicHeaders,
-                }
+                },
             ).then(({ data }) => {
                 return this.getActionbuttonsFromRequest(data);
             });
@@ -62,7 +62,7 @@ export default class AppActionButtonService {
                 params,
                 {
                     headers: this.basicHeaders,
-                }
+                },
             ).then(({ data }) => {
                 return data;
             });

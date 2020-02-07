@@ -1,6 +1,6 @@
 import express from 'express';
 import jsonBody from 'body/json.js';
-import { join } from 'path';
+import { dirname, join, resolve } from 'path';
 import AppService from './actions/app-service.js';
 import resetDB from './actions/reset-db.js';
 import clearCache from './actions/clear-cache.js';
@@ -58,10 +58,14 @@ server.delete('/cleanup', function (req, res) {
         });
 });
 
+server.get('/show-app-action', function(req, res) {
+    res.sendFile(resolve(dirname('')+'/view/show-product-app.html' ));
+});
+
 server.listen(proxyPort, () => {
     // eslint-disable-next-line
     console.log(`
-CLI Proxy server for e2e system commands started.
+CLI Proxy server for e2e system commands started. ${dirname('.')}
 Listening at port: ${proxyPort}
 `);
 });
