@@ -2,6 +2,8 @@
 
 namespace Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFieldTypes;
 
+use Shopware\Core\System\CustomField\CustomFieldTypes;
+
 class BoolField extends CustomFieldType
 {
     /**
@@ -25,7 +27,7 @@ class BoolField extends CustomFieldType
     protected function toEntityArray(): array
     {
         return [
-            'type' => 'bool',
+            'type' => CustomFieldTypes::BOOL,
             'config' => [
                 'type' => 'checkbox',
                 'componentName' => 'sw-field',

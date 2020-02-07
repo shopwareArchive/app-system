@@ -2,6 +2,8 @@
 
 namespace Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFieldTypes;
 
+use Shopware\Core\System\CustomField\CustomFieldTypes;
+
 class DateTimeField extends CustomFieldType
 {
     /**
@@ -25,7 +27,7 @@ class DateTimeField extends CustomFieldType
     protected function toEntityArray(): array
     {
         return [
-            'type' => 'datetime',
+            'type' => CustomFieldTypes::DATETIME,
             'config' => [
                 'type' => 'date',
                 'componentName' => 'sw-field',

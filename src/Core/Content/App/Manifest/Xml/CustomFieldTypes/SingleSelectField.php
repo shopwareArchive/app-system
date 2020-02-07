@@ -2,6 +2,8 @@
 
 namespace Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFieldTypes;
 
+use Shopware\Core\System\CustomField\CustomFieldTypes;
+
 class SingleSelectField extends CustomFieldType
 {
     protected const TRANSLATABLE_FIELDS = ['label', 'help-text', 'placeholder'];
@@ -64,7 +66,7 @@ class SingleSelectField extends CustomFieldType
         }
 
         return [
-            'type' => 'select',
+            'type' => CustomFieldTypes::SELECT,
             'config' => [
                 'placeholder' => $this->placeholder,
                 // use $this so child classes can override the const
