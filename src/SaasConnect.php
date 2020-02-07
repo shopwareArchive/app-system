@@ -16,7 +16,12 @@ class SaasConnect extends Plugin
 
         $connection = $this->container->get(Connection::class);
         $connection->executeUpdate('
-            DROP TABLE IF EXISTS `app_action_button_translation`, `app_action_button`, `app_translation`, `app`
+            ALTER TABLE `custom_field_set`
+            DROP FOREIGN KEY `fk.custom_field_set.app_id`,
+            DROP COLUMN `app_id`;
+        ');
+        $connection->executeUpdate('
+            DROP TABLE IF EXISTS `app_action_button_translation`, `app_action_button`, `app_translation`, `app`;
         ');
     }
 }

@@ -18,4 +18,23 @@ class DateTimeField extends CustomFieldType
     {
         return new self(self::parse($element));
     }
+
+    /**
+     * @return array<string, string|array<string, string|array<string, bool>>>
+     */
+    protected function toEntityArray(): array
+    {
+        return [
+            'type' => 'datetime',
+            'config' => [
+                'type' => 'date',
+                'componentName' => 'sw-field',
+                'customFieldType' => 'date',
+                'config' => [
+                    'time_24hr' => true,
+                ],
+                'dateType' => 'datetime',
+            ],
+        ];
+    }
 }

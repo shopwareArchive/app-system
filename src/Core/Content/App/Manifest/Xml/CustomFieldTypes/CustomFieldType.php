@@ -36,6 +36,27 @@ abstract class CustomFieldType extends XmlElement
 
     abstract public static function fromXml(\DOMElement $element): self;
 
+    /**
+     * @return array<string, string|array<string, string|float|int|array<string, string>|array<string, bool>|array<array<string, string|array<string, string>>>>>
+     */
+    public function toEntityPayload(): array
+    {
+        $entityArray = [
+            'name' => $this->name,
+            'config' => [
+                'label' => $this->label,
+                'helpText' => $this->helpText,
+                'customFieldPosition' => $this->position,
+            ],
+        ];
+
+        if ($this->required) {
+            $entityArray['config']['validation'] = 'required';
+        }
+
+        return array_merge_recursive($entityArray, $this->toEntityArray());
+    }
+
     public function getName(): string
     {
         return $this->name;
@@ -66,6 +87,11 @@ abstract class CustomFieldType extends XmlElement
     {
         return $this->helpText;
     }
+
+    /**
+     * @return array<string, string|array<string, string|float|int|array<string, string>|array<string, bool>|array<array<string, string|array<string, string>>>>>
+     */
+    abstract protected function toEntityArray(): array;
 
     /**
      * @param array<string> $translatableFields

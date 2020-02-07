@@ -24,6 +24,7 @@
             <fields>
                 <text-area name="test_text_area_field">
                     <label>Test text-area field</label>
+                    <placeholder>Enter a text...</placeholder>
                 </text-area>
             </fields>
         </custom-field-set>

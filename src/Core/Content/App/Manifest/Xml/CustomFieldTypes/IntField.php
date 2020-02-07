@@ -9,20 +9,20 @@ class IntField extends CustomFieldType
     /**
      * @var array<string, string>
      */
-    protected $placeholder;
+    protected $placeholder = [];
 
     /**
-     * @var int
+     * @var int|null
      */
     protected $steps;
 
     /**
-     * @var int
+     * @var int|null
      */
     protected $min;
 
     /**
-     * @var int
+     * @var int|null
      */
     protected $max;
 
@@ -49,18 +49,49 @@ class IntField extends CustomFieldType
         return $this->placeholder;
     }
 
-    public function getSteps(): int
+    public function getSteps(): ?int
     {
         return $this->steps;
     }
 
-    public function getMin(): int
+    public function getMin(): ?int
     {
         return $this->min;
     }
 
-    public function getMax(): int
+    public function getMax(): ?int
     {
         return $this->max;
+    }
+
+    /**
+     * @return array<string, string|array<string, string|float|array<string, string>>>
+     */
+    protected function toEntityArray(): array
+    {
+        $entityArray = [
+            'type' => 'int',
+            'config' => [
+                'type' => 'number',
+                'placeholder' => $this->placeholder,
+                'componentName' => 'sw-field',
+                'customFieldType' => 'number',
+                'numberType' => 'int',
+            ],
+        ];
+
+        if ($this->max !== null) {
+            $entityArray['config']['max'] = $this->max;
+        }
+
+        if ($this->min !== null) {
+            $entityArray['config']['min'] = $this->min;
+        }
+
+        if ($this->steps !== null) {
+            $entityArray['config']['step'] = $this->steps;
+        }
+
+        return $entityArray;
     }
 }

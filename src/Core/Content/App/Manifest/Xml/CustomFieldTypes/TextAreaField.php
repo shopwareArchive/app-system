@@ -4,6 +4,13 @@ namespace Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFieldTypes;
 
 class TextAreaField extends CustomFieldType
 {
+    protected const TRANSLATABLE_FIELDS = ['label', 'help-text', 'placeholder'];
+
+    /**
+     * @var array<string, string>
+     */
+    protected $placeholder = [];
+
     /**
      * @param array<string, string|int|float|bool|array<string, string>> $data
      */
@@ -16,6 +23,29 @@ class TextAreaField extends CustomFieldType
 
     public static function fromXml(\DOMElement $element): CustomFieldType
     {
-        return new self(self::parse($element));
+        return new self(self::parse($element, self::TRANSLATABLE_FIELDS));
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getPlaceholder(): array
+    {
+        return $this->placeholder;
+    }
+
+    /**
+     * @return array<string, string|array<string, string|array<string, string>>>
+     */
+    protected function toEntityArray(): array
+    {
+        return [
+            'type' => 'html',
+            'config' => [
+                'placeholder' => $this->placeholder,
+                'componentName' => 'sw-text-editor',
+                'customFieldType' => 'textEditor',
+            ],
+        ];
     }
 }

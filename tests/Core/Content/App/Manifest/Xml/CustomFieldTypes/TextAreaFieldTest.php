@@ -3,12 +3,17 @@
 namespace Swag\SaasConnect\Test\Core\Content\App\Manifest\Xml\CustomFieldTypes;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFieldSet;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFieldTypes\TextAreaField;
+use Swag\SaasConnect\Test\CustomFieldTypeTestBehaviour;
 
 class TextAreaFieldTest extends TestCase
 {
+    use IntegrationTestBehaviour;
+    use CustomFieldTypeTestBehaviour;
+
     public function testCreateFromXml(): void
     {
         $manifest = Manifest::createFromXmlFile(__DIR__ . '/_fixtures/text-area-field.xml');
@@ -28,7 +33,29 @@ class TextAreaFieldTest extends TestCase
             'en-GB' => 'Test text-area field',
         ], $textAreaField->getLabel());
         static::assertEquals([], $textAreaField->getHelpText());
+        static::assertEquals(['en-GB' => 'Enter a text...'], $textAreaField->getPlaceholder());
         static::assertEquals(1, $textAreaField->getPosition());
         static::assertFalse($textAreaField->getRequired());
+    }
+
+    public function testToEntityArray(): void
+    {
+        $textAreaField = $this->importCustomField(__DIR__ . '/_fixtures/text-area-field.xml');
+
+        static::assertEquals('test_text_area_field', $textAreaField->getName());
+        static::assertEquals('html', $textAreaField->getType());
+        static::assertTrue($textAreaField->isActive());
+        static::assertEquals([
+            'label' => [
+                'en-GB' => 'Test text-area field',
+            ],
+            'helpText' => [],
+            'placeholder' => [
+                'en-GB' => 'Enter a text...',
+            ],
+            'componentName' => 'sw-text-editor',
+            'customFieldType' => 'textEditor',
+            'customFieldPosition' => 1,
+        ], $textAreaField->getConfig());
     }
 }

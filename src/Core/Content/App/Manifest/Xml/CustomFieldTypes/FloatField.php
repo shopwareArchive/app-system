@@ -9,20 +9,20 @@ class FloatField extends CustomFieldType
     /**
      * @var array<string, string>
      */
-    protected $placeholder;
+    protected $placeholder = [];
 
     /**
-     * @var float
+     * @var float|null
      */
     protected $steps;
 
     /**
-     * @var float
+     * @var float|null
      */
     protected $min;
 
     /**
-     * @var float
+     * @var float|null
      */
     protected $max;
 
@@ -49,18 +49,49 @@ class FloatField extends CustomFieldType
         return $this->placeholder;
     }
 
-    public function getSteps(): float
+    public function getSteps(): ?float
     {
         return $this->steps;
     }
 
-    public function getMin(): float
+    public function getMin(): ?float
     {
         return $this->min;
     }
 
-    public function getMax(): float
+    public function getMax(): ?float
     {
         return $this->max;
+    }
+
+    /**
+     * @return array<string, string|array<string, string|float|array<string, string>>>
+     */
+    protected function toEntityArray(): array
+    {
+        $entityArray = [
+            'type' => 'float',
+            'config' => [
+                'type' => 'number',
+                'placeholder' => $this->placeholder,
+                'componentName' => 'sw-field',
+                'customFieldType' => 'number',
+                'numberType' => 'float',
+            ],
+        ];
+
+        if ($this->max !== null) {
+            $entityArray['config']['max'] = $this->max;
+        }
+
+        if ($this->min !== null) {
+            $entityArray['config']['min'] = $this->min;
+        }
+
+        if ($this->steps !== null) {
+            $entityArray['config']['step'] = $this->steps;
+        }
+
+        return $entityArray;
     }
 }

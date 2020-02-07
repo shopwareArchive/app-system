@@ -6,10 +6,12 @@ class SingleSelectField extends CustomFieldType
 {
     protected const TRANSLATABLE_FIELDS = ['label', 'help-text', 'placeholder'];
 
+    protected const COMPONENT_NAME = 'sw-single-select';
+
     /**
      * @var array<string, string>
      */
-    protected $placeholder;
+    protected $placeholder = [];
 
     /**
      * @var array<string, array<string, string>>
@@ -45,6 +47,32 @@ class SingleSelectField extends CustomFieldType
     public function getOptions(): array
     {
         return $this->options;
+    }
+
+    /**
+     * @return array<string, string|array<string, string|array<string, string>|array<array<string, string|array<string, string>>>>>
+     */
+    protected function toEntityArray(): array
+    {
+        $options = [];
+
+        foreach ($this->options as $key => $names) {
+            $options[] = [
+                'label' => $names,
+                'value' => $key,
+            ];
+        }
+
+        return [
+            'type' => 'select',
+            'config' => [
+                'placeholder' => $this->placeholder,
+                // use $this so child classes can override the const
+                'componentName' => $this::COMPONENT_NAME,
+                'customFieldType' => 'select',
+                'options' => $options,
+            ],
+        ];
     }
 
     /**

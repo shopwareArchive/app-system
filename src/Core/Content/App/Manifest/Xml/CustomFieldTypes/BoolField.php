@@ -18,4 +18,19 @@ class BoolField extends CustomFieldType
     {
         return new self(self::parse($element));
     }
+
+    /**
+     * @return array<string, string|array<string, string>>
+     */
+    protected function toEntityArray(): array
+    {
+        return [
+            'type' => 'bool',
+            'config' => [
+                'type' => 'checkbox',
+                'componentName' => 'sw-field',
+                'customFieldType' => 'checkbox',
+            ],
+        ];
+    }
 }

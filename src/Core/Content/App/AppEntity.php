@@ -5,6 +5,7 @@ namespace Swag\SaasConnect\Core\Content\App;
 use Shopware\Core\Framework\Api\Acl\Role\AclRoleEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
+use Shopware\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetCollection;
 use Shopware\Core\System\Integration\IntegrationEntity;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonCollection;
 use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationCollection;
@@ -112,6 +113,11 @@ class AppEntity extends Entity
      * @var ActionButtonCollection|null
      */
     protected $actionButtons;
+
+    /**
+     * @var CustomFieldSetCollection|null
+     */
+    protected $customFieldSets;
 
     public function getId(): string
     {
@@ -311,5 +317,15 @@ class AppEntity extends Entity
     public function setActionButtons(ActionButtonCollection $actionButtons): void
     {
         $this->actionButtons = $actionButtons;
+    }
+
+    public function getCustomFieldSets(): ?CustomFieldSetCollection
+    {
+        return $this->customFieldSets;
+    }
+
+    public function setCustomFieldSets(?CustomFieldSetCollection $customFieldSets): void
+    {
+        $this->customFieldSets = $customFieldSets;
     }
 }

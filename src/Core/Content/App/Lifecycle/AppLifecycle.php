@@ -25,14 +25,21 @@ class AppLifecycle implements AppLifecycleInterface
      */
     private $permissionPersister;
 
+    /**
+     * @var CustomFieldPersister
+     */
+    private $customFieldPersister;
+
     public function __construct(
         EntityRepositoryInterface $appRepository,
         ActionButtonPersister $actionButtonPersister,
-        PermissionPersister $permissionPersister
+        PermissionPersister $permissionPersister,
+        CustomFieldPersister $customFieldPersister
     ) {
         $this->appRepository = $appRepository;
         $this->actionButtonPersister = $actionButtonPersister;
         $this->permissionPersister = $permissionPersister;
+        $this->customFieldPersister = $customFieldPersister;
     }
 
     public function install(Manifest $manifest, Context $context): void
@@ -75,6 +82,7 @@ class AppLifecycle implements AppLifecycleInterface
         $this->updateMetadata($metadata, $context);
         $this->actionButtonPersister->updateActions($manifest, $id, $context);
         $this->permissionPersister->updatePrivileges($manifest->getPermissions(), $roleId);
+        $this->customFieldPersister->updateCustomFields($manifest->getCustomFields(), $id, $context);
     }
 
     /**
