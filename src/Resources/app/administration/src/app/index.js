@@ -1,8 +1,3 @@
-export function installSnippets(Shopware) {
-    Shopware.Locale.extend('de-DE', require('./snippets/de-DE'));
-    Shopware.Locale.extend('en-GB', require('./snippets/en-GB'));
-}
-
 export function installComponents(Shopware) {
     const { Component } = Shopware;
     const context = require.context('./component/', true, /\.js$/);
