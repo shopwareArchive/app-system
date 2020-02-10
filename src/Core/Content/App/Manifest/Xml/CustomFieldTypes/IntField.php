@@ -2,6 +2,8 @@
 
 namespace Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFieldTypes;
 
+use Shopware\Core\System\CustomField\CustomFieldTypes;
+
 class IntField extends CustomFieldType
 {
     protected const TRANSLATABLE_FIELDS = ['label', 'help-text', 'placeholder'];
@@ -70,7 +72,7 @@ class IntField extends CustomFieldType
     protected function toEntityArray(): array
     {
         $entityArray = [
-            'type' => 'int',
+            'type' => CustomFieldTypes::INT,
             'config' => [
                 'type' => 'number',
                 'placeholder' => $this->placeholder,

@@ -2,6 +2,8 @@
 
 namespace Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFieldTypes;
 
+use Shopware\Core\System\CustomField\CustomFieldTypes;
+
 class ColorPickerField extends CustomFieldType
 {
     /**
@@ -25,7 +27,7 @@ class ColorPickerField extends CustomFieldType
     protected function toEntityArray(): array
     {
         return [
-            'type' => 'text',
+            'type' => CustomFieldTypes::TEXT,
             'config' => [
                 'type' => 'colorpicker',
                 'componentName' => 'sw-field',

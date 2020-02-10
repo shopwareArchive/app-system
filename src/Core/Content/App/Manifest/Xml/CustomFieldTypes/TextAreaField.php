@@ -2,6 +2,8 @@
 
 namespace Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFieldTypes;
 
+use Shopware\Core\System\CustomField\CustomFieldTypes;
+
 class TextAreaField extends CustomFieldType
 {
     protected const TRANSLATABLE_FIELDS = ['label', 'help-text', 'placeholder'];
@@ -40,7 +42,7 @@ class TextAreaField extends CustomFieldType
     protected function toEntityArray(): array
     {
         return [
-            'type' => 'html',
+            'type' => CustomFieldTypes::HTML,
             'config' => [
                 'placeholder' => $this->placeholder,
                 'componentName' => 'sw-text-editor',
