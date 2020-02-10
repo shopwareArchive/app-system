@@ -51,6 +51,8 @@ return [
         '*Definition.php',
         'Migration*.php',
         'AppAction.php',
+        'BusinessEventEncoder.php',
+        'WebhookDispatcher.php',
     ],
 
     'add' => [

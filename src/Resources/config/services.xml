@@ -8,6 +8,24 @@
         <parameter key="saas_connect.app_dir">%kernel.project_dir%/custom/apps</parameter>
     </parameters>
     <services>
+        <service id="Swag\SaasConnect\Core\Framework\Webhook\WebhookDispatcher" decorates="event_dispatcher" decoration-priority="100">
+            <argument type="service" id="Swag\SaasConnect\Core\Framework\Webhook\WebhookDispatcher.inner" />
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="GuzzleHttp\Client"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Framework\Webhook\BusinessEventEncoder"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Framework\Webhook\WebhookCacheClearer">
+            <argument type="service" id="Swag\SaasConnect\Core\Framework\Webhook\WebhookDispatcher" />
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Framework\Webhook\BusinessEventEncoder">
+            <argument type="service" id="Shopware\Core\Framework\Api\Serializer\JsonEntityEncoder"/>
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry"/>
+        </service>
+
         <service id="Swag\SaasConnect\Core\Content\App\AppService">
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycleIterator"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle"/>
@@ -112,6 +130,10 @@
 
         <service id="Swag\SaasConnect\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetExtension">
             <tag name="shopware.entity.extension"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Framework\Webhook\WebhookDefinition">
+            <tag name="shopware.entity.definition" entity="webhook"/>
         </service>
     </services>
 </container>

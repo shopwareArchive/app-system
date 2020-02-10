@@ -9,6 +9,7 @@ use Shopware\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetColl
 use Shopware\Core\System\Integration\IntegrationEntity;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonCollection;
 use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationCollection;
+use Swag\SaasConnect\Core\Framework\Webhook\WebhookCollection;
 
 class AppEntity extends Entity
 {
@@ -123,6 +124,11 @@ class AppEntity extends Entity
      * @var CustomFieldSetCollection|null
      */
     protected $customFieldSets;
+
+    /**
+     * @var WebhookCollection|null
+     */
+    protected $webhooks;
 
     public function getId(): string
     {
@@ -342,5 +348,15 @@ class AppEntity extends Entity
     public function setCustomFieldSets(?CustomFieldSetCollection $customFieldSets): void
     {
         $this->customFieldSets = $customFieldSets;
+    }
+
+    public function getWebhooks(): ?WebhookCollection
+    {
+        return $this->webhooks;
+    }
+
+    public function setWebhooks(?WebhookCollection $webhooks): void
+    {
+        $this->webhooks = $webhooks;
     }
 }
