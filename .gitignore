@@ -4,7 +4,7 @@
 
 # ignore test output
 .phpunit.result.cache
-**/e2e/artifacts
+**/app/artifacts
 
 # ignore dependency folders
 vendor
@@ -19,3 +19,6 @@ build
 
 #ignore caches
 .php_cs.cache
+
+cypress.env.json
+!dev-ops/gitlab/cypress.env.json

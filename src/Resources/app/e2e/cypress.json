@@ -1,0 +1,24 @@
+{
+    "integrationFolder": "./integration",
+    "fixturesFolder": "./fixtures",
+    "pluginsFile": "./plugins/index.js",
+    "supportFile": "./support/index.js",
+    
+    "viewportHeight": 1080,
+    "viewportWidth": 1920,
+    "watchForFileChanges": false,
+    "requestTimeout": 10000,
+    "responseTimeout": 60000,
+    "defaultCommandTimeout": 10000,
+    "useDarkTheme": false,
+    "video": false,
+    "useShopwareTheme": true,
+    "theme": "dark",
+
+    "reporter": "junit",
+    "screenshotsFolder": "../build/artifacts/e2e/screenshots",
+    "reporterOptions": {
+        "mochaFile": "../build/artifacts/e2e/saas-administration-e2e.xml",
+        "toConsole": false
+    }
+}
