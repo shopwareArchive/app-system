@@ -7,6 +7,7 @@ use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Swag\SaasConnect\Core\Content\App\Action\ActionButtonLoader;
 use Swag\SaasConnect\Core\Content\App\Action\AppActionLoader;
 use Swag\SaasConnect\Core\Content\App\Action\Executor;
+use Swag\SaasConnect\Core\Content\App\Manifest\ModuleLoader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,14 +34,21 @@ class AppActionController extends AbstractController
      */
     private $appActionFactory;
 
+    /**
+     * @var ModuleLoader
+     */
+    private $moduleLoader;
+
     public function __construct(
         ActionButtonLoader $actionButtonLoader,
         AppActionLoader $appActionFactory,
-        Executor $executor
+        Executor $executor,
+        ModuleLoader $moduleLoader
     ) {
         $this->actionButtonLoader = $actionButtonLoader;
         $this->executor = $executor;
         $this->appActionFactory = $appActionFactory;
+        $this->moduleLoader = $moduleLoader;
     }
 
     /**
@@ -65,5 +73,13 @@ class AppActionController extends AbstractController
         $this->executor->execute($action);
 
         return new JsonResponse();
+    }
+
+    /**
+     * @Route("api/v{version}/app-system/modules", name="api.app_system.modules", methods={"GET"})
+     */
+    public function getModules(Context $context): Response
+    {
+        return new JsonResponse(['modules' => $this->moduleLoader->loadModules($context)]);
     }
 }

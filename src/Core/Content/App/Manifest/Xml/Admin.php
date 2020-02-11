@@ -7,19 +7,26 @@ class Admin extends XmlElement
     /**
      * @var array<ActionButton>
      */
-    protected $actionButtons;
+    protected $actionButtons = [];
 
     /**
-     * @param array<ActionButton> $actionButtons
+     * @var array<Module>
      */
-    private function __construct(array $actionButtons)
+    protected $modules = [];
+
+    /**
+     * @param array<string, array<ActionButton>|array<Module>> $data
+     */
+    private function __construct(array $data)
     {
-        $this->actionButtons = $actionButtons;
+        foreach ($data as $property => $value) {
+            $this->$property = $value;
+        }
     }
 
     public static function fromXml(\DOMElement $element): self
     {
-        return new self(self::parseActionButtons($element));
+        return new self(self::parseChilds($element));
     }
 
     /**
@@ -31,9 +38,17 @@ class Admin extends XmlElement
     }
 
     /**
-     * @return array<ActionButton>
+     * @return array<Module>
      */
-    private static function parseActionButtons(\DOMElement $element): array
+    public function getModules(): array
+    {
+        return $this->modules;
+    }
+
+    /**
+     * @return array<string, array<ActionButton>|array<Module>>
+     */
+    private static function parseChilds(\DOMElement $element): array
     {
         $actionButtons = [];
         /** @var \DOMElement $actionButton */
@@ -41,6 +56,15 @@ class Admin extends XmlElement
             $actionButtons[] = ActionButton::fromXml($actionButton);
         }
 
-        return $actionButtons;
+        $modules = [];
+        /** @var \DOMElement $module */
+        foreach ($element->getElementsByTagName('module') as $module) {
+            $modules[] = Module::fromXml($module);
+        }
+
+        return [
+            'actionButtons' => $actionButtons,
+            'modules' => $modules,
+        ];
     }
 }

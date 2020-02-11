@@ -52,6 +52,7 @@
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Action\ActionButtonLoader"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Action\AppActionLoader"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Action\Executor"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Manifest\ModuleLoader"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
@@ -70,6 +71,10 @@
 
         <service id="Swag\SaasConnect\Core\Content\App\Action\ActionButtonLoader">
             <argument type="service" id="app_action_button.repository"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\Manifest\ModuleLoader">
+            <argument type="service" id="app.repository"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Action\Executor">
