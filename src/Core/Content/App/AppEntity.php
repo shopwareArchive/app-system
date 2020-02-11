@@ -55,7 +55,7 @@ class AppEntity extends Entity
     protected $modules;
 
     /**
-     * @var object|null
+     * @var string|null
      */
     protected $iconRaw;
 
@@ -204,12 +204,12 @@ class AppEntity extends Entity
         $this->modules = $modules;
     }
 
-    public function getIconRaw(): ?object
+    public function getIconRaw(): ?string
     {
         return $this->iconRaw;
     }
 
-    public function setIconRaw(?object $iconRaw): void
+    public function setIconRaw(?string $iconRaw): void
     {
         $this->iconRaw = $iconRaw;
     }

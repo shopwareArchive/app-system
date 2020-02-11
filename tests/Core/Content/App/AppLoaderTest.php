@@ -38,4 +38,34 @@ class AppLoaderTest extends TestCase
             static::assertInstanceOf(Manifest::class, $manifest);
         }
     }
+
+    public function testGetIcon(): void
+    {
+        $appLoader = new AppLoader(__DIR__ . '/Manifest/_fixtures/test');
+
+        $manifests = $appLoader->load();
+
+        static::assertCount(1, $manifests);
+        /** @var Manifest $manifest */
+        $manifest = $manifests[0];
+
+        static::assertStringEqualsFile(
+            __DIR__ . '/Manifest/_fixtures/test/icon.png', $appLoader->getIcon($manifest)
+        );
+    }
+
+    public function testGetIconReturnsNullOnInvalidIconPath(): void
+    {
+        $appLoader = new AppLoader(__DIR__ . '/Manifest/_fixtures/test');
+
+        $manifests = $appLoader->load();
+
+        static::assertCount(1, $manifests);
+        /** @var Manifest $manifest */
+        $manifest = $manifests[0];
+
+        $manifest->getMetadata()->assign(['icon' => 'file/that/dont/exist.png']);
+
+        static::assertNull($appLoader->getIcon($manifest));
+    }
 }

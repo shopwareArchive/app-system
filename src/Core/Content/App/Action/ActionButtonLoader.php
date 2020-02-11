@@ -23,7 +23,7 @@ class ActionButtonLoader
     }
 
     /**
-     * @return array<array<string|array|bool>>
+     * @return array<array<string|array|bool|null>>
      */
     public function loadActionButtonsForView(string $entity, string $view, Context $context): array
     {
@@ -39,7 +39,7 @@ class ActionButtonLoader
     }
 
     /**
-     * @return array<array<string|array|bool>>
+     * @return array<array<string|array|bool|null>>
      */
     private function formatCollection(ActionButtonCollection $actionButtons): array
     {
@@ -51,6 +51,7 @@ class ActionButtonLoader
                 'action' => $button->getAction(),
                 'url' => $button->getUrl(),
                 'openNewTab' => $button->isOpenNewTab(),
+                'icon' => $button->getApp()->getIcon(),
             ];
         }, $actionButtons->getElements()));
     }

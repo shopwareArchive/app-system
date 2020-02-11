@@ -35,7 +35,7 @@ class Metadata extends XmlElement
     protected $version;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $icon;
 
@@ -90,7 +90,7 @@ class Metadata extends XmlElement
         return $this->version;
     }
 
-    public function getIcon(): string
+    public function getIcon(): ?string
     {
         return $this->icon;
     }
