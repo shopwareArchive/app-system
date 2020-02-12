@@ -14,8 +14,8 @@ export default {
     },
 
     computed: {
-        appApiService() {
-            return Shopware.Service('AppApiService');
+        appActionButtonService() {
+            return Shopware.Service('AppActionButtonService');
         },
 
         params() {
@@ -66,7 +66,7 @@ export default {
             if(entity && view) {
                 this.isLoading = true;
 
-                this.appApiService.getActionButtonsPerView(entity, view)
+                this.appActionButtonService.getActionButtonsPerView(entity, view)
                     .then((actions) => {
                         this.actions = actions;
                         this.isLoading = false;
@@ -77,7 +77,7 @@ export default {
         },
 
         runAction(actionId) {
-            this.appApiService.runAction(actionId, { ids: this.params });
+            this.appActionButtonService.runAction(actionId, { ids: this.params });
         },
     },
 };

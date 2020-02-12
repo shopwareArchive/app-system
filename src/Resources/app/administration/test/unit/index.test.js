@@ -3,6 +3,6 @@ describe('index.js', () => {
         const swaas = require('connect/core/index.js').default;
         
         swaas.install(Shopware);
-        expect(Shopware.Service('AppApiService')).toBeDefined();
+        expect(Shopware.Service('AppActionButtonService')).toBeDefined();
     });
 });

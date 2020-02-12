@@ -1,4 +1,4 @@
-import AppApiService from 'connect/core/service/api/app-api.service';
+import AppActionButtonService from 'connect/core/service/api/app-action-button.service';
 import apiResponses from '__fixtures__/app-system/action-buttons.fixtures';
 
 let httpClient = null;
@@ -14,20 +14,20 @@ describe('app-api.service', () => {
         const httpClient = Shopware.Application.getContainer('init').httpClient;
         const loginService = Shopware.Service('loginService');
 
-        const apiService = new AppApiService(
+        const appActionButtonService = new AppActionButtonService(
             httpClient,
             loginService
         );
 
-        expect(AppApiService.name).toBe('AppApiService');
-        expect(apiService.name).toBe('AppApiService');
+        expect(AppActionButtonService.name).toBe('AppActionButtonService');
+        expect(appActionButtonService.name).toBe('AppActionButtonService');
     });
 
     test('fetch available actions', (done) => {
         httpClient = Shopware.Application.getContainer('init').httpClient;
-        const appApiService = new AppApiService(httpClient, Shopware.Service('loginService'));
+        const appActionButtonService = new AppActionButtonService(httpClient, Shopware.Service('loginService'));
 
-        appApiService.getActionButtonsPerView('product', 'list')
+        appActionButtonService.getActionButtonsPerView('product', 'list')
             .then((actions) => {
                 expect(Array.isArray(actions)).toBe(true);
                 expect(actions.length).toBe(1);
@@ -51,9 +51,9 @@ describe('app-api.service', () => {
 
     test('fetch undefined action', (done) => {
         httpClient = Shopware.Application.getContainer('init').httpClient;
-        const appApiService = new AppApiService(httpClient, Shopware.Service('loginService'));
+        const appActionButtonService = new AppActionButtonService(httpClient, Shopware.Service('loginService'));
         
-        appApiService.getActionButtonsPerView()
+        appActionButtonService.getActionButtonsPerView()
             .then((actions) => {
                 expect(Array.isArray(actions)).toBe(true);
                 expect(actions.length).toBe(0); 
@@ -76,9 +76,9 @@ describe('app-api.service', () => {
 
     test('does not return top level array', (done) => {
         httpClient = Shopware.Application.getContainer('init').httpClient;
-        const appApiService = new AppApiService(httpClient, Shopware.Service('loginService'));
+        const appActionButtonService = new AppActionButtonService(httpClient, Shopware.Service('loginService'));
         
-        appApiService.getActionButtonsPerView()
+        appActionButtonService.getActionButtonsPerView()
             .then((actions) => {
                 expect(Array.isArray(actions)).toBe(true);
                 expect(actions.length).toBe(0); 
@@ -101,10 +101,10 @@ describe('app-api.service', () => {
 
     test('run action has no response', (done) => {
         httpClient = Shopware.Application.getContainer('init').httpClient;
-        const appApiService = new AppApiService(httpClient, Shopware.Service('loginService'));
+        const appActionButtonService = new AppActionButtonService(httpClient, Shopware.Service('loginService'));
         const actionId = Shopware.Utils.createId();
 
-        appApiService.runAction(actionId)
+        appActionButtonService.runAction(actionId)
             .then((response) => {
                 expect(response).toEqual([]);
                 done();
