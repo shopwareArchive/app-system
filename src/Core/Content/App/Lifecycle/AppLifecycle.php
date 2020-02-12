@@ -6,6 +6,10 @@ use Shopware\Core\Framework\Api\Util\AccessKeyHelper;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\ActionButtonPersister;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\CustomFieldPersister;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionPersister;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\WebhookPersister;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Module;
 
@@ -32,6 +36,11 @@ class AppLifecycle implements AppLifecycleInterface
     private $customFieldPersister;
 
     /**
+     * @var WebhookPersister
+     */
+    private $webhookPersister;
+
+    /**
      * @var AppLoaderInterface
      */
     private $appLoader;
@@ -41,12 +50,14 @@ class AppLifecycle implements AppLifecycleInterface
         ActionButtonPersister $actionButtonPersister,
         PermissionPersister $permissionPersister,
         CustomFieldPersister $customFieldPersister,
+        WebhookPersister $webhookPersister,
         AppLoaderInterface $appLoader
     ) {
         $this->appRepository = $appRepository;
         $this->actionButtonPersister = $actionButtonPersister;
         $this->permissionPersister = $permissionPersister;
         $this->customFieldPersister = $customFieldPersister;
+        $this->webhookPersister = $webhookPersister;
         $this->appLoader = $appLoader;
     }
 
@@ -102,6 +113,7 @@ class AppLifecycle implements AppLifecycleInterface
         $this->actionButtonPersister->updateActions($manifest, $id, $context);
         $this->permissionPersister->updatePrivileges($manifest->getPermissions(), $roleId);
         $this->customFieldPersister->updateCustomFields($manifest->getCustomFields(), $id, $context);
+        $this->webhookPersister->updateWebhooks($manifest, $id, $context);
     }
 
     /**

@@ -7,6 +7,7 @@ use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Admin;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFields;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Metadata;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Permissions;
+use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Webhooks;
 use Symfony\Component\Config\Util\XmlUtils;
 
 class Manifest
@@ -38,18 +39,25 @@ class Manifest
      */
     private $customFields;
 
+    /**
+     * @var Webhooks|null
+     */
+    private $webhooks;
+
     private function __construct(
         string $path,
         Metadata $metadata,
         ?Admin $admin,
         ?Permissions $permissions,
-        ?CustomFields $customFields
+        ?CustomFields $customFields,
+        ?Webhooks $webhooks
     ) {
         $this->path = $path;
         $this->metadata = $metadata;
         $this->admin = $admin;
         $this->permissions = $permissions;
         $this->customFields = $customFields;
+        $this->webhooks = $webhooks;
     }
 
     public static function createFromXmlFile(string $xmlFile): self
@@ -76,7 +84,11 @@ class Manifest
         $customFields = $doc->getElementsByTagName('custom-fields')->item(0);
         $customFields = $customFields === null ? null : CustomFields::fromXml($customFields);
 
-        return new self(dirname($xmlFile), $metadata, $admin, $permissions, $customFields);
+        /** @var \DOMElement|null $webhooks */
+        $webhooks = $doc->getElementsByTagName('webhooks')->item(0);
+        $webhooks = $webhooks === null ? null : Webhooks::fromXml($webhooks);
+
+        return new self(dirname($xmlFile), $metadata, $admin, $permissions, $customFields, $webhooks);
     }
 
     public function getPath(): string
@@ -102,5 +114,10 @@ class Manifest
     public function getCustomFields(): ?CustomFields
     {
         return $this->customFields;
+    }
+
+    public function getWebhooks(): ?Webhooks
+    {
+        return $this->webhooks;
     }
 }

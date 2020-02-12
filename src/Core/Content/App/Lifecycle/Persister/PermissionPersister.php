@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swag\SaasConnect\Core\Content\App\Lifecycle;
+namespace Swag\SaasConnect\Core\Content\App\Lifecycle\Persister;
 
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Uuid\Uuid;

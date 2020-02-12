@@ -4,6 +4,8 @@ namespace Swag\SaasConnect\Core\Framework\Webhook;
 
 use Shopware\Core\Framework\Api\Serializer\JsonEntityEncoder;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Event\BusinessEventInterface;
 use Shopware\Core\Framework\Event\EventData\ScalarValueType;
@@ -45,6 +47,10 @@ class BusinessEventEncoder
         return $data;
     }
 
+    /**
+     * @param mixed $property
+     * @return mixed
+     */
     private function encodeProperty(array $dataType, $property)
     {
         switch ($dataType['type']) {
@@ -69,6 +75,10 @@ class BusinessEventEncoder
         }
     }
 
+    /**
+     * @param object|array $object
+     * @return mixed
+     */
     private function getProperty(string $propertyName, $object)
     {
         if (is_object($object)) {
@@ -90,11 +100,14 @@ class BusinessEventEncoder
         throw new \RuntimeException(
             sprintf('Invalid available DataMapping, could not get property "%s" on instance of %s',
                 $propertyName,
-                get_class($object)
+                is_object($object) ? get_class($object) : 'array'
             )
         );
     }
 
+    /**
+     * @param Entity|EntityCollection $property
+     */
     private function encodeEntity(array $dataType, $property): array
     {
         $definition = $this->definitionRegistry->get($dataType['entityClass']);
@@ -108,7 +121,7 @@ class BusinessEventEncoder
         );
     }
 
-    private function encodeArray(array $dataType, $property): array
+    private function encodeArray(array $dataType, array $property): array
     {
         $data = [];
         foreach ($property as $nested) {

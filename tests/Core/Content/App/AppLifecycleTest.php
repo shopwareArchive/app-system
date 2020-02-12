@@ -18,6 +18,7 @@ use Swag\SaasConnect\Core\Content\App\AppCollection;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
+use Swag\SaasConnect\Core\Framework\Webhook\WebhookEntity;
 
 class AppLifecycleTest extends TestCase
 {
@@ -71,6 +72,7 @@ class AppLifecycleTest extends TestCase
         $this->assertDefaultModules($apps->first());
         $this->assertDefaultPrivileges($apps->first()->getAclRoleId());
         $this->assertDefaultCustomFields($apps->first()->getId());
+        $this->assertDefaultWebhooks($apps->first()->getId());
     }
 
     public function testInstallMinimalManifest(): void
@@ -129,6 +131,12 @@ class AppLifecycleTest extends TestCase
                 'id' => $roleId,
                 'name' => 'SwagApp',
             ],
+            'webhooks' => [
+                [
+                    'url' => 'oldUrl.com',
+                    'eventName' => 'testEvent',
+                ],
+            ],
         ]], $this->context);
 
         $app = [
@@ -155,6 +163,7 @@ class AppLifecycleTest extends TestCase
         $this->assertDefaultModules($apps->first());
         $this->assertDefaultPrivileges($apps->first()->getAclRoleId());
         $this->assertDefaultCustomFields($id);
+        $this->assertDefaultWebhooks($apps->first()->getId());
     }
 
     public function testDelete(): void
@@ -299,5 +308,32 @@ class AppLifecycleTest extends TestCase
             ],
             'translated' => true,
         ], $customFieldSet->getConfig());
+    }
+
+    private function assertDefaultWebhooks(string $appId): void
+    {
+        /** @var EntityRepositoryInterface $webhookRepository */
+        $webhookRepository = $this->getContainer()->get('webhook.repository');
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('appId', $appId));
+
+        $webhooks = $webhookRepository->search($criteria, $this->context)->getElements();
+
+        static::assertCount(2, $webhooks);
+
+        usort($webhooks, static function (WebhookEntity $a, WebhookEntity $b): int {
+            return $a->getUrl() <=> $b->getUrl();
+        });
+
+        /** @var WebhookEntity $firstWebhook */
+        $firstWebhook = $webhooks[0];
+        static::assertEquals('https://test.com/hook', $firstWebhook->getUrl());
+        static::assertEquals('checkout.customer.before.login', $firstWebhook->getEventName());
+
+        /** @var WebhookEntity $secondWebhook */
+        $secondWebhook = $webhooks[1];
+        static::assertEquals('https://test.com/hook2', $secondWebhook->getUrl());
+        static::assertEquals('checkout.order.placed', $secondWebhook->getEventName());
     }
 }
