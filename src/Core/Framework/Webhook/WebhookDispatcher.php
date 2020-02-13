@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Request;
 use Shopware\Core\Framework\DataAbstractionLayer\Doctrine\FetchModeHelper;
+use Shopware\Core\Framework\Event\BusinessEvent;
 use Shopware\Core\Framework\Event\BusinessEventInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -57,9 +58,15 @@ class WebhookDispatcher implements EventDispatcherInterface
     {
         $event = $this->dispatcher->dispatch($event, $eventName);
 
-        if ($event instanceof BusinessEventInterface) {
-            $this->callWebhooks($event->getName(), $this->getJsonPayloadForBusinessEvent($event));
+        if (!$event instanceof BusinessEventInterface && !$event instanceof Hookable) {
+            return $event;
         }
+
+        if ($event instanceof BusinessEvent) {
+            return $event;
+        }
+
+        $this->callWebhooks($event->getName(), $event);
 
         return $event;
     }
@@ -123,12 +130,16 @@ class WebhookDispatcher implements EventDispatcherInterface
         $this->webhooks = null;
     }
 
-    private function callWebhooks(string $eventName, string $payload): void
+    /**
+     * @param BusinessEventInterface|Hookable $event
+     */
+    private function callWebhooks(string $eventName, $event): void
     {
         if (!array_key_exists($eventName, $this->getWebhooks())) {
             return;
         }
 
+        $payload = $this->getJsonPayloadFor($event);
         $requests = [];
         foreach ($this->getWebhooks()[$eventName] as $url) {
             $requests[] = new Request('POST', $url['url'], [], $payload);
@@ -149,10 +160,21 @@ class WebhookDispatcher implements EventDispatcherInterface
         return $this->webhooks = FetchModeHelper::group($result);
     }
 
-    private function getJsonPayloadForBusinessEvent(BusinessEventInterface $event): string
+    /**
+     * @param BusinessEventInterface|Hookable $event
+     */
+    private function getJsonPayloadFor($event): string
     {
-        /** @var string $payload */
-        $payload = json_encode($this->eventEncoder->encode($event));
+        $payload = '';
+
+        if ($event instanceof BusinessEventInterface) {
+            /** @var string $payload */
+            $payload = json_encode($this->eventEncoder->encode($event));
+        }
+        if ($event instanceof Hookable) {
+            /** @var string $payload */
+            $payload = json_encode($event->getWebhookPayload());
+        }
 
         return $payload;
     }

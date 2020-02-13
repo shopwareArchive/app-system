@@ -21,6 +21,12 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <service id="Swag\SaasConnect\Core\Framework\Webhook\EventWrapper\EventWrapper">
+            <argument type="service" id="event_dispatcher" />
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <service id="Swag\SaasConnect\Core\Framework\Webhook\BusinessEventEncoder">
             <argument type="service" id="Shopware\Core\Framework\Api\Serializer\JsonEntityEncoder"/>
             <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry"/>
