@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:noNamespaceSchemaLocation="../../../../../../../src/Core/Content/App/Manifest/Schema/manifest-1.0.xsd">
+          xsi:noNamespaceSchemaLocation="../../../../../Core/Content/App/Manifest/Schema/manifest-1.0.xsd">
     <meta>
         <name>E2E_Product</name>
         <label>E2E_Product_label_en</label>
@@ -17,7 +17,7 @@
             action="viewProduct"
             entity="product"
             view="detail"
-            url="https://swag-test.com/your-product"
+            url="https://docker.vm:8000/your-product"
             openNewTab="false">
             <label>Action product detail</label>
             <label lang="de-DE">Aktion Produktdetailseite</label>
@@ -26,7 +26,7 @@
             action="viewProductExtern"
             entity="product"
             view="detail"
-            url="https://swag-test.com/your-order"
+            url="https://docker.vm:8000/your-order"
             openNewTab="true">
             <label>Action product detail external</label>
             <label lang="de-DE">Aktion Produktdetailseite extern</label>
@@ -35,8 +35,16 @@
             action="doStuffWithProducts"
             entity="product"
             view="index"
-            url="https://swag-test.com/do-stuff">
+            url="https://docker.vm:8000/do-stuff">
             <label>Do Stuff with products</label>
         </action-button>
+        <module name="external-module" source="http://docker.vm:8005/show-app-action">
+            <label>Product module</label>
+            <label lang="de-DE">Produktmodul</label>
+        </module>
+        <module name="external-module-broken" source="http://docker.vm:8005/somewhere">
+            <label>404 module</label>
+            <label lang="de-DE">404 Modul</label>
+        </module>
     </admin>
 </manifest>

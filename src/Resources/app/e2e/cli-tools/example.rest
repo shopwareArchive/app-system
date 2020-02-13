@@ -3,8 +3,7 @@ content-type: application/json
 
 {
     "apps": [
-        "productApp",
-        "orderApp"
+        "productApp"
     ]
 }
 
@@ -14,3 +13,7 @@ content-type: application/json
 
 ###
 DELETE http://127.0.0.1:8005/cleanup
+
+###
+GET http://127.0.0.1:8005/show-app-action
+Accept: text/html

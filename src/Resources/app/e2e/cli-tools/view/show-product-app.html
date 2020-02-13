@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body onLoad="sendLoadedEventToParent()">
+    <h2>Hi this is your product service</h2>
+
+    <form id="authorization-form" action="authorize">
+        <input type="text" id="user" class="user-input">
+        <input type="password" id="password" class="user-pass">
+
+        <button type="submit">authorize</button>
+    </form>
+</body>
+<script type="text/javascript">
+    function sendLoadedEventToParent() {
+        window.parent.postMessage('connect-app-loaded', '*');
+    }
+</script>
+
+</html>

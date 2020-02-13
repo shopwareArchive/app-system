@@ -16,7 +16,7 @@ describe('app-api.service', () => {
 
         const appActionButtonService = new AppActionButtonService(
             httpClient,
-            loginService
+            loginService,
         );
 
         expect(AppActionButtonService.name).toBe('AppActionButtonService');
@@ -45,7 +45,7 @@ describe('app-api.service', () => {
                     Accept: 'application/json',
                     Authorization: 'Bearer false',
                 },
-            }
+            },
         );
     });
 
@@ -70,7 +70,7 @@ describe('app-api.service', () => {
                     Accept: 'application/json',
                     Authorization: 'Bearer false',
                 },
-            }
+            },
         );
     });
 
@@ -95,7 +95,7 @@ describe('app-api.service', () => {
                     Accept: 'application/json',
                     Authorization: 'Bearer false',
                 },
-            }
+            },
         );
     });
 
@@ -121,7 +121,7 @@ describe('app-api.service', () => {
                     Accept: 'application/json',
                     Authorization: 'Bearer false',
                 },
-            }
+            },
         );
     });
 });

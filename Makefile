@@ -43,6 +43,9 @@ administration-unit: ## run administration unit tests
 administration-lint: ## run eslint for administration
 	npm --prefix src/Resources/app/administration run eslint
 
+administration-fix-lint: ## run eslint for administration
+	npm --prefix src/Resources/app/administration run eslint -- --fix
+
 install-tools: | $(TOOLS_BIN) ## Installs connect dev tooling
 
 $(TOOLS_BIN):

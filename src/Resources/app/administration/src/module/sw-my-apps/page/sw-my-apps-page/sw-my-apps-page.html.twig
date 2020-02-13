@@ -1,0 +1,27 @@
+<sw-page class="sw-my-apps-page">
+    <template #smart-bar-header>
+        <h2>{{ heading }}</h2>
+    </template>
+
+    <template #content>
+        <template v-if="!suspend">
+            <iframe
+                id="app-content"
+                class="sw-my-apps-page__app-content"
+                ref="innerFrame"
+                referrerpolicy="origin-when-cross-origin"
+                :src="entryPoint"
+                :title="heading"
+                v-show="appLoaded">
+            </iframe>
+            <template v-if="!appLoaded">
+                <template v-if="timedOut">
+                   <sw-my-apps-time-out-animation></sw-my-apps-time-out-animation>
+                </template>
+                <template v-else>
+                    <sw-loader></sw-loader>
+                </template>
+            </template>
+        </template>
+    </template>
+</sw-page>
