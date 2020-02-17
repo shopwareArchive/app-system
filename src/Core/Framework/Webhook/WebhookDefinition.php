@@ -35,6 +35,7 @@ class WebhookDefinition extends EntityDefinition
     {
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new PrimaryKey(), new Required()),
+            (new StringField('name', 'name'))->addFlags(new Required()),
             (new StringField('event_name', 'eventName', 500))->addFlags(new Required()),
             (new StringField('url', 'url', 500))->addFlags(new Required()),
 

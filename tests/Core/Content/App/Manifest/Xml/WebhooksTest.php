@@ -17,11 +17,13 @@ class WebhooksTest extends TestCase
 
         /** @var Webhook $firstWebhook */
         $firstWebhook = $manifest->getWebhooks()->getWebhooks()[0];
+        static::assertEquals('hook1', $firstWebhook->getName());
         static::assertEquals('https://test.com/hook', $firstWebhook->getUrl());
         static::assertEquals('checkout.customer.before.login', $firstWebhook->getEvent());
 
         /** @var Webhook $secondWebhook */
         $secondWebhook = $manifest->getWebhooks()->getWebhooks()[1];
+        static::assertEquals('hook2', $secondWebhook->getName());
         static::assertEquals('https://test.com/hook2', $secondWebhook->getUrl());
         static::assertEquals('checkout.order.placed', $secondWebhook->getEvent());
     }

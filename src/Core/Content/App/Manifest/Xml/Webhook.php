@@ -9,6 +9,11 @@ class Webhook extends XmlElement
     /**
      * @var string
      */
+    protected $name;
+
+    /**
+     * @var string
+     */
     protected $url;
 
     /**
@@ -29,6 +34,11 @@ class Webhook extends XmlElement
     public static function fromXml(\DOMElement $element): self
     {
         return new self(self::parse($element));
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     public function getUrl(): string

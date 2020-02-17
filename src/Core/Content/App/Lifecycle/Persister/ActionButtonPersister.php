@@ -6,6 +6,8 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonCollection;
+use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonEntity;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\ActionButton;
 
@@ -23,45 +25,54 @@ class ActionButtonPersister
 
     public function updateActions(Manifest $manifest, string $appId, Context $context): void
     {
-        $this->deleteExistingActions($appId, $context);
+        $existingActionButtons = $this->getExistingActionButtons($appId, $context);
 
         $actionButtons = $manifest->getAdmin() ? $manifest->getAdmin()->getActionButtons() : [];
-        $this->addActionButtons($actionButtons, $appId, $context);
+        $upserts = [];
+        /** @var ActionButton $actionButton */
+        foreach ($actionButtons as $actionButton) {
+            $payload = $actionButton->toArray();
+            $payload['appId'] = $appId;
+
+            /** @var ActionButtonEntity|null $existing */
+            $existing = $existingActionButtons->filterByProperty('action', $actionButton->getAction())->first();
+            if ($existing) {
+                $payload['id'] = $existing->getId();
+                $existingActionButtons->remove($existing->getId());
+            }
+
+            $upserts[] = $payload;
+        }
+
+        if (!empty($upserts)) {
+            $this->actionButtonRepository->upsert($upserts, $context);
+        }
+
+        $this->deleteOldActions($existingActionButtons, $context);
     }
 
-    private function deleteExistingActions(string $appId, Context $context): void
+    private function deleteOldActions(ActionButtonCollection $toBeRemoved, Context $context): void
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('appId', $appId));
-
         /** @var array<string> $ids */
-        $ids = $this->actionButtonRepository->searchIds($criteria, $context)->getIds();
+        $ids = $toBeRemoved->getIds();
 
         if (!empty($ids)) {
             $ids = array_map(static function (string $id): array {
                 return ['id' => $id];
-            }, $ids);
+            }, array_values($ids));
 
             $this->actionButtonRepository->delete($ids, $context);
         }
     }
 
-    /**
-     * @param array<ActionButton> $actionButtons
-     */
-    private function addActionButtons(array $actionButtons, string $appId, Context $context): void
+    private function getExistingActionButtons(string $appId, Context $context): ActionButtonCollection
     {
-        if (empty($actionButtons)) {
-            return;
-        }
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('appId', $appId));
 
-        $actionButtons = array_map(static function (ActionButton $actionButton) use ($appId): array {
-            $actionButton = $actionButton->toArray();
-            $actionButton['appId'] = $appId;
+        /** @var ActionButtonCollection $actionButtons */
+        $actionButtons = $this->actionButtonRepository->search($criteria, $context)->getEntities();
 
-            return $actionButton;
-        }, $actionButtons);
-
-        $this->actionButtonRepository->create($actionButtons, $context);
+        return $actionButtons;
     }
 }

@@ -17,7 +17,12 @@
                 </xs:element>
                 <xs:element name="permissions" type="permissions" minOccurs="0"/>
                 <xs:element name="custom-fields" type="custom-fields" minOccurs="0"/>
-                <xs:element name="webhooks" type="webhooks" minOccurs="0"/>
+                <xs:element name="webhooks" type="webhooks" minOccurs="0">
+                    <xs:unique name="uniqueWebhookName">
+                        <xs:selector xpath="webhook"/>
+                        <xs:field xpath="@name"/>
+                    </xs:unique>
+                </xs:element>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -75,6 +80,7 @@
         <xs:attribute type="xs:string" name="name" use="required"/>
     </xs:complexType>
     <xs:complexType name="webhook">
+        <xs:attribute type="xs:string" name="name" use="required"/>
         <xs:attribute type="xs:anyURI" name="url" use="required"/>
         <xs:attribute type="xs:string" name="event" use="required"/>
     </xs:complexType>

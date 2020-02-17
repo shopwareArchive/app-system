@@ -13,6 +13,11 @@ class WebhookEntity extends Entity
     /**
      * @var string
      */
+    protected $name;
+
+    /**
+     * @var string
+     */
     protected $eventName;
 
     /**
@@ -29,6 +34,16 @@ class WebhookEntity extends Entity
      * @var AppEntity|null
      */
     protected $app;
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
 
     public function getEventName(): string
     {

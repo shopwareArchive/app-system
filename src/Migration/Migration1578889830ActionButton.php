@@ -27,7 +27,8 @@ class Migration1578889830ActionButton extends MigrationStep
                 `updated_at` DATETIME(3) NULL,
                 PRIMARY KEY (`id`),
                 KEY `fk.app_action_button.app_id` (`app_id`),
-                CONSTRAINT `fk.app_action_button.app_id` FOREIGN KEY (`app_id`) REFERENCES `app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+                CONSTRAINT `fk.app_action_button.app_id` FOREIGN KEY (`app_id`) REFERENCES `app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+                CONSTRAINT `uniq.app_action_button.action` UNIQUE (`action`, `app_id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
 

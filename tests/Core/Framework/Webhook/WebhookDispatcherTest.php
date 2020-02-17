@@ -48,6 +48,7 @@ class WebhookDispatcherTest extends TestCase
     {
         $this->webhookRepository->upsert([
             [
+                'name' => 'hook1',
                 'eventName' => CustomerBeforeLoginEvent::EVENT_NAME,
                 'url' => 'https://test.com',
             ],
@@ -79,6 +80,7 @@ class WebhookDispatcherTest extends TestCase
     {
         $this->webhookRepository->upsert([
             [
+                'name' => 'hook1',
                 'eventName' => ProductEvents::PRODUCT_WRITTEN_EVENT,
                 'url' => 'https://test.com',
             ],
@@ -169,6 +171,7 @@ class WebhookDispatcherTest extends TestCase
     {
         $this->webhookRepository->upsert([
             [
+                'name' => 'hook1',
                 'eventName' => CustomerBeforeLoginEvent::EVENT_NAME,
                 'url' => 'https://test.com',
             ],

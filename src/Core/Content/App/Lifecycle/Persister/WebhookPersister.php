@@ -8,6 +8,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Webhook;
+use Swag\SaasConnect\Core\Framework\Webhook\WebhookCollection;
+use Swag\SaasConnect\Core\Framework\Webhook\WebhookEntity;
 
 class WebhookPersister
 {
@@ -23,46 +25,55 @@ class WebhookPersister
 
     public function updateWebhooks(Manifest $manifest, string $appId, Context $context): void
     {
-        $this->deleteExistingWebhooks($appId, $context);
+        $existingWebhooks = $this->getExistingWebhooks($appId, $context);
 
         $webhooks = $manifest->getWebhooks() ? $manifest->getWebhooks()->getWebhooks() : [];
-        $this->addWebhooks($webhooks, $appId, $context);
+        $upserts = [];
+        /** @var Webhook $webhook */
+        foreach ($webhooks as $webhook) {
+            $payload = $webhook->toArray();
+            $payload['appId'] = $appId;
+            $payload['eventName'] = $webhook->getEvent();
+
+            /** @var WebhookEntity|null $existing */
+            $existing = $existingWebhooks->filterByProperty('name', $webhook->getName())->first();
+            if ($existing) {
+                $payload['id'] = $existing->getId();
+                $existingWebhooks->remove($existing->getId());
+            }
+
+            $upserts[] = $payload;
+        }
+
+        if (!empty($upserts)) {
+            $this->webhookRepository->upsert($upserts, $context);
+        }
+
+        $this->deleteOldWebhooks($existingWebhooks, $context);
     }
 
-    private function deleteExistingWebhooks(string $appId, Context $context): void
+    private function deleteOldWebhooks(WebhookCollection $toBeRemoved, Context $context): void
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('appId', $appId));
-
         /** @var array<string> $ids */
-        $ids = $this->webhookRepository->searchIds($criteria, $context)->getIds();
+        $ids = $toBeRemoved->getIds();
 
         if (!empty($ids)) {
             $ids = array_map(static function (string $id): array {
                 return ['id' => $id];
-            }, $ids);
+            }, array_values($ids));
 
             $this->webhookRepository->delete($ids, $context);
         }
     }
 
-    /**
-     * @param array<Webhook> $webhooks
-     */
-    private function addWebhooks(array $webhooks, string $appId, Context $context): void
+    private function getExistingWebhooks(string $appId, Context $context): WebhookCollection
     {
-        if (empty($webhooks)) {
-            return;
-        }
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('appId', $appId));
 
-        $webhooks = array_map(static function (Webhook $webhook) use ($appId): array {
-            $webhook = $webhook->toArray();
-            $webhook['appId'] = $appId;
-            $webhook['eventName'] = $webhook['event'];
+        /** @var WebhookCollection $webhooks */
+        $webhooks = $this->webhookRepository->search($criteria, $context)->getEntities();
 
-            return $webhook;
-        }, $webhooks);
-
-        $this->webhookRepository->create($webhooks, $context);
+        return $webhooks;
     }
 }
