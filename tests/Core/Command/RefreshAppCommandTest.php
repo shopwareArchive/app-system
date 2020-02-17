@@ -25,7 +25,7 @@ class RefreshAppCommandTest extends TestCase
 
     public function setUp(): void
     {
-        $this->appRepository = $this->getContainer()->get('app.repository');
+        $this->appRepository = $this->getContainer()->get('swag_app.repository');
     }
 
     public function testRefreshWithoutPermissions(): void
@@ -210,7 +210,7 @@ class RefreshAppCommandTest extends TestCase
         return new RefreshAppCommand(
             new AppService(
                 new AppLifecycleIterator(
-                    $this->getContainer()->get('app.repository'),
+                    $this->getContainer()->get('swag_app.repository'),
                     new AppLoader($appFolder)
                 ),
                 $this->getContainer()->get(AppLifecycle::class)

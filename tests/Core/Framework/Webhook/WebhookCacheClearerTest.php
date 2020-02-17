@@ -12,7 +12,7 @@ class WebhookCacheClearerTest extends TestCase
     public function testGetSubscribedEvents(): void
     {
         static::assertEquals([
-            'webhook.written' => 'clearWebhookCache',
+            'swag_webhook.written' => 'clearWebhookCache',
         ], WebhookCacheClearer::getSubscribedEvents());
     }
 

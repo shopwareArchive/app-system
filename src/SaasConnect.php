@@ -22,11 +22,11 @@ class SaasConnect extends Plugin
         ');
         $connection->executeUpdate('
             DROP TABLE IF EXISTS
-                `webhook`,
-                `app_action_button_translation`,
-                `app_action_button`,
-                `app_translation`,
-                `app`;
+                `swag_webhook`,
+                `swag_app_action_button_translation`,
+                `swag_app_action_button`,
+                `swag_app_translation`,
+                `swag_app`;
         ');
     }
 }

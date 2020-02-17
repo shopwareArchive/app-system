@@ -22,7 +22,7 @@ class WebhookCacheClearer implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'webhook.written' => 'clearWebhookCache',
+            'swag_webhook.written' => 'clearWebhookCache',
         ];
     }
 

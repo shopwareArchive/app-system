@@ -43,8 +43,8 @@ class AppServiceTest extends TestCase
 
     public function setUp(): void
     {
-        $this->appRepository = $this->getContainer()->get('app.repository');
-        $this->actionButtonRepository = $this->getContainer()->get('app_action_button.repository');
+        $this->appRepository = $this->getContainer()->get('swag_app.repository');
+        $this->actionButtonRepository = $this->getContainer()->get('swag_app_action_button.repository');
 
         $this->appService = new AppService(
             new AppLifecycleIterator(

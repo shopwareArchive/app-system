@@ -62,6 +62,8 @@ class WebhookDispatcher implements EventDispatcherInterface
             return $event;
         }
 
+        // BusinessEvent are the generic Events that get wrapped around the specific events
+        // we don't want to dispatch those to the webhooks
         if ($event instanceof BusinessEvent) {
             return $event;
         }
@@ -155,7 +157,7 @@ class WebhookDispatcher implements EventDispatcherInterface
             return $this->webhooks;
         }
 
-        $result = $this->connection->fetchAll('SELECT `event_name`, `url` FROM `webhook`');
+        $result = $this->connection->fetchAll('SELECT `event_name`, `url` FROM `swag_webhook`');
 
         return $this->webhooks = FetchModeHelper::group($result);
     }

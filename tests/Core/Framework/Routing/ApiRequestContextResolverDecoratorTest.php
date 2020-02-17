@@ -164,8 +164,8 @@ class ApiRequestContextResolverDecoratorTest extends TestCase
             '
             SELECT `access_key`, `access_token`
             FROM `integration`
-            INNER JOIN `app` ON `app`.`integration_id` = `integration`.`id`
-            WHERE `app`.`name` = :appName',
+            INNER JOIN `swag_app` ON `swag_app`.`integration_id` = `integration`.`id`
+            WHERE `swag_app`.`name` = :appName',
             ['appName' => $appName]
         );
 

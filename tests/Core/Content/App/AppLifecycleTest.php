@@ -47,8 +47,8 @@ class AppLifecycleTest extends TestCase
 
     public function setUp(): void
     {
-        $this->appRepository = $this->getContainer()->get('app.repository');
-        $this->actionButtonRepository = $this->getContainer()->get('app_action_button.repository');
+        $this->appRepository = $this->getContainer()->get('swag_app.repository');
+        $this->actionButtonRepository = $this->getContainer()->get('swag_app_action_button.repository');
 
         $this->appLifecycle = $this->getContainer()->get(AppLifecycle::class);
         $this->context = Context::createDefaultContext();
@@ -343,7 +343,7 @@ class AppLifecycleTest extends TestCase
     private function assertDefaultWebhooks(string $appId): void
     {
         /** @var EntityRepositoryInterface $webhookRepository */
-        $webhookRepository = $this->getContainer()->get('webhook.repository');
+        $webhookRepository = $this->getContainer()->get('swag_webhook.repository');
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('appId', $appId));

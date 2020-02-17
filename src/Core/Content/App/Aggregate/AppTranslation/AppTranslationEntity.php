@@ -34,7 +34,7 @@ class AppTranslationEntity extends Entity
     /**
      * @var string
      */
-    protected $appId;
+    protected $swagAppId;
 
     /**
      * @var string
@@ -44,7 +44,7 @@ class AppTranslationEntity extends Entity
     /**
      * @var AppEntity|null
      */
-    protected $app;
+    protected $swagApp;
 
     /**
      * @var LanguageEntity|null
@@ -91,14 +91,14 @@ class AppTranslationEntity extends Entity
         $this->updatedAt = $updatedAt;
     }
 
-    public function getAppId(): string
+    public function getSwagAppId(): string
     {
-        return $this->appId;
+        return $this->swagAppId;
     }
 
-    public function setAppId(string $appId): void
+    public function setSwagAppId(string $swagAppId): void
     {
-        $this->appId = $appId;
+        $this->swagAppId = $swagAppId;
     }
 
     public function getLanguageId(): string
@@ -111,14 +111,14 @@ class AppTranslationEntity extends Entity
         $this->languageId = $languageId;
     }
 
-    public function getApp(): ?AppEntity
+    public function getSwagApp(): ?AppEntity
     {
-        return $this->app;
+        return $this->swagApp;
     }
 
-    public function setApp(?AppEntity $app): void
+    public function setSwagApp(?AppEntity $swagApp): void
     {
-        $this->app = $app;
+        $this->swagApp = $swagApp;
     }
 
     public function getLanguage(): ?LanguageEntity

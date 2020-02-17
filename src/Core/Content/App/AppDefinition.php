@@ -32,7 +32,7 @@ use Swag\SaasConnect\Core\Framework\Webhook\WebhookDefinition;
 
 class AppDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'app';
+    public const ENTITY_NAME = 'swag_app';
 
     public function getEntityName(): string
     {
@@ -72,7 +72,7 @@ class AppDefinition extends EntityDefinition
 
             new ListField('modules', 'modules', JsonField::class),
 
-            (new TranslationsAssociationField(AppTranslationDefinition::class, 'app_id'))->addFlags(
+            (new TranslationsAssociationField(AppTranslationDefinition::class, 'swag_app_id'))->addFlags(
                 new Required(),
                 new CascadeDelete()
             ),

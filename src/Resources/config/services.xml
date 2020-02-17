@@ -38,12 +38,12 @@
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycleIterator">
-            <argument type="service" id="app.repository"/>
+            <argument type="service" id="swag_app.repository"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle">
-            <argument type="service" id="app.repository"/>
+            <argument type="service" id="swag_app.repository"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\ActionButtonPersister"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionPersister"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\CustomFieldPersister"/>
@@ -52,7 +52,7 @@
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\ActionButtonPersister">
-            <argument type="service" id="app_action_button.repository"/>
+            <argument type="service" id="swag_app_action_button.repository"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\CustomFieldPersister">
@@ -60,7 +60,7 @@
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\WebhookPersister">
-            <argument type="service" id="webhook.repository"/>
+            <argument type="service" id="swag_webhook.repository"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionPersister">
@@ -96,15 +96,15 @@
         </service>
 
         <service id="Swag\SaasConnect\Core\Command\AppPrinter">
-            <argument type="service" id="app.repository"/>
+            <argument type="service" id="swag_app.repository"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Action\ActionButtonLoader">
-            <argument type="service" id="app_action_button.repository"/>
+            <argument type="service" id="swag_app_action_button.repository"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Manifest\ModuleLoader">
-            <argument type="service" id="app.repository"/>
+            <argument type="service" id="swag_app.repository"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Action\Executor">
@@ -116,7 +116,7 @@
 
         <service id="Swag\SaasConnect\Core\Content\App\Action\AppActionLoader">
             <argument>%env(APP_URL)%</argument>
-            <argument type="service" id="app_action_button.repository"/>
+            <argument type="service" id="swag_app_action_button.repository"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Subscriber\AppLoadedSubscriber">
@@ -124,19 +124,19 @@
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\AppDefinition">
-            <tag name="shopware.entity.definition" entity="app"/>
+            <tag name="shopware.entity.definition" entity="swag_app"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationDefinition">
-            <tag name="shopware.entity.definition" entity="app_translation"/>
+            <tag name="shopware.entity.definition" entity="swag_app_translation"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonDefinition">
-            <tag name="shopware.entity.definition" entity="app_action_button"/>
+            <tag name="shopware.entity.definition" entity="swag_app_action_button"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Aggregate\ActionButtonTranslation\ActionButtonTranslationDefinition">
-            <tag name="shopware.entity.definition" entity="app_action_button_translation"/>
+            <tag name="shopware.entity.definition" entity="swag_app_action_button_translation"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetExtension">
@@ -144,7 +144,7 @@
         </service>
 
         <service id="Swag\SaasConnect\Core\Framework\Webhook\WebhookDefinition">
-            <tag name="shopware.entity.definition" entity="webhook"/>
+            <tag name="shopware.entity.definition" entity="swag_webhook"/>
         </service>
     </services>
 </container>

@@ -41,7 +41,7 @@ class WebhookDispatcherTest extends TestCase
     public function setUp(): void
     {
         $this->appServerMock = $this->getContainer()->get(MockHandler::class);
-        $this->webhookRepository = $this->getContainer()->get('webhook.repository');
+        $this->webhookRepository = $this->getContainer()->get('swag_webhook.repository');
     }
 
     public function testDispatchesBusinessEventToWebhook(): void
