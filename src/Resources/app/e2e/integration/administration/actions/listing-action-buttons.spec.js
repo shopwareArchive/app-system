@@ -64,6 +64,13 @@ describe('action buttons in administration', () => {
 
         cy.get('.sw-page .smart-bar__header h2').contains('product as a service');
 
+        // test icon
+        cy.actionButtons()
+            .contains('Action product detail extern')
+            .within(() => {
+                cy.get('.sw-connect-action-button__icon').should('be.visible');
+            });
+
         cy.actionButtons()
             .contains('Action product detail extern')
             .should('have.attr', 'target', '_blank')
@@ -75,7 +82,7 @@ describe('action buttons in administration', () => {
             url: 'api/v1/app-system/action-button/run/**',
             response: {},
         }).as('productAction');
-        
+
         cy.actionButtons()
             .find('div.sw-connect-action-button')
             .contains('Action product detail')
