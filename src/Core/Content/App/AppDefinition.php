@@ -28,6 +28,7 @@ use Shopware\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetDefi
 use Shopware\Core\System\Integration\IntegrationDefinition;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonDefinition;
 use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationDefinition;
+use Swag\SaasConnect\Core\Framework\Template\TemplateDefinition;
 use Swag\SaasConnect\Core\Framework\Webhook\WebhookDefinition;
 
 class AppDefinition extends EntityDefinition
@@ -90,6 +91,8 @@ class AppDefinition extends EntityDefinition
             (new OneToManyAssociationField('customFieldSets', CustomFieldSetDefinition::class, 'app_id'))->addFlags(new CascadeDelete()),
 
             (new OneToManyAssociationField('webhooks', WebhookDefinition::class, 'app_id'))->addFlags(new CascadeDelete()),
+
+            (new OneToManyAssociationField('templates', TemplateDefinition::class, 'app_id'))->addFlags(new CascadeDelete()),
         ]);
     }
 }

@@ -8,6 +8,20 @@
         <parameter key="saas_connect.app_dir">%kernel.project_dir%/custom/apps</parameter>
     </parameters>
     <services>
+        <service id="Swag\SaasConnect\Core\Framework\Adapter\Twig\EntityTemplateLoader">
+            <argument type="service" id="swag_template.repository" />
+
+            <tag name="twig.loader"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Framework\Adapter\Twig\AppTemplateHierarchyBuilder">
+            <argument type="service" id="swag_app.repository"/>
+
+            <!-- Make sure it runs after default `BundleHierarchyBuilder`, but before `ThemeNamespaceHierarchyBuilder` -->
+            <tag name="shopware.twig.hierarchy_builder" priority="900"/>
+        </service>
+
         <service id="Swag\SaasConnect\Core\Framework\Webhook\WebhookDispatcher" decorates="event_dispatcher" decoration-priority="100">
             <argument type="service" id="Swag\SaasConnect\Core\Framework\Webhook\WebhookDispatcher.inner" />
             <argument type="service" id="Doctrine\DBAL\Connection"/>
@@ -145,6 +159,10 @@
 
         <service id="Swag\SaasConnect\Core\Framework\Webhook\WebhookDefinition">
             <tag name="shopware.entity.definition" entity="swag_webhook"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Framework\Template\TemplateDefinition">
+            <tag name="shopware.entity.definition" entity="swag_template"/>
         </service>
     </services>
 </container>

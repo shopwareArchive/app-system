@@ -23,6 +23,7 @@ class SaasConnect extends Plugin
         $connection->executeUpdate('
             DROP TABLE IF EXISTS
                 `swag_webhook`,
+                `swag_template`,
                 `swag_app_action_button_translation`,
                 `swag_app_action_button`,
                 `swag_app_translation`,
