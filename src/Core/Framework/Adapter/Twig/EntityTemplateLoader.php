@@ -114,7 +114,7 @@ class EntityTemplateLoader implements LoaderInterface, EventSubscriberInterface
         }
 
         // remove "@"
-        $template = substr($template, 1);
+        $template = mb_substr($template, 1);
 
         $template = explode('/', $template);
         $namespace = array_shift($template);

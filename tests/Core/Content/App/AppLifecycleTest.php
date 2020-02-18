@@ -19,6 +19,7 @@ use Swag\SaasConnect\Core\Content\App\AppCollection;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
+use Swag\SaasConnect\Core\Framework\Template\TemplateEntity;
 use Swag\SaasConnect\Core\Framework\Webhook\WebhookEntity;
 
 class AppLifecycleTest extends TestCase
@@ -74,6 +75,7 @@ class AppLifecycleTest extends TestCase
         $this->assertDefaultPrivileges($apps->first()->getAclRoleId());
         $this->assertDefaultCustomFields($apps->first()->getId());
         $this->assertDefaultWebhooks($apps->first()->getId());
+        $this->assertDefaultTemplate($apps->first()->getId());
     }
 
     public function testInstallMinimalManifest(): void
@@ -151,6 +153,18 @@ class AppLifecycleTest extends TestCase
                     'eventName' => 'anotherTest',
                 ],
             ],
+            'templates' => [
+                [
+                    'path' => 'storefront/layout/header/logo.html.twig',
+                    'template' => 'will be overwritten',
+                    'active' => true,
+                ],
+                [
+                    'path' => 'storefront/got/removed',
+                    'template' => 'will be removed',
+                    'active' => true,
+                ],
+            ],
         ]], $this->context);
 
         /** @var Connection $connection */
@@ -185,6 +199,7 @@ class AppLifecycleTest extends TestCase
         $this->assertDefaultPrivileges($apps->first()->getAclRoleId());
         $this->assertDefaultCustomFields($id);
         $this->assertDefaultWebhooks($apps->first()->getId());
+        $this->assertDefaultTemplate($apps->first()->getId());
     }
 
     public function testDelete(): void
@@ -365,5 +380,27 @@ class AppLifecycleTest extends TestCase
         $secondWebhook = $webhooks[1];
         static::assertEquals('https://test.com/hook2', $secondWebhook->getUrl());
         static::assertEquals('checkout.order.placed', $secondWebhook->getEventName());
+    }
+
+    private function assertDefaultTemplate(string $appId): void
+    {
+        /** @var EntityRepositoryInterface $templateRepository */
+        $templateRepository = $this->getContainer()->get('swag_template.repository');
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('appId', $appId));
+
+        $templates = $templateRepository->search($criteria, $this->context)->getEntities();
+
+        static::assertCount(1, $templates);
+
+        /** @var TemplateEntity $template */
+        $template = $templates->first();
+        static::assertEquals('storefront/layout/header/logo.html.twig', $template->getPath());
+        static::assertStringEqualsFile(
+            __DIR__ . '/Manifest/_fixtures/test/views/storefront/layout/header/logo.html.twig',
+            $template->getTemplate()
+        );
+        static::assertTrue($template->isActive());
     }
 }

@@ -8,6 +8,13 @@
         <parameter key="saas_connect.app_dir">%kernel.project_dir%/custom/apps</parameter>
     </parameters>
     <services>
+        <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\TemplatePersister">
+            <argument type="service" id="Swag\SaasConnect\Core\Framework\Template\TemplateLoader" />
+            <argument type="service" id="swag_template.repository" />
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Framework\Template\TemplateLoader"/>
+
         <service id="Swag\SaasConnect\Core\Framework\Adapter\Twig\EntityTemplateLoader">
             <argument type="service" id="swag_template.repository" />
 
@@ -63,6 +70,7 @@
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\CustomFieldPersister"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\WebhookPersister"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\TemplatePersister"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\ActionButtonPersister">

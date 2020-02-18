@@ -9,6 +9,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\ActionButtonPersister;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\CustomFieldPersister;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionPersister;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\TemplatePersister;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\WebhookPersister;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Module;
@@ -45,13 +46,19 @@ class AppLifecycle implements AppLifecycleInterface
      */
     private $appLoader;
 
+    /**
+     * @var TemplatePersister
+     */
+    private $templatePersister;
+
     public function __construct(
         EntityRepositoryInterface $appRepository,
         ActionButtonPersister $actionButtonPersister,
         PermissionPersister $permissionPersister,
         CustomFieldPersister $customFieldPersister,
         WebhookPersister $webhookPersister,
-        AppLoaderInterface $appLoader
+        AppLoaderInterface $appLoader,
+        TemplatePersister $templatePersister
     ) {
         $this->appRepository = $appRepository;
         $this->actionButtonPersister = $actionButtonPersister;
@@ -59,6 +66,7 @@ class AppLifecycle implements AppLifecycleInterface
         $this->customFieldPersister = $customFieldPersister;
         $this->webhookPersister = $webhookPersister;
         $this->appLoader = $appLoader;
+        $this->templatePersister = $templatePersister;
     }
 
     public function install(Manifest $manifest, Context $context): void
@@ -114,6 +122,7 @@ class AppLifecycle implements AppLifecycleInterface
         $this->permissionPersister->updatePrivileges($manifest->getPermissions(), $roleId);
         $this->customFieldPersister->updateCustomFields($manifest->getCustomFields(), $id, $context);
         $this->webhookPersister->updateWebhooks($manifest, $id, $context);
+        $this->templatePersister->updateTemplates($manifest, $id, $context);
     }
 
     /**
