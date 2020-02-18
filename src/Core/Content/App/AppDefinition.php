@@ -28,10 +28,11 @@ use Shopware\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetDefi
 use Shopware\Core\System\Integration\IntegrationDefinition;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonDefinition;
 use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationDefinition;
+use Swag\SaasConnect\Core\Framework\Webhook\WebhookDefinition;
 
 class AppDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'app';
+    public const ENTITY_NAME = 'swag_app';
 
     public function getEntityName(): string
     {
@@ -71,7 +72,7 @@ class AppDefinition extends EntityDefinition
 
             new ListField('modules', 'modules', JsonField::class),
 
-            (new TranslationsAssociationField(AppTranslationDefinition::class, 'app_id'))->addFlags(
+            (new TranslationsAssociationField(AppTranslationDefinition::class, 'swag_app_id'))->addFlags(
                 new Required(),
                 new CascadeDelete()
             ),
@@ -87,6 +88,8 @@ class AppDefinition extends EntityDefinition
             new OneToOneAssociationField('aclRole', 'acl_role_id', 'id', AclRoleDefinition::class),
 
             (new OneToManyAssociationField('customFieldSets', CustomFieldSetDefinition::class, 'app_id'))->addFlags(new CascadeDelete()),
+
+            (new OneToManyAssociationField('webhooks', WebhookDefinition::class, 'app_id'))->addFlags(new CascadeDelete()),
         ]);
     }
 }

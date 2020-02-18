@@ -18,7 +18,7 @@ use Swag\SaasConnect\Core\Content\App\AppDefinition;
 
 class ActionButtonDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'app_action_button';
+    public const ENTITY_NAME = 'swag_app_action_button';
 
     public function getEntityName(): string
     {
@@ -46,7 +46,7 @@ class ActionButtonDefinition extends EntityDefinition
             new BoolField('open_new_tab', 'openNewTab'),
 
             new TranslatedField('label'),
-            new TranslationsAssociationField(ActionButtonTranslationDefinition::class, 'app_action_button_id'),
+            new TranslationsAssociationField(ActionButtonTranslationDefinition::class, 'swag_app_action_button_id'),
 
             (new FkField('app_id', 'appId', AppDefinition::class))->addFlags(new Required()),
             new ManyToOneAssociationField('app', 'app_id', AppDefinition::class),

@@ -67,7 +67,7 @@ class AppActionControllerTest extends TestCase
         $appServerMock = $this->getContainer()->get(MockHandler::class);
 
         /** @var EntityRepository $actionRepo */
-        $actionRepo = $this->getContainer()->get('app_action_button.repository');
+        $actionRepo = $this->getContainer()->get('swag_app_action_button.repository');
         $this->loadAppsFromDir(__DIR__ . '/../Manifest/_fixtures/test');
 
         $criteria = (new Criteria())
@@ -121,7 +121,7 @@ class AppActionControllerTest extends TestCase
         $appServerMock = $this->getContainer()->get(MockHandler::class);
 
         /** @var EntityRepository $actionRepo */
-        $actionRepo = $this->getContainer()->get('app_action_button.repository');
+        $actionRepo = $this->getContainer()->get('swag_app_action_button.repository');
         $this->loadAppsFromDir(__DIR__ . '/../Manifest/_fixtures/test');
 
         $criteria = (new Criteria())

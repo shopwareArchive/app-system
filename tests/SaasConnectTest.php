@@ -48,9 +48,9 @@ class SaasConnectTest extends TestCase
     {
         $this->lifecycleService->uninstallPlugin($this->plugin, Context::createDefaultContext(), true);
 
-        $tables = $this->connection->fetchAll('SHOW TABLES LIKE "app%"');
+        $tables = $this->connection->fetchAll('SHOW TABLES LIKE "swag%"');
 
-        // app, app_translation, app_config, app_action_button, app_action_button_translation
+        // swag_app, swag_app_translation, swag_app_action_button, swag_app_action_button_translation, swag_webhook
         static::assertCount(5, $tables);
     }
 
@@ -59,10 +59,9 @@ class SaasConnectTest extends TestCase
         try {
             $this->lifecycleService->uninstallPlugin($this->plugin, Context::createDefaultContext());
 
-            $tables = $this->connection->fetchAll('SHOW TABLES LIKE "app%"');
+            $tables = $this->connection->fetchAll('SHOW TABLES LIKE "swag%"');
 
-            // app_config
-            static::assertCount(1, $tables);
+            static::assertCount(0, $tables);
         } finally {
             // the drop tables in uninstall method will break the transaction, so we have to reinstall our plugin
             $this->lifecycleService->installPlugin($this->plugin, Context::createDefaultContext());

@@ -2,6 +2,7 @@
 
 namespace Swag\SaasConnect\Test\Core\Content\App;
 
+use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Api\Acl\Resource\AclResourceCollection;
 use Shopware\Core\Framework\Api\Acl\Resource\AclResourceEntity;
@@ -18,6 +19,7 @@ use Swag\SaasConnect\Core\Content\App\AppCollection;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
+use Swag\SaasConnect\Core\Framework\Webhook\WebhookEntity;
 
 class AppLifecycleTest extends TestCase
 {
@@ -45,8 +47,8 @@ class AppLifecycleTest extends TestCase
 
     public function setUp(): void
     {
-        $this->appRepository = $this->getContainer()->get('app.repository');
-        $this->actionButtonRepository = $this->getContainer()->get('app_action_button.repository');
+        $this->appRepository = $this->getContainer()->get('swag_app.repository');
+        $this->actionButtonRepository = $this->getContainer()->get('swag_app_action_button.repository');
 
         $this->appLifecycle = $this->getContainer()->get(AppLifecycle::class);
         $this->context = Context::createDefaultContext();
@@ -71,6 +73,7 @@ class AppLifecycleTest extends TestCase
         $this->assertDefaultModules($apps->first());
         $this->assertDefaultPrivileges($apps->first()->getAclRoleId());
         $this->assertDefaultCustomFields($apps->first()->getId());
+        $this->assertDefaultWebhooks($apps->first()->getId());
     }
 
     public function testInstallMinimalManifest(): void
@@ -107,10 +110,17 @@ class AppLifecycleTest extends TestCase
             ],
             'actionButtons' => [
                 [
+                    'action' => 'test',
                     'entity' => 'order',
                     'view' => 'detail',
-                    'action' => 'test',
                     'label' => 'test',
+                    'url' => 'test.com',
+                ],
+                [
+                    'action' => 'viewOrder',
+                    'entity' => 'should',
+                    'view' => 'get',
+                    'label' => 'updated',
                     'url' => 'test.com',
                 ],
             ],
@@ -129,7 +139,26 @@ class AppLifecycleTest extends TestCase
                 'id' => $roleId,
                 'name' => 'SwagApp',
             ],
+            'webhooks' => [
+                [
+                    'name' => 'hook1',
+                    'url' => 'oldUrl.com',
+                    'eventName' => 'testEvent',
+                ],
+                [
+                    'name' => 'shouldGetDeleted',
+                    'url' => 'test.com',
+                    'eventName' => 'anotherTest',
+                ],
+            ],
         ]], $this->context);
+
+        /** @var Connection $connection */
+        $connection = $this->getContainer()->get(Connection::class);
+        $connection->executeUpdate('
+            INSERT INTO `acl_resource` (`resource`, `privilege`, `acl_role_id`, `created_at`)
+            VALUES ("test", "list", UNHEX(:roleId), NOW()), ("product", "detail", UNHEX(:roleId), NOW())
+        ', ['roleId' => $roleId]);
 
         $app = [
             'id' => $id,
@@ -155,6 +184,7 @@ class AppLifecycleTest extends TestCase
         $this->assertDefaultModules($apps->first());
         $this->assertDefaultPrivileges($apps->first()->getAclRoleId());
         $this->assertDefaultCustomFields($id);
+        $this->assertDefaultWebhooks($apps->first()->getId());
     }
 
     public function testDelete(): void
@@ -246,15 +276,24 @@ class AppLifecycleTest extends TestCase
         /** @var AclResourceCollection $privileges */
         $privileges = $aclResourceRepository->search($criteria, $this->context)->getEntities();
 
+        static::assertCount(14, $privileges);
         $this->assertPrivilegesContains('list', 'product', $privileges);
         $this->assertPrivilegesContains('detail', 'product', $privileges);
         $this->assertPrivilegesContains('create', 'product', $privileges);
+        $this->assertPrivilegesContains('update', 'product', $privileges);
+        $this->assertPrivilegesContains('delete', 'product', $privileges);
 
         $this->assertPrivilegesContains('list', 'category', $privileges);
         $this->assertPrivilegesContains('delete', 'category', $privileges);
 
         $this->assertPrivilegesContains('list', 'product_manufacturer', $privileges);
         $this->assertPrivilegesContains('delete', 'product_manufacturer', $privileges);
+        $this->assertPrivilegesContains('create', 'product_manufacturer', $privileges);
+        $this->assertPrivilegesContains('detail', 'product_manufacturer', $privileges);
+
+        $this->assertPrivilegesContains('list', 'tax', $privileges);
+        $this->assertPrivilegesContains('create', 'tax', $privileges);
+        $this->assertPrivilegesContains('detail', 'tax', $privileges);
     }
 
     private function assertPrivilegesContains(string $privilege, string $resource, AclResourceCollection $privileges): void
@@ -299,5 +338,32 @@ class AppLifecycleTest extends TestCase
             ],
             'translated' => true,
         ], $customFieldSet->getConfig());
+    }
+
+    private function assertDefaultWebhooks(string $appId): void
+    {
+        /** @var EntityRepositoryInterface $webhookRepository */
+        $webhookRepository = $this->getContainer()->get('swag_webhook.repository');
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('appId', $appId));
+
+        $webhooks = $webhookRepository->search($criteria, $this->context)->getElements();
+
+        static::assertCount(2, $webhooks);
+
+        usort($webhooks, static function (WebhookEntity $a, WebhookEntity $b): int {
+            return $a->getUrl() <=> $b->getUrl();
+        });
+
+        /** @var WebhookEntity $firstWebhook */
+        $firstWebhook = $webhooks[0];
+        static::assertEquals('https://test.com/hook', $firstWebhook->getUrl());
+        static::assertEquals('checkout.customer.before.login', $firstWebhook->getEventName());
+
+        /** @var WebhookEntity $secondWebhook */
+        $secondWebhook = $webhooks[1];
+        static::assertEquals('https://test.com/hook2', $secondWebhook->getUrl());
+        static::assertEquals('checkout.order.placed', $secondWebhook->getEventName());
     }
 }

@@ -58,4 +58,8 @@
             <fields/>
         </custom-field-set>
     </custom-fields>
+    <webhooks>
+        <webhook name="hook1" url="https://test.com/hook" event="checkout.customer.before.login"/>
+        <webhook name="hook2" url="https://test.com/hook2" event="checkout.order.placed"/>
+    </webhooks>
 </manifest>

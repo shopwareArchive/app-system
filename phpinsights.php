@@ -51,6 +51,8 @@ return [
         '*Definition.php',
         'Migration*.php',
         'AppAction.php',
+        'BusinessEventEncoder.php',
+        'WebhookDispatcher.php',
     ],
 
     'add' => [
@@ -68,6 +70,7 @@ return [
         \NunoMaduro\PhpInsights\Domain\Insights\ForbiddenNormalClasses::class,
         \SlevomatCodingStandard\Sniffs\Classes\SuperfluousInterfaceNamingSniff::class,
         \SlevomatCodingStandard\Sniffs\Classes\SuperfluousExceptionNamingSniff::class,
+        \PhpCsFixer\Fixer\ReturnNotation\ReturnAssignmentFixer::class,
     ],
 
     'config' => [

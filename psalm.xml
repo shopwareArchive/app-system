@@ -25,6 +25,13 @@
             </errorLevel>
         </InternalMethod>
 
+        <!-- Necessary for the Symfony EventDispatcher BC break -->
+        <TooManyArguments>
+            <errorLevel type="suppress">
+                <referencedFunction name="Symfony\Component\EventDispatcher\EventDispatcherInterface::dispatch" />
+            </errorLevel>
+        </TooManyArguments>
+
         <DeprecatedTrait>
             <errorLevel type="info">
                 <directory name="tests"/>

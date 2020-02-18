@@ -17,6 +17,7 @@ cache:
     key: "Eternal static key"
     paths:
         - .composer
+        - .npm
 
 Build-Analysis-Container:
     stage: Build

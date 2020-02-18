@@ -50,7 +50,7 @@ class ActionButtonLoaderTest extends TestCase
 
     public function setUp(): void
     {
-        $this->appRepository = $this->getContainer()->get('app.repository');
+        $this->appRepository = $this->getContainer()->get('swag_app.repository');
         $this->actionButtonLoader = $this->getContainer()->get(ActionButtonLoader::class);
         $this->context = Context::createDefaultContext();
 

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swag\SaasConnect\Core\Content\App\Lifecycle;
+namespace Swag\SaasConnect\Core\Content\App\Lifecycle\Persister;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;

@@ -21,7 +21,12 @@ class SaasConnect extends Plugin
             DROP COLUMN `app_id`;
         ');
         $connection->executeUpdate('
-            DROP TABLE IF EXISTS `app_action_button_translation`, `app_action_button`, `app_translation`, `app`;
+            DROP TABLE IF EXISTS
+                `swag_webhook`,
+                `swag_app_action_button_translation`,
+                `swag_app_action_button`,
+                `swag_app_translation`,
+                `swag_app`;
         ');
     }
 }
