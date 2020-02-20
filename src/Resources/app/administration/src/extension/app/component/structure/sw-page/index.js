@@ -47,21 +47,32 @@ export default {
         },
     },
 
-    mounted() {
-        if (this.$route.meta.$module) {
-            this.getActionButtons();
-        }
+    watch: {
+        $route: {
+            immediate: true,
+            handler(newVal, oldVal) {
+                if (!oldVal) {
+                    this.getActionButtons();
+                    return;
+                }
+
+                if (this.didViewChange(newVal, oldVal)) {
+                    this.getActionButtons();
+                }
+            },
+        },
     },
 
     methods: {
         getActionButtons() {
-            const entity = this.module.entity;
+            const module = this.$route.meta.$module;
+            if (!module) {
+                return;
+            }
 
-            const view = Object.keys(this.module.routes).find((routeName) => {
-                const symbol = this.module.routes[routeName].name;
+            const entity = module.entity;
 
-                return this.$route.name.startsWith(symbol);
-            });
+            const view = this.getViewForRoute(this.$route);
 
             if(entity && view) {
                 this.isLoading = true;
@@ -78,6 +89,26 @@ export default {
 
         runAction(actionId) {
             this.appActionButtonService.runAction(actionId, { ids: this.params });
+        },
+
+        getViewForRoute(route) {
+            const module = route.meta.$module;
+            return Object.keys(module.routes).find((routeName) => {
+                const symbol = module.routes[routeName].name;
+
+                return route.name.startsWith(symbol);
+            });
+        },
+
+        didViewChange(newRoute, oldRoute) {
+            if (newRoute.meta.$module.entity !== oldRoute.meta.$module.entity) {
+                return true;
+            }
+
+            const oldView = this.getViewForRoute(oldRoute);
+            const newView = this.getViewForRoute(newRoute);
+
+            return oldView !== newView;
         },
     },
 };
