@@ -11,6 +11,7 @@ use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonCollect
 use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationCollection;
 use Swag\SaasConnect\Core\Framework\Template\TemplateCollection;
 use Swag\SaasConnect\Core\Framework\Webhook\WebhookCollection;
+use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 
 class AppEntity extends Entity
 {
@@ -374,5 +375,10 @@ class AppEntity extends Entity
     public function setTemplates(?TemplateCollection $templates): void
     {
         $this->templates = $templates;
+    }
+
+    final public function getNameAsSnakeCase(): string
+    {
+        return (new CamelCaseToSnakeCaseNameConverter())->normalize($this->getName());
     }
 }

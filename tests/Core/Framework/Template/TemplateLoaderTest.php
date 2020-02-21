@@ -39,7 +39,7 @@ class TemplateLoaderTest extends TestCase
         $templateLoader = new TemplateLoader();
 
         static::assertStringEqualsFile(
-            __DIR__ . '/../../Content/App/Manifest/_fixtures/test/views/storefront/layout/header/logo.html.twig',
+            __DIR__ . '/../../Content/App/Manifest/_fixtures/test/Resources/views/storefront/layout/header/logo.html.twig',
             $templateLoader->getTemplateContent('storefront/layout/header/logo.html.twig', $manifest)
         );
     }

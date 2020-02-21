@@ -1,6 +1,9 @@
 parameters:
     checkMissingIterableValueType: false
     level: 8
+    autoload_files:
+        - %currentWorkingDirectory%/../../../vendor/autoload.php
+    checkGenericClassInNonGenericObjectType: false
     ignoreErrors:
         # Happens a lot for nullable props in DAL entities for associations
         - '#Cannot call method .*\|null\.$#'

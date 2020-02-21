@@ -58,10 +58,19 @@ Psalm:
         refs:
             - merge_requests
             - master
-    image: "${IMAGE_NAME}:latest"
-    script:
+    image: shopware/development:latest
+    before_script:
+        - zip -rq plugin.zip .
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git --branch $PLATFORM_BRANCH
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch $PLATFORM_BRANCH
+        - unzip -q plugin.zip -d development/custom/plugins/SaasConnect
+        - cd development
         - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
-        - psalm --output-format=compact
+        - cp -v dev-ops/gitlab/.psh.yaml.override .
+        - /entrypoint supervisord > /dev/null 2>&1 &
+    script:
+        - cd custom/plugins/SaasConnect
+        - make psalm
 
 
 Phpstan:
@@ -70,10 +79,19 @@ Phpstan:
         refs:
             - merge_requests
             - master
-    image: "${IMAGE_NAME}:latest"
-    script:
+    image: shopware/development:latest
+    before_script:
+        - zip -rq plugin.zip .
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git --branch $PLATFORM_BRANCH
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch $PLATFORM_BRANCH
+        - unzip -q plugin.zip -d development/custom/plugins/SaasConnect
+        - cd development
         - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
-        - phpstan analyze --configuration phpstan.neon src
+        - cp -v dev-ops/gitlab/.psh.yaml.override .
+        - /entrypoint supervisord > /dev/null 2>&1 &
+    script:
+        - cd custom/plugins/SaasConnect
+        - make phpstan
 
 PhpInsights:
     stage: Static analysis
@@ -132,6 +150,8 @@ Unit:
         - /entrypoint supervisord > /dev/null 2>&1 &
     script:
         - ./psh.phar init
+        - ./psh.phar storefront:install-dependencies
+        - ./psh.phar storefront:build
         - composer install -d custom/plugins/SaasConnect
         - composer dump-autoload -d custom/plugins/SaasConnect
         - php bin/console plugin:install --activate SaasConnect
@@ -148,7 +168,7 @@ Unit:
     coverage: '/^\s*Lines:\s*(\d+(?:\.\d+)?%)/'
     artifacts:
         paths:
-            - development/build/artifacts/phpunit.clover.xml
+            - development/build/artifacts/
         reports:
             junit: development/build/artifacts/phpunit.junit.xml
 

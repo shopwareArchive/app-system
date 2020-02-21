@@ -15,7 +15,9 @@ package-lock.json
 #ignore bundle output
 src/Resources/public/**
 !src/Resources/public/.gitkeep
-build
+/build
+src/Resources/app/administration/build/**
+!tests/Core/Framework/Plugin/_fixtures/with-webpack/Resources/app/storefront/build/webpack.config.js
 
 #ignore caches
 .php_cs.cache

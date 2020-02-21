@@ -26,7 +26,6 @@
         }
     },
     "require-dev": {
-        "shopware/platform": "master@dev",
         "opis/json-schema": "^1.0.18"
     }
 }

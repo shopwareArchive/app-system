@@ -25,6 +25,10 @@ class AppTemplateHierarchyBuilder implements TemplateNamespaceHierarchyBuilderIn
         $this->appRepository = $appRepository;
     }
 
+    /**
+     * @param array<string> $namespaceHierarchy
+     * @return array<string>
+     */
     public function buildNamespaceHierarchy(array $namespaceHierarchy): array
     {
         return array_unique(array_merge($this->getAppTemplateNamespaces(), $namespaceHierarchy));

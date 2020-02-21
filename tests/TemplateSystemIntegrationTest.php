@@ -11,6 +11,8 @@ class TemplateSystemIntegrationTest extends TestCase
     use IntegrationTestBehaviour;
     use StorefrontControllerTestBehaviour;
     use AppSystemTestBehaviour;
+    use StorefrontAppRegistryTestBehaviour;
+    use TwigResetCacheTestBehaviour;
 
     public function testTemplateChangesAreDisplayed(): void
     {
@@ -18,6 +20,7 @@ class TemplateSystemIntegrationTest extends TestCase
 
         $homepage = $this->request('GET', '/', []);
 
+        static::assertEquals(200, $homepage->getStatusCode());
         static::assertStringContainsString('Built with <3 on Shopware as a Service', $homepage->getContent());
     }
 }
