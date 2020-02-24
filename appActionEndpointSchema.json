@@ -58,6 +58,11 @@
                 "reference": {
                     "type": "string",
                     "description": "A reference id to track and debug actions"
+                },
+                "language": {
+                    "type": "string",
+                    "$ref": "#/definitions/uuidv4",
+                    "description": "The languageId that should be used to fetch and write data"
                 }
             },
             "required": ["timestamp", "reference"]

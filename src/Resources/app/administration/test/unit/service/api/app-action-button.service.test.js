@@ -36,12 +36,12 @@ describe('app-api.service', () => {
             apiResponses.emptyActionButtonList.status,
             apiResponses.emptyActionButtonList.data,
         );
-        
+
         const appActionButtonService = Shopware.Service('AppActionButtonService');
         const actions = await appActionButtonService.getActionButtonsPerView('product', 'list');
 
         expect(Array.isArray(actions)).toBe(true);
-        expect(actions.length).toBe(0); 
+        expect(actions.length).toBe(0);
     });
 
     test('does not return top level array', async () => {
@@ -51,12 +51,12 @@ describe('app-api.service', () => {
             apiResponses.malformedList.status,
             apiResponses.malformedList.data,
         );
-        
+
         const appActionButtonService = Shopware.Service('AppActionButtonService');
         const actions = await appActionButtonService.getActionButtonsPerView('product', 'list');
 
         expect(Array.isArray(actions)).toBe(true);
-        expect(actions.length).toBe(0); 
+        expect(actions.length).toBe(0);
     });
 
     test('run action has no response', async () => {
@@ -70,7 +70,7 @@ describe('app-api.service', () => {
 
         const appActionButtonService = Shopware.Service('AppActionButtonService');
         const response = await appActionButtonService.runAction(actionId);
-        
+
         expect(response).toEqual([]);
     });
 });
