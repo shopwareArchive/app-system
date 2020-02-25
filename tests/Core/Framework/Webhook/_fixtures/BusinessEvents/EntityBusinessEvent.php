@@ -39,7 +39,6 @@ class EntityBusinessEvent implements BusinessEventInterface, BusinessEventEncode
                 'taxRate' => (int) $this->tax->getTaxRate(),
                 'products' => null,
                 'customFields' => null,
-                'rules' => null,
                 'translated' => [],
                 'createdAt' => $this->tax->getCreatedAt()->format(DATE_ATOM),
                 'updatedAt' => null,

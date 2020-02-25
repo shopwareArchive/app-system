@@ -142,6 +142,7 @@ class WebhookDispatcherTest extends TestCase
                 'shippingFree',
                 'restockTime',
                 'createdAt',
+                'name',
             ],
         ]], json_decode($body, true));
     }

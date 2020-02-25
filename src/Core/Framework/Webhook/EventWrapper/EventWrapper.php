@@ -24,9 +24,17 @@ class EventWrapper implements EventSubscriberInterface
      */
     private $eventDispatcher;
 
-    public function __construct(EventDispatcherInterface $eventDispatcher)
-    {
+    /**
+     * @var WriteResultMerger
+     */
+    private $writeResultMerger;
+
+    public function __construct(
+        EventDispatcherInterface $eventDispatcher,
+        WriteResultMerger $writeResultMerger
+    ) {
         $this->eventDispatcher = $eventDispatcher;
+        $this->writeResultMerger = $writeResultMerger;
     }
 
     /**
@@ -48,7 +56,12 @@ class EventWrapper implements EventSubscriberInterface
                 continue;
             }
 
-            $this->eventDispatcher->dispatch(new HookableEntityWrittenEvent($writtenEvent));
+            $translationEvent = $event->getEventByEntityName($entity . '_translation');
+            $this->eventDispatcher->dispatch(
+                new HookableEntityWrittenEvent(
+                    $this->writeResultMerger->mergeWriteResults($writtenEvent, $translationEvent)
+                )
+            );
         }
     }
 }

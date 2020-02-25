@@ -52,6 +52,7 @@ class EventWrapperTest extends TestCase
                     'shippingFree',
                     'restockTime',
                     'createdAt',
+                    'name',
                 ],
             ]], $event->getWebhookPayload());
 
@@ -191,6 +192,51 @@ class EventWrapperTest extends TestCase
         static::assertFalse($listenerCalled);
 
         $eventDispatcher->removeListener(HookableEntityWrittenEvent::class, $eventListener);
+    }
+
+    public function testWrapsEntityWriteForTranslationUpdate(): void
+    {
+        $id = Uuid::randomHex();
+
+        /** @var EntityRepositoryInterface $productRepository */
+        $productRepository = $this->getContainer()->get('product.repository');
+        $this->insertProduct($id, $productRepository);
+
+        $eventDispatcher = $this->getContainer()->get('event_dispatcher');
+        $listenerCalled = false;
+        $updateListener = function (HookableEntityWrittenEvent $event) use (&$listenerCalled, $id): void {
+            static::assertEquals('product.written', $event->getName());
+            static::assertEquals([[
+                'entity' => 'product',
+                'operation' => 'update',
+                'primaryKey' => $id,
+                'updatedFields' => [
+                    'updatedAt',
+                    'id',
+                    'versionId',
+                    'name',
+                    'description',
+                ],
+            ]], $event->getWebhookPayload());
+
+            $listenerCalled = true;
+        };
+        $eventDispatcher->addListener(
+            HookableEntityWrittenEvent::class,
+            $updateListener
+        );
+
+        $productRepository->upsert([
+            [
+                'id' => $id,
+                'name' => 'a new name',
+                'description' => 'a fancy description.',
+            ],
+        ], Context::createDefaultContext());
+
+        static::assertTrue($listenerCalled);
+
+        $eventDispatcher->removeListener(HookableEntityWrittenEvent::class, $updateListener);
     }
 
     private function insertProduct(string $id, EntityRepositoryInterface $productRepository): void
