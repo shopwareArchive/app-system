@@ -50,8 +50,8 @@ class SaasConnectTest extends TestCase
 
         $tables = $this->connection->fetchAll('SHOW TABLES LIKE "swag%"');
 
-        // swag_app, swag_app_translation, swag_app_action_button, swag_app_action_button_translation, swag_webhook
-        static::assertCount(5, $tables);
+        // swag_app, swag_app_translation, swag_app_action_button, swag_app_action_button_translation, swag_webhook, swag_template
+        static::assertCount(6, $tables);
     }
 
     public function testUninstallWithoutKeepUserData(): void
