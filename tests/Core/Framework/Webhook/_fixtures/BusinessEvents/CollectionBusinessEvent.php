@@ -41,7 +41,6 @@ class CollectionBusinessEvent implements BusinessEventInterface, BusinessEventEn
                 'taxRate' => (int) $tax->getTaxRate(),
                 'products' => null,
                 'customFields' => null,
-                'rules' => null,
                 'translated' => [],
                 'createdAt' => $tax->getCreatedAt()->format(DATE_ATOM),
                 'updatedAt' => null,

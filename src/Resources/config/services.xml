@@ -44,8 +44,13 @@
 
         <service id="Swag\SaasConnect\Core\Framework\Webhook\EventWrapper\EventWrapper">
             <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="Swag\SaasConnect\Core\Framework\Webhook\EventWrapper\WriteResultMerger" />
 
             <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Framework\Webhook\EventWrapper\WriteResultMerger">
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry" />
         </service>
 
         <service id="Swag\SaasConnect\Core\Framework\Webhook\BusinessEventEncoder">
