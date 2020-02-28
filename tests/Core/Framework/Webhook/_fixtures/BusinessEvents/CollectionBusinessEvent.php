@@ -6,7 +6,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Event\BusinessEventInterface;
 use Shopware\Core\Framework\Event\EventData\EntityCollectionType;
 use Shopware\Core\Framework\Event\EventData\EventDataCollection;
-use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\System\Tax\TaxCollection;
 use Shopware\Core\System\Tax\TaxDefinition;
 
@@ -45,8 +44,11 @@ class CollectionBusinessEvent implements BusinessEventInterface, BusinessEventEn
                 'createdAt' => $tax->getCreatedAt()->format(DATE_ATOM),
                 'updatedAt' => null,
                 'extensions' => [
-                    'foreignKeys' => (new ArrayEntity())->jsonSerialize(),
+                    'foreignKeys' => [
+                        'extensions' => [],
+                    ],
                 ],
+                'apiAlias' => 'tax',
             ];
         }
 
