@@ -1,7 +1,8 @@
 {% block sw_connect_action_button %}
     <component
         :is="openInNewTab ? 'a' : 'div'"
-        class="sw-connect-action-button sw-context-menu-item sw-context-menu-item--icon"
+        class="sw-connect-action-button sw-context-menu-item"
+        :class="{ 'sw-context-menu-item--icon': !!action.icon }"
         @click="runAction"
         v-bind="linkData">
 
