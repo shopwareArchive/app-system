@@ -16,9 +16,12 @@ class TemplateLoader implements TemplateLoaderInterface
         'documents',
     ];
 
+    /**
+     * {@inheritdoc}
+     */
     public function getTemplatePathsForApp(Manifest $app): array
     {
-        $viewDirectory = $app->getPath() . '/views';
+        $viewDirectory = $app->getPath() . '/Resources/views';
 
         if (!is_dir($viewDirectory)) {
             return [];
@@ -42,7 +45,7 @@ class TemplateLoader implements TemplateLoaderInterface
      */
     public function getTemplateContent(string $path, Manifest $app): string
     {
-        $content = @file_get_contents($app->getPath() . '/views/' . $path);
+        $content = @file_get_contents($app->getPath() . '/Resources/views/' . $path);
 
         if ($content === false) {
             throw new \RuntimeException(sprintf('Unable to read file from: %s.', $app->getPath() . '/views/' . $path));

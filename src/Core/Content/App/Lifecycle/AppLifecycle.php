@@ -13,6 +13,7 @@ use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\TemplatePersister;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\WebhookPersister;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Module;
+use Swag\SaasConnect\Storefront\Theme\Lifecycle\ThemeLifecycleHandler;
 
 class AppLifecycle implements AppLifecycleInterface
 {
@@ -51,6 +52,11 @@ class AppLifecycle implements AppLifecycleInterface
      */
     private $templatePersister;
 
+    /**
+     * @var ThemeLifecycleHandler
+     */
+    private $themeLifecycleHandler;
+
     public function __construct(
         EntityRepositoryInterface $appRepository,
         ActionButtonPersister $actionButtonPersister,
@@ -58,7 +64,8 @@ class AppLifecycle implements AppLifecycleInterface
         CustomFieldPersister $customFieldPersister,
         WebhookPersister $webhookPersister,
         AppLoaderInterface $appLoader,
-        TemplatePersister $templatePersister
+        TemplatePersister $templatePersister,
+        ThemeLifecycleHandler $themeLifecycleHandler
     ) {
         $this->appRepository = $appRepository;
         $this->actionButtonPersister = $actionButtonPersister;
@@ -67,6 +74,7 @@ class AppLifecycle implements AppLifecycleInterface
         $this->webhookPersister = $webhookPersister;
         $this->appLoader = $appLoader;
         $this->templatePersister = $templatePersister;
+        $this->themeLifecycleHandler = $themeLifecycleHandler;
     }
 
     public function install(Manifest $manifest, Context $context): void
@@ -89,12 +97,11 @@ class AppLifecycle implements AppLifecycleInterface
     }
 
     /**
-     * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter
-     *
      * @param array<string, string> $app
      */
     public function delete(string $appName, array $app, Context $context): void
     {
+        $this->themeLifecycleHandler->handleUninstall($appName, $context);
         $this->appRepository->delete([['id' => $app['id']]], $context);
     }
 
@@ -123,6 +130,7 @@ class AppLifecycle implements AppLifecycleInterface
         $this->customFieldPersister->updateCustomFields($manifest->getCustomFields(), $id, $context);
         $this->webhookPersister->updateWebhooks($manifest, $id, $context);
         $this->templatePersister->updateTemplates($manifest, $id, $context);
+        $this->themeLifecycleHandler->handleAppUpdate($manifest, $context);
     }
 
     /**

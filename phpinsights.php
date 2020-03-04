@@ -53,6 +53,7 @@ return [
         'AppAction.php',
         'BusinessEventEncoder.php',
         'WebhookDispatcher.php',
+        'EntityTemplateLoader.php',
     ],
 
     'add' => [

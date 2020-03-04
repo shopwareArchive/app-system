@@ -13,6 +13,14 @@
             <argument type="service" id="swag_template.repository" />
         </service>
 
+        <service id="Swag\SaasConnect\Core\Framework\Plugin\AppConfigGenerator" decorates="Shopware\Core\Framework\Plugin\BundleConfigGenerator">
+            <argument type="service" id="Swag\SaasConnect\Core\Framework\Plugin\AppConfigGenerator.inner" />
+            <argument type="service" id="swag_app.repository" />
+            <argument type="service" id="Shopware\Storefront\Theme\StorefrontPluginRegistry" on-invalid="null" />
+            <argument>%kernel.project_dir%</argument>
+
+        </service>
+
         <service id="Swag\SaasConnect\Core\Framework\Template\TemplateLoader"/>
 
         <service id="Swag\SaasConnect\Core\Framework\Adapter\Twig\EntityTemplateLoader">
@@ -27,6 +35,27 @@
 
             <!-- Make sure it runs after default `BundleHierarchyBuilder`, but before `ThemeNamespaceHierarchyBuilder` -->
             <tag name="shopware.twig.hierarchy_builder" priority="900"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Framework\Adapter\Twig\AppTemplateIterator" decorates="twig.template_iterator">
+            <argument type="service" id="Swag\SaasConnect\Core\Framework\Adapter\Twig\AppTemplateIterator.inner" />
+            <argument type="service" id="swag_template.repository" />
+        </service>
+
+        <service id="Swag\SaasConnect\Storefront\Theme\StorefrontPluginConfiguration\StorefrontPluginConfigurationAppFactory">
+            <argument type="service" id="Shopware\Storefront\Theme\StorefrontPluginConfiguration\StorefrontPluginConfigurationFactory" />
+        </service>
+
+        <service id="Swag\SaasConnect\Storefront\Theme\StorefrontAppRegistry" decorates="Shopware\Storefront\Theme\StorefrontPluginRegistry">
+            <argument type="service" id="Swag\SaasConnect\Storefront\Theme\StorefrontAppRegistry.inner" />
+            <argument type="service" id="swag_app.repository" />
+            <argument type="service" id="Swag\SaasConnect\Storefront\Theme\StorefrontPluginConfiguration\StorefrontPluginConfigurationAppFactory" />
+        </service>
+
+        <service id="Swag\SaasConnect\Storefront\Theme\Lifecycle\ThemeLifecycleHandler">
+            <argument type="service" id="Shopware\Storefront\Theme\StorefrontPluginRegistry"/>
+            <argument type="service" id="Swag\SaasConnect\Storefront\Theme\StorefrontPluginConfiguration\StorefrontPluginConfigurationAppFactory"/>
+            <argument type="service" id="Shopware\Storefront\Theme\ThemeLifecycleHandler"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Framework\Webhook\WebhookDispatcher" decorates="event_dispatcher" decoration-priority="100">
@@ -76,6 +105,7 @@
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\WebhookPersister"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\TemplatePersister"/>
+            <argument type="service" id="Swag\SaasConnect\Storefront\Theme\Lifecycle\ThemeLifecycleHandler"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\ActionButtonPersister">

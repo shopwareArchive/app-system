@@ -12,6 +12,7 @@ interface TemplateLoaderInterface
 {
     /**
      * Returns the list of template paths the given app ships
+     *
      * @return array<string>
      */
     public function getTemplatePathsForApp(Manifest $app): array;

@@ -398,7 +398,7 @@ class AppLifecycleTest extends TestCase
         $template = $templates->first();
         static::assertEquals('storefront/layout/header/logo.html.twig', $template->getPath());
         static::assertStringEqualsFile(
-            __DIR__ . '/Manifest/_fixtures/test/views/storefront/layout/header/logo.html.twig',
+            __DIR__ . '/Manifest/_fixtures/test/Resources/views/storefront/layout/header/logo.html.twig',
             $template->getTemplate()
         );
         static::assertTrue($template->isActive());
