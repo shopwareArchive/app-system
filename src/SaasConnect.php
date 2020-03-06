@@ -11,6 +11,8 @@ class SaasConnect extends Plugin
     public function uninstall(UninstallContext $uninstallContext): void
     {
         if ($uninstallContext->keepUserData() === true) {
+            $uninstallContext->enableKeepMigrations();
+
             return;
         }
 

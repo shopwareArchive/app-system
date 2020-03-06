@@ -47,11 +47,14 @@ class SaasConnectTest extends TestCase
     public function testUninstallWithKeepUserData(): void
     {
         $this->lifecycleService->uninstallPlugin($this->plugin, Context::createDefaultContext(), true);
-
         $tables = $this->connection->fetchAll('SHOW TABLES LIKE "swag%"');
 
         // swag_app, swag_app_translation, swag_app_action_button, swag_app_action_button_translation, swag_webhook, swag_template
         static::assertCount(6, $tables);
+
+        // install again to make sure migration is not run twice
+        $this->lifecycleService->installPlugin($this->plugin, Context::createDefaultContext());
+        $this->lifecycleService->activatePlugin($this->plugin, Context::createDefaultContext());
     }
 
     public function testUninstallWithoutKeepUserData(): void
