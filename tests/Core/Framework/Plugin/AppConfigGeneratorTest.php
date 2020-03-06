@@ -50,10 +50,13 @@ class AppConfigGeneratorTest extends TestCase
         static::assertEquals('Resources/app/storefront/src', $storefrontConfig['path']);
         static::assertEquals('Resources/app/storefront/src/main.js', $storefrontConfig['entryFilePath']);
         static::assertNull($storefrontConfig['webpack']);
-        static::assertEquals([
+
+        $expectedStyles = [
             __DIR__ . '/../../Content/App/Manifest/_fixtures/test/Resources/app/storefront/src/scss/base.scss',
             __DIR__ . '/../../Content/App/Manifest/_fixtures/test/Resources/app/storefront/src/scss/overrides.scss',
-        ], $storefrontConfig['styleFiles']);
+        ];
+
+        static::assertEquals([], array_diff($expectedStyles, $storefrontConfig['styleFiles']));
     }
 
     public function testGeneratedConfigStaysSameWithoutThemeRegistry(): void
