@@ -14,6 +14,7 @@ module.exports = {
         'padded-blocks': ['error', 'never'],
         'semi': ['error', 'always'],
         'no-useless-return': ['error'],
+        'keyword-spacing': ['error'],
 
         'import/no-useless-path-segments': ['warn', { noUselessIndex: true }],
         'max-len': [ 'warn', 125, { 'ignoreRegExpLiterals': true } ],

@@ -1,101 +1,61 @@
 import AppModulesService from 'connect/core/service/api/app-modules.service';
 import apiResponses from '__fixtures__/app-system/app-modules.fixtures';
 
-let httpClient = null;
-
 describe('app-api.service', () => {
     beforeEach(() => {
-        if (httpClient) {
-            httpClient.reset();
-        }
+        Shopware.Service('mockAdapter').reset();
     });
 
     test('constructor', () => {
-        const httpClient = Shopware.Application.getContainer('init').httpClient;
-        const loginService = Shopware.Service('loginService');
-
-        const appModulesService = new AppModulesService(
-            httpClient,
-            loginService,
-        );
+        const appModulesService = Shopware.Service('AppModulesService');
 
         expect(AppModulesService.name).toBe('AppModulesService');
         expect(appModulesService.name).toBe('AppModulesService');
     });
 
-    test('It can fetch modules', (done) => {
-        httpClient = Shopware.Application.getContainer('init').httpClient;
-        const appModulesService = new AppModulesService(httpClient, Shopware.Service('loginService'));
+    test('It can fetch modules', async () => {
+        const mockAdapter = Shopware.Service('mockAdapter');
 
-        appModulesService.fetchAppModules()
-            .then((modules) => {
-                expect(Array.isArray(modules)).toBe(true);
-                expect(modules.length).toBe(2);
-                expect(modules).toEqual(apiResponses.appsAndModules.data.modules);
-                
-                done();
-            });
-
-        httpClient.mockResponse(apiResponses.appsAndModules);
-        expect(httpClient.get).toBeCalledWith(
-            'app-system/modules',
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                    Authorization: 'Bearer false',
-                },
-            },
+        mockAdapter.onGet('app-system/modules').reply(
+            apiResponses.appsAndModules.status,
+            apiResponses.appsAndModules.data,
         );
+
+        const appModulesService = Shopware.Service('AppModulesService');
+        const modules = await appModulesService.fetchAppModules();
+
+        expect(Array.isArray(modules)).toBe(true);
+        expect(modules.length).toBe(2);
+        expect(modules).toEqual(apiResponses.appsAndModules.data.modules);
     });
 
-    test('with empty list', (done) => {
-        httpClient = Shopware.Application.getContainer('init').httpClient;
-        const appModulesService = new AppModulesService(httpClient, Shopware.Service('loginService'));
+    test('with empty list', async () => {
+        const mockAdapter = Shopware.Service('mockAdapter');
 
-        appModulesService.fetchAppModules()
-            .then((modules) => {
-                expect(Array.isArray(modules)).toBe(true);
-                expect(modules.length).toBe(0);
-                
-                done();
-            });
-
-        httpClient.mockResponse(apiResponses.emptyModuleList);
-        expect(httpClient.get).toBeCalledWith(
-            'app-system/modules',
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                    Authorization: 'Bearer false',
-                },
-            },
+        mockAdapter.onGet('app-system/modules').reply(
+            apiResponses.emptyModuleList.status,
+            apiResponses.emptyModuleList.data,
         );
+
+        const appModulesService = Shopware.Service('AppModulesService');
+        const modules = await appModulesService.fetchAppModules();
+        
+        expect(Array.isArray(modules)).toBe(true);
+        expect(modules.length).toBe(0);;
     });
 
-    test('It does not return top level array', (done) => {
-        httpClient = Shopware.Application.getContainer('init').httpClient;
-        const appModulesService = new AppModulesService(httpClient, Shopware.Service('loginService'));
+    test('It does not return top level array', async () => {
+        const mockAdapter = Shopware.Service('mockAdapter');
 
-        appModulesService.fetchAppModules()
-            .then((modules) => {
-                expect(Array.isArray(modules)).toBe(true);
-                expect(modules.length).toBe(0);
-                
-                done();
-            });
-
-        httpClient.mockResponse(apiResponses.malformedModulesList);
-        expect(httpClient.get).toBeCalledWith(
-            'app-system/modules',
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                    Authorization: 'Bearer false',
-                },
-            },
+        mockAdapter.onGet('app-system/modules').reply(
+            apiResponses.malformedModulesList.status,
+            apiResponses.malformedModulesList.data,
         );
+
+        const appModulesService = Shopware.Service('AppModulesService');
+        const modules = await appModulesService.fetchAppModules();
+
+        expect(Array.isArray(modules)).toBe(true);
+        expect(modules.length).toBe(0);
     });
 });

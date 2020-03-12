@@ -2,14 +2,14 @@
 
 namespace Swag\SaasConnect\Core\System\CustomField\Aggregate\CustomFieldSet;
 
-use Shopware\Core\Framework\DataAbstractionLayer\EntityExtensionInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetDefinition;
 use Swag\SaasConnect\Core\Content\App\AppDefinition;
 
-class CustomFieldSetExtension implements EntityExtensionInterface
+class CustomFieldSetExtension extends EntityExtension
 {
     public function extendFields(FieldCollection $collection): void
     {

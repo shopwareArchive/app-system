@@ -1,127 +1,76 @@
 import AppActionButtonService from 'connect/core/service/api/app-action-button.service';
 import apiResponses from '__fixtures__/app-system/action-buttons.fixtures';
 
-let httpClient = null;
-
 describe('app-api.service', () => {
     beforeEach(() => {
-        if (httpClient) {
-            httpClient.reset();
-        }
+        Shopware.Service('mockAdapter').reset();
     });
 
     test('constructor', () => {
-        const httpClient = Shopware.Application.getContainer('init').httpClient;
-        const loginService = Shopware.Service('loginService');
-
-        const appActionButtonService = new AppActionButtonService(
-            httpClient,
-            loginService,
-        );
+        const appActionButtonService = Shopware.Service('AppActionButtonService');
 
         expect(AppActionButtonService.name).toBe('AppActionButtonService');
         expect(appActionButtonService.name).toBe('AppActionButtonService');
     });
 
-    test('fetch available actions', (done) => {
-        httpClient = Shopware.Application.getContainer('init').httpClient;
-        const appActionButtonService = new AppActionButtonService(httpClient, Shopware.Service('loginService'));
+    test('fetch available actions', async () => {
+        const mockAdapter = Shopware.Service('mockAdapter');
 
-        appActionButtonService.getActionButtonsPerView('product', 'list')
-            .then((actions) => {
-                expect(Array.isArray(actions)).toBe(true);
-                expect(actions.length).toBe(1);
-                expect(actions).toEqual(apiResponses.actionButtons.data.actions);
-                
-                done();
-            });
-
-        httpClient.mockResponse(apiResponses.actionButtons);
-        expect(httpClient.get).toBeCalledWith(
-            'app-system/action-button/product/list',
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                    Authorization: 'Bearer false',
-                },
-            },
+        mockAdapter.onGet('app-system/action-button/product/list').reply(
+            apiResponses.actionButtons.status,
+            apiResponses.actionButtons.data,
         );
+
+        const appActionButtonService = Shopware.Service('AppActionButtonService');
+        const actions = await appActionButtonService.getActionButtonsPerView('product', 'list');
+
+        expect(Array.isArray(actions)).toBe(true);
+        expect(actions.length).toBe(1);
+        expect(actions).toEqual(apiResponses.actionButtons.data.actions);
     });
 
-    test('fetch undefined action', (done) => {
-        httpClient = Shopware.Application.getContainer('init').httpClient;
-        const appActionButtonService = new AppActionButtonService(httpClient, Shopware.Service('loginService'));
+    test('fetch undefined action', async () => {
+        const mockAdapter = Shopware.Service('mockAdapter');
+
+        mockAdapter.onGet('app-system/action-button/product/list').reply(
+            apiResponses.emptyActionButtonList.status,
+            apiResponses.emptyActionButtonList.data,
+        );
         
-        appActionButtonService.getActionButtonsPerView()
-            .then((actions) => {
-                expect(Array.isArray(actions)).toBe(true);
-                expect(actions.length).toBe(0); 
- 
-                done();
-            });
+        const appActionButtonService = Shopware.Service('AppActionButtonService');
+        const actions = await appActionButtonService.getActionButtonsPerView('product', 'list');
 
-        httpClient.mockResponse(apiResponses.emptyActionButtonList);
-        expect(httpClient.get).toBeCalledWith(
-            'app-system/action-button/undefined/undefined',
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                    Authorization: 'Bearer false',
-                },
-            },
-        );
+        expect(Array.isArray(actions)).toBe(true);
+        expect(actions.length).toBe(0); 
     });
 
-    test('does not return top level array', (done) => {
-        httpClient = Shopware.Application.getContainer('init').httpClient;
-        const appActionButtonService = new AppActionButtonService(httpClient, Shopware.Service('loginService'));
+    test('does not return top level array', async () => {
+        const mockAdapter = Shopware.Service('mockAdapter');
+
+        mockAdapter.onGet('app-system/action-button/product/list').reply(
+            apiResponses.malformedList.status,
+            apiResponses.malformedList.data,
+        );
         
-        appActionButtonService.getActionButtonsPerView()
-            .then((actions) => {
-                expect(Array.isArray(actions)).toBe(true);
-                expect(actions.length).toBe(0); 
- 
-                done();
-            });
+        const appActionButtonService = Shopware.Service('AppActionButtonService');
+        const actions = await appActionButtonService.getActionButtonsPerView('product', 'list');
 
-        httpClient.mockResponse(apiResponses.malformedList);
-        expect(httpClient.get).toBeCalledWith(
-            'app-system/action-button/undefined/undefined',
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                    Authorization: 'Bearer false',
-                },
-            },
-        );
+        expect(Array.isArray(actions)).toBe(true);
+        expect(actions.length).toBe(0); 
     });
 
-    test('run action has no response', (done) => {
-        httpClient = Shopware.Application.getContainer('init').httpClient;
-        const appActionButtonService = new AppActionButtonService(httpClient, Shopware.Service('loginService'));
+    test('run action has no response', async () => {
+        const mockAdapter = Shopware.Service('mockAdapter');
         const actionId = Shopware.Utils.createId();
 
-        appActionButtonService.runAction(actionId)
-            .then((response) => {
-                expect(response).toEqual([]);
-                done();
-            });
-
-        httpClient.mockResponse(apiResponses.emptyResponse);
-
-        expect(httpClient.post).toBeCalledWith(
-            `app-system/action-button/run/${actionId}`,
-            {},
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                    Authorization: 'Bearer false',
-                },
-            },
+        mockAdapter.onPost(`app-system/action-button/run/${actionId}`).reply(
+            apiResponses.emptyResponse.status,
+            apiResponses.emptyResponse.data,
         );
+
+        const appActionButtonService = Shopware.Service('AppActionButtonService');
+        const response = await appActionButtonService.runAction(actionId);
+        
+        expect(response).toEqual([]);
     });
 });

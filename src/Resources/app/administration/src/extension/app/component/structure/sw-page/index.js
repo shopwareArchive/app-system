@@ -19,11 +19,11 @@ export default {
         },
 
         params() {
-            if(this.isListingPage) {
+            if (this.isListingPage) {
                 return Object.keys(this.$parent.selection);
             }
             
-            if(this.$route.params.id) {
+            if (this.$route.params.id) {
                 return [this.$route.params.id];
             }
             
@@ -74,7 +74,7 @@ export default {
 
             const view = this.getViewForRoute(this.$route);
 
-            if(entity && view) {
+            if (entity && view) {
                 this.isLoading = true;
 
                 this.appActionButtonService.getActionButtonsPerView(entity, view)
