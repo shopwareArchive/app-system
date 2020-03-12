@@ -141,10 +141,20 @@ class WebhookDispatcher implements EventDispatcherInterface
             return;
         }
 
-        $payload = $this->getJsonPayloadFor($event);
+        $payload = $this->getPayloadFor($event);
         $requests = [];
-        foreach ($this->getWebhooks()[$eventName] as $url) {
-            $requests[] = new Request('POST', $url['url'], [], $payload);
+        foreach ($this->getWebhooks()[$eventName] as $webhookConfig) {
+            $payload = ['payload' => $payload];
+
+            if ($webhookConfig['access_token'] && $webhookConfig['access_key']) {
+                $payload['apiKey'] = $webhookConfig['access_key'];
+                $payload['secretKey'] = $webhookConfig['access_token'];
+            }
+
+            /** @var string $jsonPayload */
+            $jsonPayload = \json_encode($payload);
+
+            $requests[] = new Request('POST', $webhookConfig['url'], [], $jsonPayload);
         }
 
         $pool = new Pool($this->guzzle, $requests);
@@ -157,7 +167,12 @@ class WebhookDispatcher implements EventDispatcherInterface
             return $this->webhooks;
         }
 
-        $result = $this->connection->fetchAll('SELECT `event_name`, `url` FROM `swag_webhook`');
+        $result = $this->connection->fetchAll('
+            SELECT `webhook`.`event_name`, `webhook`.`url`, `app`.`access_token`, `integration`.`access_key`
+            FROM `swag_webhook` AS `webhook`
+            LEFT JOIN `swag_app` AS `app` ON `webhook`.`app_id` = `app`.`id`
+            LEFT JOIN `integration` ON `app`.`integration_id` = `integration`.`id`
+        ');
 
         return $this->webhooks = FetchModeHelper::group($result);
     }
@@ -165,19 +180,12 @@ class WebhookDispatcher implements EventDispatcherInterface
     /**
      * @param BusinessEventInterface|Hookable $event
      */
-    private function getJsonPayloadFor($event): string
+    private function getPayloadFor($event): array
     {
-        $payload = '';
-
         if ($event instanceof BusinessEventInterface) {
-            /** @var string $payload */
-            $payload = json_encode($this->eventEncoder->encode($event));
-        }
-        if ($event instanceof Hookable) {
-            /** @var string $payload */
-            $payload = json_encode($event->getWebhookPayload());
+            return $this->eventEncoder->encode($event);
         }
 
-        return $payload;
+        return $event->getWebhookPayload();
     }
 }
