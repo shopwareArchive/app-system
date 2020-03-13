@@ -1,9 +1,10 @@
 const path = require('path');
 
-const artifactsPath = path.join(process.env.PROJECT_ROOT, '/build/artifacts');
+const projectRoot = path.join(__dirname, '../../../../../../../');
+const artifactsPath = path.join(projectRoot, '/build/artifacts');
 const administrationCorePath = path.join(
-    process.env.PROJECT_ROOT,
-    'vendor/shopware/platform/src/Administration/Resources/app/administration/src'
+    projectRoot,
+    'vendor/shopware/platform/src/Administration/Resources/app/administration/src',
 );
 
 module.exports = {
@@ -45,6 +46,11 @@ module.exports = {
 
     watchPathIgnorePatterns: ['node_modules'],
 
+    globals: {
+        projectRoot,
+        administrationCorePath,
+    },
+
     /*
      * transforms
      */
@@ -62,6 +68,7 @@ module.exports = {
         '\\.(css|scss|less)$': '<rootDir>/test/unit/__mocks__/style.mock.js',
         '^module$': '<rootDir>/test/unit/__mocks__/module.mock',
         '^src/app/component/component$': '<rootDir>/test/unit/__mocks__/components.mock',
+        '^src/core/factory/http.factory': '<rootDir>/test/unit/__mocks__/http.factory.js',
         '^src/(.*)$': `${administrationCorePath}/$1`,
         '^__fixtures__/(.*)$': '<rootDir>/test/unit/__fixtures__/$1',
     },

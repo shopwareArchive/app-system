@@ -41,6 +41,12 @@
             </errorLevel>
         </DeprecatedTrait>
 
+        <DeprecatedInterface>
+            <errorLevel type="info">
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\EntityExtensionInterface"/>
+            </errorLevel>
+        </DeprecatedInterface>
+
         <DeprecatedMethod>
             <errorLevel type="info">
                 <directory name="tests"/>
