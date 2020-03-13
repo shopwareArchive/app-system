@@ -13,8 +13,8 @@ describe('app theme system for storefront', () => {
                     endpoint: 'sales-channel',
                     data: {
                         field: 'name',
-                        value: 'Storefront'
-                    }
+                        value: 'Storefront',
+                    },
                 }).then((result) => {
                     return cy.createProduct({
                         ...productData,
@@ -22,14 +22,14 @@ describe('app theme system for storefront', () => {
                         visibilities: [
                             {
                                 salesChannelId: result.id,
-                                visibility: 30
-                            }
+                                visibility: 30,
+                            },
                         ],
                         categories: [
                             {
-                                id: result.attributes.navigationCategoryId
-                            }
-                        ]
+                                id: result.attributes.navigationCategoryId,
+                            },
+                        ],
                     });
                 });
             });

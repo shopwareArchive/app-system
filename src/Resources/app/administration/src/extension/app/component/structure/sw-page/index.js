@@ -22,11 +22,11 @@ export default {
             if (this.isListingPage) {
                 return Object.keys(this.$parent.selection);
             }
-            
+
             if (this.$route.params.id) {
                 return [this.$route.params.id];
             }
-            
+
             return [];
         },
 

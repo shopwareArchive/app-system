@@ -230,17 +230,16 @@ Connect E2E:
         - /entrypoint supervisord > /dev/null 2>&1 &
     script:
         - ./psh.phar init --APP_ENV="prod"
-        - php bin/console plugin:refresh
         - php bin/console plugin:install --activate -c SaasConnect
-        - ./psh.phar storefront:init --APP_ENV="prod"
         - ./psh.phar administration:init --APP_ENV="prod"
+        - ./psh.phar storefront:init --APP_ENV="prod"
         - ./psh.phar init-test-databases --APP_ENV="prod"
         - ./psh.phar e2e:dump-db
         - chown -R 1000:1000 .
         - npm --prefix custom/plugins/SaasConnect/src/Resources/app/e2e/cli-tools install --production
         - forever start -c "npm run start" --workingDir custom/plugins/SaasConnect/src/Resources/app/e2e/cli-tools ./custom/plugins/SaasConnect/src/Resources/app/e2e/cli-tools
         - forever list
-        - docker run --name cypress --add-host="docker.vm:$(hostname -I)" -v $(pwd)/custom/plugins/SaasConnect/src/Resources/app/e2e:/e2e -v $(pwd)/build:/build -w /e2e --entrypoint "sh" cypress/included:3.8.1 -c "npm install --production --prefix /e2e && DEBUG=cypress:* node_modules/.bin/cypress run --project /e2e --browser chrome --config numTestsKeptInMemory=0"
+        - docker run --name cypress --add-host="docker.vm:$(hostname -I)" -v $(pwd)/custom/plugins/SaasConnect/src/Resources/app/e2e:/e2e -v $(pwd)/build:/build -w /e2e --entrypoint "sh" cypress/included:3.8.1 -c "npm install --production --prefix /e2e && node_modules/.bin/cypress run --project /e2e --browser chrome --config numTestsKeptInMemory=0"
         - docker rm -f cypress
     artifacts:
         when: always

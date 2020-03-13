@@ -7,8 +7,8 @@ function activateThemeForStorefront(themeName) {
     cy.server();
     cy.login('admin');
 
-    cy.get(`.sw-admin-menu__sales-channel-item--1 > a`).contains('Storefront');
-    cy.get(`.sw-admin-menu__sales-channel-item--1`).click();
+    cy.get('.sw-admin-menu__sales-channel-item--1 > a').contains('Storefront');
+    cy.get('.sw-admin-menu__sales-channel-item--1').click();
     cy.get('.sw-tabs-item').contains('Theme').click();
     cy.get('.sw-button').contains('Change theme').click();
 
@@ -17,7 +17,7 @@ function activateThemeForStorefront(themeName) {
 
     cy.route({
         method: 'post',
-        url: 'api/v1/_action/theme/**'
+        url: 'api/v1/_action/theme/**',
     }).as('themeAction');
 
     cy.get('.sw-modal .sw-button--primary').contains('Change theme').click();
@@ -25,7 +25,6 @@ function activateThemeForStorefront(themeName) {
     cy.wait('@themeAction');
 
     cy.get('.sw-sales-channel-detail__save-action').click();
-
 }
 
 export default function addThemeCommands(Cypress) {
