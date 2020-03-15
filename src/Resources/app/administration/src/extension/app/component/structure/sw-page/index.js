@@ -50,40 +50,38 @@ export default {
     watch: {
         $route: {
             immediate: true,
-            handler(newVal, oldVal) {
+            async handler(newVal, oldVal) {
                 if (!oldVal) {
-                    this.getActionButtons();
+                    this.actions = await this.getActionButtons(newVal);
                     return;
                 }
 
                 if (this.didViewChange(newVal, oldVal)) {
-                    this.getActionButtons();
+                    this.actions = await this.getActionButtons(newVal);
                 }
             },
         },
     },
 
     methods: {
-        getActionButtons() {
-            const module = this.$route.meta.$module;
+        async getActionButtons(newRoute) {
+            const module = newRoute.meta.$module;
             if (!module) {
-                return;
+                return [];
             }
 
             const entity = module.entity;
+            const view = this.getViewForRoute(newRoute);
 
-            const view = this.getViewForRoute(this.$route);
+            if (!entity || !view) {
+                return [];
+            }
 
-            if (entity && view) {
+            try {
                 this.isLoading = true;
-
-                this.appActionButtonService.getActionButtonsPerView(entity, view)
-                    .then((actions) => {
-                        this.actions = actions;
-                        this.isLoading = false;
-                    }).catch(() => {
-                    this.isLoading = false;
-                });
+                return await this.appActionButtonService.getActionButtonsPerView(entity, view);
+            } finally {
+                this.isLoading = false;
             }
         },
 
@@ -93,6 +91,11 @@ export default {
 
         getViewForRoute(route) {
             const module = route.meta.$module;
+
+            if (!module) {
+                return undefined;
+            }
+
             return Object.keys(module.routes).find((routeName) => {
                 const symbol = module.routes[routeName].name;
 
@@ -101,7 +104,10 @@ export default {
         },
 
         didViewChange(newRoute, oldRoute) {
-            if (newRoute.meta.$module.entity !== oldRoute.meta.$module.entity) {
+            const oldEntity = oldRoute.meta.$module ? oldRoute.meta.$module.entity : undefined; 
+            const newEntity = newRoute.meta.$module ? newRoute.meta.$module.entity : undefined;
+
+            if (oldEntity !== newEntity) {
                 return true;
             }
 
@@ -110,5 +116,6 @@ export default {
 
             return oldView !== newView;
         },
+
     },
 };
