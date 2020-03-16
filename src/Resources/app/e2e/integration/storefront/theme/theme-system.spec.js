@@ -35,7 +35,7 @@ describe('app theme system for storefront', () => {
             });
     });
 
-    it('CSS changes have effect if theme is active', () => {
+    it.skip('CSS changes have effect if theme is active', () => {
         cy.activateThemeForStorefront('SwagTheme');
 
         cy.visit('/');
@@ -59,7 +59,7 @@ describe('app theme system for storefront', () => {
             });
     });
 
-    it('CSS changes have no effect if theme is deactivated', () => {
+    it.skip('CSS changes have no effect if theme is deactivated', () => {
         cy.activateThemeForStorefront('Shopware default theme');
 
         cy.visit('/');
