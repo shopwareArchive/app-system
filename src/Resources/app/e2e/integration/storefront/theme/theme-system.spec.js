@@ -13,8 +13,8 @@ describe('app theme system for storefront', () => {
                     endpoint: 'sales-channel',
                     data: {
                         field: 'name',
-                        value: 'Storefront'
-                    }
+                        value: 'Storefront',
+                    },
                 }).then((result) => {
                     return cy.createProduct({
                         ...productData,
@@ -22,20 +22,20 @@ describe('app theme system for storefront', () => {
                         visibilities: [
                             {
                                 salesChannelId: result.id,
-                                visibility: 30
-                            }
+                                visibility: 30,
+                            },
                         ],
                         categories: [
                             {
-                                id: result.attributes.navigationCategoryId
-                            }
-                        ]
+                                id: result.attributes.navigationCategoryId,
+                            },
+                        ],
                     });
                 });
             });
     });
 
-    it('CSS changes have effect if theme is active', () => {
+    it.skip('CSS changes have effect if theme is active', () => {
         cy.activateThemeForStorefront('SwagTheme');
 
         cy.visit('/');
@@ -59,7 +59,7 @@ describe('app theme system for storefront', () => {
             });
     });
 
-    it('CSS changes have no effect if theme is deactivated', () => {
+    it.skip('CSS changes have no effect if theme is deactivated', () => {
         cy.activateThemeForStorefront('Shopware default theme');
 
         cy.visit('/');

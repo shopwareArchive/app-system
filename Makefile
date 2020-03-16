@@ -32,6 +32,10 @@ test: ## runs phpunit
        --coverage-clover build/artifacts/phpunit.clover.xml \
        --coverage-html build/artifacts/phpunit-coverage-html
 
+test-no-cov: ## runs phpunit
+	composer dump-autoload
+	php ../../../vendor/bin/phpunit --configuration phpunit.xml.dist
+
 ecs-dry: | install-tools vendor  ## runs easy coding standard in dry mode
 	$(TOOLS_BIN)/ecs check .
 
@@ -42,6 +46,7 @@ init: ## activates the plugin and dumps test-db
 	- cd ../../../ \
 		&& ./psh.phar init \
 		&& php bin/console plugin:install --activate SaasConnect \
+		&& ./psh.phar storefront:init \
 		&& ./psh.phar init-test-databases \
 		&& ./psh.phar e2e:dump-db \
 		&& ./psh.phar cache
