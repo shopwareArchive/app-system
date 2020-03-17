@@ -44,7 +44,7 @@ class WebhookDispatcherTest extends TestCase
         $this->webhookRepository = $this->getContainer()->get('swag_webhook.repository');
     }
 
-    public function testDispatchesBusinessEventToWebhook(): void
+    public function testDispatchesBusinessEventToWebhookWithoutApp(): void
     {
         $this->webhookRepository->upsert([
             [
@@ -72,11 +72,13 @@ class WebhookDispatcherTest extends TestCase
         $body = $request->getBody()->getContents();
         static::assertJson($body);
         static::assertEquals([
-            'email' => 'test@example.com',
+            'payload' => [
+                'email' => 'test@example.com',
+            ],
         ], json_decode($body, true));
     }
 
-    public function testDispatchesWrappedEntityWrittenEventToWebhook(): void
+    public function testDispatchesWrappedEntityWrittenEventToWebhookWithoutApp(): void
     {
         $this->webhookRepository->upsert([
             [
@@ -122,29 +124,31 @@ class WebhookDispatcherTest extends TestCase
         static::assertEquals('POST', $request->getMethod());
         $body = $request->getBody()->getContents();
         static::assertJson($body);
-        static::assertEquals([[
-            'entity' => 'product',
-            'operation' => 'insert',
-            'primaryKey' => $id,
-            'updatedFields' => [
-                'versionId',
-                'id',
-                'parentVersionId',
-                'manufacturerId',
-                'productManufacturerVersionId',
-                'taxId',
-                'stock',
-                'price',
-                'productNumber',
-                'isCloseout',
-                'purchaseSteps',
-                'minPurchase',
-                'shippingFree',
-                'restockTime',
-                'createdAt',
-                'name',
-            ],
-        ]], json_decode($body, true));
+        static::assertEquals([
+            'payload' => [[
+                'entity' => 'product',
+                'operation' => 'insert',
+                'primaryKey' => $id,
+                'updatedFields' => [
+                    'versionId',
+                    'id',
+                    'parentVersionId',
+                    'manufacturerId',
+                    'productManufacturerVersionId',
+                    'taxId',
+                    'stock',
+                    'price',
+                    'productNumber',
+                    'isCloseout',
+                    'purchaseSteps',
+                    'minPurchase',
+                    'shippingFree',
+                    'restockTime',
+                    'createdAt',
+                    'name',
+                ],
+            ]],
+        ], json_decode($body, true));
     }
 
     public function testNoRegisteredWebhook(): void
@@ -230,6 +234,59 @@ class WebhookDispatcherTest extends TestCase
         );
 
         $webhookDispatcher->removeSubscriber(new MockSubscriber());
+    }
+
+    public function testDispatchesAccessKeyIfWebhookHasApp(): void
+    {
+        $appRepository = $this->getContainer()->get('swag_app.repository');
+        $appRepository->create([[
+            'name' => 'SwagApp',
+            'path' => __DIR__ . '/Manifest/_fixtures/test',
+            'version' => '0.0.1',
+            'label' => 'test',
+            'accessToken' => 'test',
+            'integration' => [
+                'label' => 'test',
+                'writeAccess' => false,
+                'accessKey' => 'api access key',
+                'secretAccessKey' => 'test',
+            ],
+            'aclRole' => [
+                'name' => 'SwagApp',
+            ],
+            'webhooks' => [
+                [
+                    'name' => 'hook1',
+                    'eventName' => CustomerBeforeLoginEvent::EVENT_NAME,
+                    'url' => 'https://test.com',
+                ],
+            ],
+        ]], Context::createDefaultContext());
+
+        $this->appServerMock->append(new Response(200));
+
+        $event = new CustomerBeforeLoginEvent(
+            $this->getContainer()->get(SalesChannelContextFactory::class)->create(Uuid::randomHex(), Defaults::SALES_CHANNEL),
+            'test@example.com'
+        );
+
+        /** @var EventDispatcherInterface $eventDispatcher */
+        $eventDispatcher = $this->getContainer()->get('event_dispatcher');
+        $eventDispatcher->dispatch($event);
+
+        /** @var Request $request */
+        $request = $this->appServerMock->getLastRequest();
+
+        static::assertEquals('POST', $request->getMethod());
+        $body = $request->getBody()->getContents();
+        static::assertJson($body);
+        static::assertEquals([
+            'payload' => [
+                'email' => 'test@example.com',
+            ],
+            'apiKey' => 'api access key',
+            'secretKey' => 'test',
+        ], json_decode($body, true));
     }
 }
 
