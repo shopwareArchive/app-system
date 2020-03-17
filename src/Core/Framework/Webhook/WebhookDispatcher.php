@@ -39,16 +39,23 @@ class WebhookDispatcher implements EventDispatcherInterface
      */
     private $eventEncoder;
 
+    /**
+     * @var string
+     */
+    private $shopUrl;
+
     public function __construct(
         EventDispatcherInterface $dispatcher,
         Connection $connection,
         Client $guzzle,
-        BusinessEventEncoder $eventEncoder
+        BusinessEventEncoder $eventEncoder,
+        string $shopUrl
     ) {
         $this->dispatcher = $dispatcher;
         $this->connection = $connection;
         $this->guzzle = $guzzle;
         $this->eventEncoder = $eventEncoder;
+        $this->shopUrl = $shopUrl;
     }
 
     /**
@@ -145,6 +152,11 @@ class WebhookDispatcher implements EventDispatcherInterface
         $requests = [];
         foreach ($this->getWebhooks()[$eventName] as $webhookConfig) {
             $payload = ['payload' => $payload];
+            $payload['sourceUrl'] = $this->shopUrl;
+
+            if ($webhookConfig['version']) {
+                $payload['appVersion'] = $webhookConfig['version'];
+            }
 
             if ($webhookConfig['access_token'] && $webhookConfig['access_key']) {
                 $payload['apiKey'] = $webhookConfig['access_key'];
@@ -168,7 +180,7 @@ class WebhookDispatcher implements EventDispatcherInterface
         }
 
         $result = $this->connection->fetchAll('
-            SELECT `webhook`.`event_name`, `webhook`.`url`, `app`.`access_token`, `integration`.`access_key`
+            SELECT `webhook`.`event_name`, `webhook`.`url`, `app`.`access_token`, `app`.`version`, `integration`.`access_key`
             FROM `swag_webhook` AS `webhook`
             LEFT JOIN `swag_app` AS `app` ON `webhook`.`app_id` = `app`.`id`
             LEFT JOIN `integration` ON `app`.`integration_id` = `integration`.`id`
