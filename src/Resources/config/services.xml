@@ -63,6 +63,7 @@
             <argument type="service" id="Doctrine\DBAL\Connection"/>
             <argument type="service" id="GuzzleHttp\Client"/>
             <argument type="service" id="Swag\SaasConnect\Core\Framework\Webhook\BusinessEventEncoder"/>
+            <argument>%env(APP_URL)%</argument>
         </service>
 
         <service id="Swag\SaasConnect\Core\Framework\Webhook\WebhookCacheClearer">

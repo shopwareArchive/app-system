@@ -38,10 +38,16 @@ class WebhookDispatcherTest extends TestCase
      */
     private $webhookRepository;
 
+    /**
+     * @var string
+     */
+    private $shopUrl;
+
     public function setUp(): void
     {
         $this->appServerMock = $this->getContainer()->get(MockHandler::class);
         $this->webhookRepository = $this->getContainer()->get('swag_webhook.repository');
+        $this->shopUrl = $_ENV['APP_URL'];
     }
 
     public function testDispatchesBusinessEventToWebhookWithoutApp(): void
@@ -75,6 +81,7 @@ class WebhookDispatcherTest extends TestCase
             'payload' => [
                 'email' => 'test@example.com',
             ],
+            'sourceUrl' => $this->shopUrl,
         ], json_decode($body, true));
     }
 
@@ -148,6 +155,7 @@ class WebhookDispatcherTest extends TestCase
                     'name',
                 ],
             ]],
+            'sourceUrl' => $this->shopUrl,
         ], json_decode($body, true));
     }
 
@@ -166,7 +174,8 @@ class WebhookDispatcherTest extends TestCase
             $this->getContainer()->get('event_dispatcher'),
             $this->getContainer()->get(Connection::class),
             $clientMock,
-            $this->getContainer()->get(BusinessEventEncoder::class)
+            $this->getContainer()->get(BusinessEventEncoder::class),
+            $this->shopUrl
         );
 
         $webhookDispatcher->dispatch($event);
@@ -198,7 +207,8 @@ class WebhookDispatcherTest extends TestCase
             $this->getContainer()->get('event_dispatcher'),
             $this->getContainer()->get(Connection::class),
             $clientMock,
-            $this->getContainer()->get(BusinessEventEncoder::class)
+            $this->getContainer()->get(BusinessEventEncoder::class),
+            $this->shopUrl
         );
 
         $webhookDispatcher->dispatch($event);
@@ -214,7 +224,8 @@ class WebhookDispatcherTest extends TestCase
             $eventDispatcherMock,
             $this->getContainer()->get(Connection::class),
             $this->getContainer()->get(Client::class),
-            $this->getContainer()->get(BusinessEventEncoder::class)
+            $this->getContainer()->get(BusinessEventEncoder::class),
+            $this->shopUrl
         );
 
         $webhookDispatcher->addSubscriber(new MockSubscriber());
@@ -230,7 +241,8 @@ class WebhookDispatcherTest extends TestCase
             $eventDispatcherMock,
             $this->getContainer()->get(Connection::class),
             $this->getContainer()->get(Client::class),
-            $this->getContainer()->get(BusinessEventEncoder::class)
+            $this->getContainer()->get(BusinessEventEncoder::class),
+            $this->shopUrl
         );
 
         $webhookDispatcher->removeSubscriber(new MockSubscriber());
@@ -286,6 +298,8 @@ class WebhookDispatcherTest extends TestCase
             ],
             'apiKey' => 'api access key',
             'secretKey' => 'test',
+            'sourceUrl' => $this->shopUrl,
+            'appVersion' => '0.0.1',
         ], json_decode($body, true));
     }
 }
