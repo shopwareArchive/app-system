@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\Response;
 use Opis\JsonSchema\Schema;
 use Opis\JsonSchema\ValidationResult;
 use Opis\JsonSchema\Validator;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\SaasConnect\Core\Content\App\Action\AppAction;
@@ -50,7 +51,7 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->appServerMock->append(new Response(200));
-        $this->executor->execute($action);
+        $this->executor->execute($action, Context::createDefaultContext());
 
         /** @var Request $request */
         $request = $this->appServerMock->getLastRequest();
@@ -80,7 +81,7 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->appServerMock->append(new Response(500));
-        $this->executor->execute($action);
+        $this->executor->execute($action, Context::createDefaultContext());
 
         /** @var Request $request */
         $request = $this->appServerMock->getLastRequest();
@@ -103,7 +104,7 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->appServerMock->append(new Response(200));
-        $this->executor->execute($action);
+        $this->executor->execute($action, Context::createDefaultContext());
 
         /** @var Request $request */
         $request = $this->appServerMock->getLastRequest();
@@ -132,8 +133,10 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
             $secretKey
         );
 
+        $context = Context::createDefaultContext();
+
         $this->appServerMock->append(new Response(200));
-        $this->executor->execute($action);
+        $this->executor->execute($action, $context);
 
         /** @var Request $request */
         $request = $this->appServerMock->getLastRequest();
@@ -159,6 +162,7 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
         static::assertEquals($expectedData, $data['data']);
         static::assertNotEmpty($data['meta']['timestamp']);
         static::assertTrue(Uuid::isValid($data['meta']['reference']));
+        static::assertEquals($context->getLanguageId(), $data['meta']['language']);
     }
 
     private function parseSchemaErrors(ValidationResult $result): string

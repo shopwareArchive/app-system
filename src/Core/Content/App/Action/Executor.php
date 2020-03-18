@@ -4,6 +4,7 @@ namespace Swag\SaasConnect\Core\Content\App\Action;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ServerException;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class Executor
@@ -18,12 +19,13 @@ class Executor
         $this->guzzleClient = $guzzle;
     }
 
-    public function execute(AppAction $action): void
+    public function execute(AppAction $action, Context $context): void
     {
         $payload = $action->asPayload();
         $payload['meta'] = [
             'timestamp' => (new \DateTime())->getTimestamp(),
             'reference' => Uuid::randomHex(),
+            'language' => $context->getLanguageId(),
         ];
 
         try {

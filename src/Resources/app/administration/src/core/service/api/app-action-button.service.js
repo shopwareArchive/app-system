@@ -6,8 +6,8 @@ export default class AppActionButtonService {
     }
 
     /**
-     * @param {AxiosInstance} httpClient 
-     * @param {LoginService} loginService 
+     * @param {AxiosInstance} httpClient
+     * @param {LoginService} loginService
      */
     constructor(httpClient, loginService) {
         this.httpClient = httpClient;
@@ -20,14 +20,15 @@ export default class AppActionButtonService {
         return {
             'Content-Type': 'application/json',
             Accept: 'application/json',
+            'sw-language-id': Shopware.Context.api.languageId,
             Authorization: `Bearer ${this.loginService.getToken()}`,
         };
     }
 
     /**
      * Fetches available actions for a page
-     * 
-     * @param {string} entity 
+     *
+     * @param {string} entity
      * @param {string} view
      */
     getActionButtonsPerView(entity, view) {
@@ -43,7 +44,7 @@ export default class AppActionButtonService {
 
     getActionbuttonsFromRequest(data) {
         if (!!data && !!data.actions) {
-            return data.actions;    
+            return data.actions;
         }
 
         return [];
@@ -51,7 +52,7 @@ export default class AppActionButtonService {
 
     /**
      * Run an action on the server
-     * 
+     *
      * @param {string} id
      * @param {Object} params
      */
