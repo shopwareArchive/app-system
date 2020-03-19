@@ -151,16 +151,17 @@ class WebhookDispatcher implements EventDispatcherInterface
         $payload = $this->getPayloadFor($event);
         $requests = [];
         foreach ($this->getWebhooks()[$eventName] as $webhookConfig) {
-            $payload = ['payload' => $payload];
-            $payload['sourceUrl'] = $this->shopUrl;
+            $payload = ['data' => ['payload' => $payload]];
+            $payload['source']['url'] = $this->shopUrl;
+            $payload['data']['event'] = $eventName;
 
             if ($webhookConfig['version']) {
-                $payload['appVersion'] = $webhookConfig['version'];
+                $payload['source']['appVersion'] = $webhookConfig['version'];
             }
 
             if ($webhookConfig['access_token'] && $webhookConfig['access_key']) {
-                $payload['apiKey'] = $webhookConfig['access_key'];
-                $payload['secretKey'] = $webhookConfig['access_token'];
+                $payload['source']['apiKey'] = $webhookConfig['access_key'];
+                $payload['source']['secretKey'] = $webhookConfig['access_token'];
             }
 
             /** @var string $jsonPayload */

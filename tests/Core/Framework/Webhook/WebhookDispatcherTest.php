@@ -78,10 +78,15 @@ class WebhookDispatcherTest extends TestCase
         $body = $request->getBody()->getContents();
         static::assertJson($body);
         static::assertEquals([
-            'payload' => [
-                'email' => 'test@example.com',
+            'data' => [
+                'payload' => [
+                    'email' => 'test@example.com',
+                ],
+                'event' => CustomerBeforeLoginEvent::EVENT_NAME,
             ],
-            'sourceUrl' => $this->shopUrl,
+            'source' => [
+                'url' => $this->shopUrl,
+            ],
         ], json_decode($body, true));
     }
 
@@ -132,30 +137,35 @@ class WebhookDispatcherTest extends TestCase
         $body = $request->getBody()->getContents();
         static::assertJson($body);
         static::assertEquals([
-            'payload' => [[
-                'entity' => 'product',
-                'operation' => 'insert',
-                'primaryKey' => $id,
-                'updatedFields' => [
-                    'versionId',
-                    'id',
-                    'parentVersionId',
-                    'manufacturerId',
-                    'productManufacturerVersionId',
-                    'taxId',
-                    'stock',
-                    'price',
-                    'productNumber',
-                    'isCloseout',
-                    'purchaseSteps',
-                    'minPurchase',
-                    'shippingFree',
-                    'restockTime',
-                    'createdAt',
-                    'name',
-                ],
-            ]],
-            'sourceUrl' => $this->shopUrl,
+            'data' => [
+                'payload' => [[
+                    'entity' => 'product',
+                    'operation' => 'insert',
+                    'primaryKey' => $id,
+                    'updatedFields' => [
+                        'versionId',
+                        'id',
+                        'parentVersionId',
+                        'manufacturerId',
+                        'productManufacturerVersionId',
+                        'taxId',
+                        'stock',
+                        'price',
+                        'productNumber',
+                        'isCloseout',
+                        'purchaseSteps',
+                        'minPurchase',
+                        'shippingFree',
+                        'restockTime',
+                        'createdAt',
+                        'name',
+                    ],
+                ]],
+                'event' => ProductEvents::PRODUCT_WRITTEN_EVENT,
+            ],
+            'source' => [
+                'url' => $this->shopUrl,
+            ],
         ], json_decode($body, true));
     }
 
@@ -293,13 +303,18 @@ class WebhookDispatcherTest extends TestCase
         $body = $request->getBody()->getContents();
         static::assertJson($body);
         static::assertEquals([
-            'payload' => [
-                'email' => 'test@example.com',
+            'data' => [
+                'payload' => [
+                    'email' => 'test@example.com',
+                ],
+                'event' => CustomerBeforeLoginEvent::EVENT_NAME,
             ],
-            'apiKey' => 'api access key',
-            'secretKey' => 'test',
-            'sourceUrl' => $this->shopUrl,
-            'appVersion' => '0.0.1',
+            'source' => [
+                'apiKey' => 'api access key',
+                'secretKey' => 'test',
+                'url' => $this->shopUrl,
+                'appVersion' => '0.0.1',
+            ],
         ], json_decode($body, true));
     }
 }
