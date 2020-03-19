@@ -19,6 +19,27 @@ cache:
         - .composer
         - .npm
 
+.sw6_base:
+    image: shopware/development:latest
+    before_script:
+        - zip -rq plugin.zip .
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git --branch $PLATFORM_BRANCH
+        - rm -rf development/platform
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch $PLATFORM_BRANCH
+        - unzip -q plugin.zip -d development/custom/plugins/SaasConnect
+        - cd development
+        - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
+        - cp -v dev-ops/gitlab/.psh.yaml.override .
+        - /entrypoint supervisord > /dev/null 2>&1 &
+
+.sw6_base_services:
+    services:
+        -   name: mysql:5.7
+            alias: mysql
+        -   name: elastic/elasticsearch:7.1.1
+            alias: elasticsearch
+            command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
+
 Build-Analysis-Container:
     stage: Build
     only:
@@ -54,20 +75,12 @@ EasyCodingStandard:
 
 Psalm:
     stage: Static analysis
+    extends:
+        - .sw6_base
     only:
         refs:
             - merge_requests
             - master
-    image: shopware/development:latest
-    before_script:
-        - zip -rq plugin.zip .
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git --branch $PLATFORM_BRANCH
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch $PLATFORM_BRANCH
-        - unzip -q plugin.zip -d development/custom/plugins/SaasConnect
-        - cd development
-        - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
-        - cp -v dev-ops/gitlab/.psh.yaml.override .
-        - /entrypoint supervisord > /dev/null 2>&1 &
     script:
         - cd custom/plugins/SaasConnect
         - make psalm
@@ -79,16 +92,8 @@ Phpstan:
         refs:
             - merge_requests
             - master
-    image: shopware/development:latest
-    before_script:
-        - zip -rq plugin.zip .
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git --branch $PLATFORM_BRANCH
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch $PLATFORM_BRANCH
-        - unzip -q plugin.zip -d development/custom/plugins/SaasConnect
-        - cd development
-        - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
-        - cp -v dev-ops/gitlab/.psh.yaml.override .
-        - /entrypoint supervisord > /dev/null 2>&1 &
+    extends:
+        - .sw6_base
     script:
         - cd custom/plugins/SaasConnect
         - make phpstan
@@ -110,15 +115,8 @@ Eslint Administration:
         refs:
             - merge_requests
             - master
-    image: shopware/development:latest
-    before_script:
-        - zip -rq plugin.zip .
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git --branch $PLATFORM_BRANCH
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch $PLATFORM_BRANCH
-        - unzip -q plugin.zip -d development/custom/plugins/SaasConnect
-        - cd development
-        - cp -v dev-ops/gitlab/.psh.yaml.override .
-        - /entrypoint supervisord > /dev/null 2>&1 &
+    extends:
+        - .sw6_base
     script:
         - cd custom/plugins/SaasConnect/src/Resources/app/administration
         - npm install
@@ -133,21 +131,9 @@ Unit:
         refs:
             - merge_requests
             - master
-    image: shopware/development:latest
-    services:
-        -   name: mysql:5.7
-            alias: mysql
-        -   name: elastic/elasticsearch:7.1.1
-            alias: elasticsearch
-            command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
-    before_script:
-        - zip -rq plugin.zip .
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git --branch $PLATFORM_BRANCH
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch $PLATFORM_BRANCH
-        - unzip -q plugin.zip -d development/custom/plugins/SaasConnect
-        - cd development
-        - cp -v dev-ops/gitlab/.psh.yaml.override .
-        - /entrypoint supervisord > /dev/null 2>&1 &
+    extends:
+        - .sw6_base
+        - .sw6_base_services
     script:
         - ./psh.phar init
         - ./psh.phar storefront:install-dependencies
@@ -178,21 +164,9 @@ Jest (Administration):
         refs:
             - merge_requests
             - master
-    image: shopware/development:latest
-    services:
-        -   name: mysql:5.7
-            alias: mysql
-        -   name: elastic/elasticsearch:7.1.1
-            alias: elasticsearch
-            command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
-    before_script:
-        - zip -rq plugin.zip .
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git --branch $PLATFORM_BRANCH
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch $PLATFORM_BRANCH
-        - unzip -q plugin.zip -d development/custom/plugins/SaasConnect
-        - cd development
-        - cp -v dev-ops/gitlab/.psh.yaml.override .
-        - /entrypoint supervisord > /dev/null 2>&1 &
+    extends:
+        - .sw6_base
+        - .sw6_base_services
     script:
         - composer install
         - ./psh.phar administration:install-dependencies
@@ -213,21 +187,15 @@ Connect E2E:
         refs:
             - merge_requests
             - master
-    image: shopware/development:latest
+    extends:
+        - .sw6_base
+        - .sw6_base_services
     services:
-        -   name: docker:18.09.7-dind
-            alias: docker
-        -   name: mysql:5.7
-            alias: mysql
-    before_script:
-        - zip -rq plugin.zip .
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git --branch $PLATFORM_BRANCH
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch $PLATFORM_BRANCH
-        - unzip -q plugin.zip -d development/custom/plugins/SaasConnect
-        - cd development
-        - cp -v dev-ops/gitlab/.psh.yaml.override .
-        - cp -v custom/plugins/SaasConnect/dev-ops/gitlab/cypress.env.json custom/plugins/SaasConnect/src/Resources/app/e2e/cypress.env.json
-        - /entrypoint supervisord > /dev/null 2>&1 &
+        - name: docker:18.09.7-dind
+          alias: docker
+        - name: mysql:5.7
+          alias: mysql
+
     script:
         - ./psh.phar init --APP_ENV="prod"
         - php bin/console plugin:install --activate -c SaasConnect
@@ -235,6 +203,7 @@ Connect E2E:
         - ./psh.phar storefront:init --APP_ENV="prod"
         - ./psh.phar init-test-databases --APP_ENV="prod"
         - ./psh.phar e2e:dump-db
+        - cp -v custom/plugins/SaasConnect/dev-ops/gitlab/cypress.env.json custom/plugins/SaasConnect/src/Resources/app/e2e/cypress.env.json
         - chown -R 1000:1000 .
         - npm --prefix custom/plugins/SaasConnect/src/Resources/app/e2e/cli-tools install --production
         - forever start -c "npm run start" --workingDir custom/plugins/SaasConnect/src/Resources/app/e2e/cli-tools ./custom/plugins/SaasConnect/src/Resources/app/e2e/cli-tools
