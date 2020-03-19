@@ -61,11 +61,7 @@ class AppTemplateHierarchyBuilderTest extends TestCase
 
         $hierarchyBuilder = $this->getContainer()->get(NamespaceHierarchyBuilder::class);
 
-        // should only find the `SwagThemeTest` and not `SwagApp`
-        // this is a core bug, if this fails because `SwagApp` is not included
-        // it can safely be removed with this comment
         static::assertEquals([
-            'SwagApp',
             'SwagThemeTest',
             'SaasConnect',
             'Storefront',

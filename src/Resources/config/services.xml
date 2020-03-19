@@ -37,7 +37,7 @@
             <tag name="shopware.twig.hierarchy_builder" priority="900"/>
         </service>
 
-        <service id="Swag\SaasConnect\Core\Framework\Adapter\Twig\AppTemplateIterator" decorates="twig.template_iterator">
+        <service id="Swag\SaasConnect\Core\Framework\Adapter\Twig\AppTemplateIterator" decorates="twig.template_iterator" public="true">
             <argument type="service" id="Swag\SaasConnect\Core\Framework\Adapter\Twig\AppTemplateIterator.inner" />
             <argument type="service" id="swag_template.repository" />
         </service>
