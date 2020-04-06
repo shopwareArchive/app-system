@@ -227,17 +227,6 @@
             <xs:restriction base="xs:anyType"/>
         </xs:complexContent>
     </xs:complexType>
-    <xs:simpleType name="custom-field-entities">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="product"/>
-            <xs:enumeration value="catalogue"/>
-            <xs:enumeration value="customer"/>
-            <xs:enumeration value="customer_address"/>
-            <xs:enumeration value="product_manufacturer"/>
-            <xs:enumeration value="media"/>
-            <xs:enumeration value="sales_channel"/>
-        </xs:restriction>
-    </xs:simpleType>
     <xs:complexType name="translatableString">
         <xs:simpleContent>
             <xs:extension base="xs:string">
