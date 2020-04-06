@@ -49,7 +49,7 @@ class EntityTemplateLoaderTest extends TestCase
 
     public function setUp(): void
     {
-        $this->templateRepository = $this->getContainer()->get('swag_template.repository');
+        $this->templateRepository = $this->getContainer()->get('saas_template.repository');
         $this->templateLoader = $this->getContainer()->get(EntityTemplateLoader::class);
         $this->template1Id = Uuid::randomHex();
         $this->template2Id = Uuid::randomHex();
@@ -63,7 +63,7 @@ class EntityTemplateLoaderTest extends TestCase
     public function testGetSubscribedEvents(): void
     {
         static::assertEquals(
-            ['swag_template.written' => 'clearInternalCache'],
+            ['saas_template.written' => 'clearInternalCache'],
             EntityTemplateLoader::getSubscribedEvents()
         );
     }

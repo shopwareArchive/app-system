@@ -17,7 +17,7 @@ class Migration1580907311ExtendCustomFieldSet extends MigrationStep
         $connection->executeUpdate('
             ALTER TABLE `custom_field_set`
             ADD COLUMN `app_id` BINARY(16) NULL AFTER `active`,
-            ADD CONSTRAINT `fk.custom_field_set.app_id` FOREIGN KEY (`app_id`) REFERENCES `swag_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+            ADD CONSTRAINT `fk.custom_field_set.app_id` FOREIGN KEY (`app_id`) REFERENCES `saas_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
         ');
     }
 

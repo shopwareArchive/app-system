@@ -29,7 +29,7 @@ class ModuleLoaderTest extends TestCase
 
     public function setUp(): void
     {
-        $this->appRepository = $this->getContainer()->get('swag_app.repository');
+        $this->appRepository = $this->getContainer()->get('saas_app.repository');
         $this->moduleLoader = $this->getContainer()->get(ModuleLoader::class);
         $this->context = Context::createDefaultContext();
     }

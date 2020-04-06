@@ -15,7 +15,7 @@ class Migration1581948516Template extends MigrationStep
     public function update(Connection $connection): void
     {
         $connection->executeUpdate('
-            CREATE TABLE IF NOT EXISTS `swag_template` (
+            CREATE TABLE IF NOT EXISTS `saas_template` (
               `id` BINARY(16) NOT NULL,
               `template` LONGTEXT NOT NULL,
               `path` VARCHAR(1024) NOT NULL,
@@ -24,8 +24,8 @@ class Migration1581948516Template extends MigrationStep
               `created_at` DATETIME(3) NOT NULL,
               `updated_at` DATETIME(3) NULL,
               PRIMARY KEY (`id`),
-              INDEX `idx.swag_template.path` (`path`(256)),
-              CONSTRAINT `fk.template.app_id` FOREIGN KEY (`app_id`) REFERENCES `swag_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+              INDEX `idx.saas_template.path` (`path`(256)),
+              CONSTRAINT `fk.template.app_id` FOREIGN KEY (`app_id`) REFERENCES `saas_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
     }

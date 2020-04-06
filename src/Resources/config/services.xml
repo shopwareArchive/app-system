@@ -10,12 +10,12 @@
     <services>
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\TemplatePersister">
             <argument type="service" id="Swag\SaasConnect\Core\Framework\Template\TemplateLoader" />
-            <argument type="service" id="swag_template.repository" />
+            <argument type="service" id="saas_template.repository" />
         </service>
 
         <service id="Swag\SaasConnect\Core\Framework\Plugin\AppConfigGenerator" decorates="Shopware\Core\Framework\Plugin\BundleConfigGenerator">
             <argument type="service" id="Swag\SaasConnect\Core\Framework\Plugin\AppConfigGenerator.inner" />
-            <argument type="service" id="swag_app.repository" />
+            <argument type="service" id="saas_app.repository" />
             <argument type="service" id="Shopware\Storefront\Theme\StorefrontPluginRegistry" on-invalid="null" />
             <argument>%kernel.project_dir%</argument>
 
@@ -24,14 +24,14 @@
         <service id="Swag\SaasConnect\Core\Framework\Template\TemplateLoader"/>
 
         <service id="Swag\SaasConnect\Core\Framework\Adapter\Twig\EntityTemplateLoader">
-            <argument type="service" id="swag_template.repository" />
+            <argument type="service" id="saas_template.repository" />
 
             <tag name="twig.loader"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Framework\Adapter\Twig\AppTemplateHierarchyBuilder">
-            <argument type="service" id="swag_app.repository"/>
+            <argument type="service" id="saas_app.repository"/>
 
             <!-- Make sure it runs after default `BundleHierarchyBuilder`, but before `ThemeNamespaceHierarchyBuilder` -->
             <tag name="shopware.twig.hierarchy_builder" priority="900"/>
@@ -39,7 +39,7 @@
 
         <service id="Swag\SaasConnect\Core\Framework\Adapter\Twig\AppTemplateIterator" decorates="twig.template_iterator" public="true">
             <argument type="service" id="Swag\SaasConnect\Core\Framework\Adapter\Twig\AppTemplateIterator.inner" />
-            <argument type="service" id="swag_template.repository" />
+            <argument type="service" id="saas_template.repository" />
         </service>
 
         <service id="Swag\SaasConnect\Storefront\Theme\StorefrontPluginConfiguration\StorefrontPluginConfigurationAppFactory">
@@ -48,7 +48,7 @@
 
         <service id="Swag\SaasConnect\Storefront\Theme\StorefrontAppRegistry" decorates="Shopware\Storefront\Theme\StorefrontPluginRegistry">
             <argument type="service" id="Swag\SaasConnect\Storefront\Theme\StorefrontAppRegistry.inner" />
-            <argument type="service" id="swag_app.repository" />
+            <argument type="service" id="saas_app.repository" />
             <argument type="service" id="Swag\SaasConnect\Storefront\Theme\StorefrontPluginConfiguration\StorefrontPluginConfigurationAppFactory" />
         </service>
 
@@ -94,12 +94,12 @@
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycleIterator">
-            <argument type="service" id="swag_app.repository"/>
+            <argument type="service" id="saas_app.repository"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle">
-            <argument type="service" id="swag_app.repository"/>
+            <argument type="service" id="saas_app.repository"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\ActionButtonPersister"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionPersister"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\CustomFieldPersister"/>
@@ -110,7 +110,7 @@
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\ActionButtonPersister">
-            <argument type="service" id="swag_app_action_button.repository"/>
+            <argument type="service" id="saas_app_action_button.repository"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\CustomFieldPersister">
@@ -118,7 +118,7 @@
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\WebhookPersister">
-            <argument type="service" id="swag_webhook.repository"/>
+            <argument type="service" id="saas_webhook.repository"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionPersister">
@@ -154,15 +154,15 @@
         </service>
 
         <service id="Swag\SaasConnect\Core\Command\AppPrinter">
-            <argument type="service" id="swag_app.repository"/>
+            <argument type="service" id="saas_app.repository"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Action\ActionButtonLoader">
-            <argument type="service" id="swag_app_action_button.repository"/>
+            <argument type="service" id="saas_app_action_button.repository"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Manifest\ModuleLoader">
-            <argument type="service" id="swag_app.repository"/>
+            <argument type="service" id="saas_app.repository"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Action\Executor">
@@ -174,7 +174,7 @@
 
         <service id="Swag\SaasConnect\Core\Content\App\Action\AppActionLoader">
             <argument>%env(APP_URL)%</argument>
-            <argument type="service" id="swag_app_action_button.repository"/>
+            <argument type="service" id="saas_app_action_button.repository"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Subscriber\AppLoadedSubscriber">
@@ -182,19 +182,19 @@
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\AppDefinition">
-            <tag name="shopware.entity.definition" entity="swag_app"/>
+            <tag name="shopware.entity.definition" entity="saas_app"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationDefinition">
-            <tag name="shopware.entity.definition" entity="swag_app_translation"/>
+            <tag name="shopware.entity.definition" entity="saas_app_translation"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonDefinition">
-            <tag name="shopware.entity.definition" entity="swag_app_action_button"/>
+            <tag name="shopware.entity.definition" entity="saas_app_action_button"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Aggregate\ActionButtonTranslation\ActionButtonTranslationDefinition">
-            <tag name="shopware.entity.definition" entity="swag_app_action_button_translation"/>
+            <tag name="shopware.entity.definition" entity="saas_app_action_button_translation"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\System\CustomField\Aggregate\CustomFieldSet\CustomFieldSetExtension">
@@ -202,11 +202,11 @@
         </service>
 
         <service id="Swag\SaasConnect\Core\Framework\Webhook\WebhookDefinition">
-            <tag name="shopware.entity.definition" entity="swag_webhook"/>
+            <tag name="shopware.entity.definition" entity="saas_webhook"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Framework\Template\TemplateDefinition">
-            <tag name="shopware.entity.definition" entity="swag_template"/>
+            <tag name="shopware.entity.definition" entity="saas_template"/>
         </service>
     </services>
 </container>

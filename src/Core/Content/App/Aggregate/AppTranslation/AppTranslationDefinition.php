@@ -11,7 +11,7 @@ use Swag\SaasConnect\Core\Content\App\AppDefinition;
 
 class AppTranslationDefinition extends EntityTranslationDefinition
 {
-    public const ENTITY_NAME = 'swag_app_translation';
+    public const ENTITY_NAME = 'saas_app_translation';
 
     public function getEntityName(): string
     {

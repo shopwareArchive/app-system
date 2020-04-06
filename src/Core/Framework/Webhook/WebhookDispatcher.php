@@ -182,8 +182,8 @@ class WebhookDispatcher implements EventDispatcherInterface
 
         $result = $this->connection->fetchAll('
             SELECT `webhook`.`event_name`, `webhook`.`url`, `app`.`access_token`, `app`.`version`, `integration`.`access_key`
-            FROM `swag_webhook` AS `webhook`
-            LEFT JOIN `swag_app` AS `app` ON `webhook`.`app_id` = `app`.`id`
+            FROM `saas_webhook` AS `webhook`
+            LEFT JOIN `saas_app` AS `app` ON `webhook`.`app_id` = `app`.`id`
             LEFT JOIN `integration` ON `app`.`integration_id` = `integration`.`id`
         ');
 

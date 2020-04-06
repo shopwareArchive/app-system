@@ -14,7 +14,7 @@ use Swag\SaasConnect\Core\Content\App\AppDefinition;
 
 class WebhookDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'swag_webhook';
+    public const ENTITY_NAME = 'saas_webhook';
 
     public function getEntityName(): string
     {

@@ -42,9 +42,9 @@ class AppTemplateHierarchyBuilder implements TemplateNamespaceHierarchyBuilderIn
         $criteria = new Criteria();
         $criteria->addFilter(new NotFilter(
             MultiFilter::CONNECTION_AND,
-            [new EqualsFilter('swag_app.templates.id', null)]
+            [new EqualsFilter('saas_app.templates.id', null)]
         ));
-        $criteria->addAggregation(new TermsAggregation('appNames', 'swag_app.name'));
+        $criteria->addAggregation(new TermsAggregation('appNames', 'saas_app.name'));
 
         /** @var TermsResult $appNames */
         $appNames = $this->appRepository->aggregate($criteria, Context::createDefaultContext())->get('appNames');

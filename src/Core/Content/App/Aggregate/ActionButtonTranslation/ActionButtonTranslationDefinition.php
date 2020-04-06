@@ -10,7 +10,7 @@ use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonDefinit
 
 class ActionButtonTranslationDefinition extends EntityTranslationDefinition
 {
-    public const ENTITY_NAME = 'swag_app_action_button_translation';
+    public const ENTITY_NAME = 'saas_app_action_button_translation';
 
     public function getEntityName(): string
     {

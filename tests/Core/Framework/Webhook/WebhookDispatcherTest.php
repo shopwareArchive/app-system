@@ -46,7 +46,7 @@ class WebhookDispatcherTest extends TestCase
     public function setUp(): void
     {
         $this->appServerMock = $this->getContainer()->get(MockHandler::class);
-        $this->webhookRepository = $this->getContainer()->get('swag_webhook.repository');
+        $this->webhookRepository = $this->getContainer()->get('saas_webhook.repository');
         $this->shopUrl = $_ENV['APP_URL'];
     }
 
@@ -260,7 +260,7 @@ class WebhookDispatcherTest extends TestCase
 
     public function testDispatchesAccessKeyIfWebhookHasApp(): void
     {
-        $appRepository = $this->getContainer()->get('swag_app.repository');
+        $appRepository = $this->getContainer()->get('saas_app.repository');
         $appRepository->create([[
             'name' => 'SwagApp',
             'path' => __DIR__ . '/Manifest/_fixtures/test',

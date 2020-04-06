@@ -17,7 +17,7 @@ use Swag\SaasConnect\Core\Content\App\AppDefinition;
 
 class TemplateDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'swag_template';
+    public const ENTITY_NAME = 'saas_template';
 
     public function getEntityName(): string
     {

@@ -6,6 +6,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\AdminApiTestBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
@@ -66,8 +67,8 @@ class AppActionControllerTest extends TestCase
     {
         $appServerMock = $this->getContainer()->get(MockHandler::class);
 
-        /** @var EntityRepository $actionRepo */
-        $actionRepo = $this->getContainer()->get('swag_app_action_button.repository');
+        /** @var EntityRepositoryInterface $actionRepo */
+        $actionRepo = $this->getContainer()->get('saas_app_action_button.repository');
         $this->loadAppsFromDir(__DIR__ . '/../Manifest/_fixtures/test');
 
         $criteria = (new Criteria())
@@ -120,8 +121,8 @@ class AppActionControllerTest extends TestCase
     {
         $appServerMock = $this->getContainer()->get(MockHandler::class);
 
-        /** @var EntityRepository $actionRepo */
-        $actionRepo = $this->getContainer()->get('swag_app_action_button.repository');
+        /** @var EntityRepositoryInterface $actionRepo */
+        $actionRepo = $this->getContainer()->get('saas_app_action_button.repository');
         $this->loadAppsFromDir(__DIR__ . '/../Manifest/_fixtures/test');
 
         $criteria = (new Criteria())
