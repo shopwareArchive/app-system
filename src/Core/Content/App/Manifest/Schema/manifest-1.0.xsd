@@ -190,6 +190,7 @@
             <xs:enumeration value="product"/>
             <xs:enumeration value="order"/>
             <xs:enumeration value="catalogue"/>
+            <xs:enumeration value="promotion"/>
         </xs:restriction>
     </xs:simpleType>
     <xs:complexType name="option-collection">
@@ -212,6 +213,7 @@
     <xs:complexType name="entity-list">
         <xs:choice maxOccurs="unbounded">
             <xs:element name="product" type="empty" minOccurs="0"/>
+            <xs:element name="order" type="empty" minOccurs="0"/>
             <xs:element name="category" type="empty" minOccurs="0"/>
             <xs:element name="customer" type="empty" minOccurs="0"/>
             <xs:element name="customer_address" type="empty" minOccurs="0"/>
