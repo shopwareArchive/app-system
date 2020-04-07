@@ -25,7 +25,7 @@ trait CustomFieldTypeTestBehaviour
         $appLifecycle->install($manifest, $context);
 
         /** @var EntityRepositoryInterface $appRepository */
-        $appRepository = $this->getContainer()->get('swag_app.repository');
+        $appRepository = $this->getContainer()->get('saas_app.repository');
         $criteria = new Criteria();
         $criteria->addAssociation('customFieldSets.customFields');
 

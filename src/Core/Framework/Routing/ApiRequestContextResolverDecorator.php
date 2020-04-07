@@ -60,7 +60,7 @@ class ApiRequestContextResolverDecorator implements RequestContextResolverInterf
     {
         /** @var string|null $roleId */
         $roleId = $this->connection->fetchColumn(
-            'SELECT acl_role_id FROM `swag_app` WHERE `integration_id` = :integrationId',
+            'SELECT acl_role_id FROM `saas_app` WHERE `integration_id` = :integrationId',
             ['integrationId' => Uuid::fromHexToBytes($integrationId)]
         );
 

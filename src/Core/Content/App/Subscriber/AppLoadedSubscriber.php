@@ -14,7 +14,7 @@ class AppLoadedSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'swag_app.loaded' => 'unserialize',
+            'saas_app.loaded' => 'unserialize',
         ];
     }
 

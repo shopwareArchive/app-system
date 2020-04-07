@@ -15,7 +15,7 @@ class Migration1578889830ActionButton extends MigrationStep
     public function update(Connection $connection): void
     {
         $connection->executeUpdate('
-            CREATE TABLE `swag_app_action_button` (
+            CREATE TABLE `saas_app_action_button` (
                 `id` BINARY(16) NOT NULL,
                 `entity` VARCHAR(255) NOT NULL,
                 `view` VARCHAR(255) NOT NULL,
@@ -27,22 +27,22 @@ class Migration1578889830ActionButton extends MigrationStep
                 `updated_at` DATETIME(3) NULL,
                 PRIMARY KEY (`id`),
                 KEY `fk.app_action_button.app_id` (`app_id`),
-                CONSTRAINT `fk.app_action_button.app_id` FOREIGN KEY (`app_id`) REFERENCES `swag_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+                CONSTRAINT `fk.app_action_button.app_id` FOREIGN KEY (`app_id`) REFERENCES `saas_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
                 CONSTRAINT `uniq.app_action_button.action` UNIQUE (`action`, `app_id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
 
         $connection->executeUpdate('
-            CREATE TABLE `swag_app_action_button_translation` (
+            CREATE TABLE `saas_app_action_button_translation` (
                 `label` VARCHAR(255) NOT NULL,
                 `created_at` DATETIME(3) NOT NULL,
                 `updated_at` DATETIME(3) NULL,
-                `swag_app_action_button_id` BINARY(16) NOT NULL,
+                `saas_app_action_button_id` BINARY(16) NOT NULL,
                 `language_id` BINARY(16) NOT NULL,
-                PRIMARY KEY (`swag_app_action_button_id`,`language_id`),
-                KEY `fk.app_action_button_translation.swag_app_action_button_id` (`swag_app_action_button_id`),
+                PRIMARY KEY (`saas_app_action_button_id`,`language_id`),
+                KEY `fk.app_action_button_translation.saas_app_action_button_id` (`saas_app_action_button_id`),
                 KEY `fk.app_action_button_translation.language_id` (`language_id`),
-                CONSTRAINT `fk.app_action_button_translation.swag_app_action_button_id` FOREIGN KEY (`swag_app_action_button_id`) REFERENCES `swag_app_action_button` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+                CONSTRAINT `fk.app_action_button_translation.saas_app_action_button_id` FOREIGN KEY (`saas_app_action_button_id`) REFERENCES `saas_app_action_button` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
                 CONSTRAINT `fk.app_action_button_translation.language_id` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');

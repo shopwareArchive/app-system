@@ -15,7 +15,7 @@ class AppTemplateHierarchyBuilderTest extends TestCase
     public function testItAddsAppTemplateNamespaces(): void
     {
         /** @var EntityRepositoryInterface $appRepository */
-        $appRepository = $this->getContainer()->get('swag_app.repository');
+        $appRepository = $this->getContainer()->get('saas_app.repository');
 
         $appRepository->create([
             [

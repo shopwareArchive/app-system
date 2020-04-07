@@ -22,7 +22,7 @@ class AppActionLoaderTest extends TestCase
         $actionLoader = $this->getContainer()->get(AppActionLoader::class);
 
         /** @var EntityRepository $actionRepo */
-        $actionRepo = $this->getContainer()->get('swag_app_action_button.repository');
+        $actionRepo = $this->getContainer()->get('saas_app_action_button.repository');
         $this->loadAppsFromDir(__DIR__ . '/../Manifest/_fixtures/test');
 
         $criteria = (new Criteria())

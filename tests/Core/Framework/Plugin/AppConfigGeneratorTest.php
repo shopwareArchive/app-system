@@ -76,7 +76,7 @@ class AppConfigGeneratorTest extends TestCase
                 $this->getContainer()->get('kernel'),
                 $this->getContainer()->get('plugin.repository')
             ),
-            $this->getContainer()->get('swag_app.repository'),
+            $this->getContainer()->get('saas_app.repository'),
             null,
             $this->getContainer()->getParameter('kernel.project_dir')
         );

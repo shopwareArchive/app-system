@@ -15,7 +15,7 @@ class Migration1578558350App extends MigrationStep
     public function update(Connection $connection): void
     {
         $connection->executeUpdate('
-            CREATE TABLE `swag_app` (
+            CREATE TABLE `saas_app` (
                 `id` BINARY(16) NOT NULL,
                 `name` VARCHAR(255) NOT NULL,
                 `path` VARCHAR(255) NOT NULL,
@@ -39,17 +39,17 @@ class Migration1578558350App extends MigrationStep
         ');
 
         $connection->executeUpdate('
-            CREATE TABLE `swag_app_translation` (
-                `swag_app_id` BINARY(16) NOT NULL,
+            CREATE TABLE `saas_app_translation` (
+                `saas_app_id` BINARY(16) NOT NULL,
                 `language_id` BINARY(16) NOT NULL,
                 `label` VARCHAR(255) NOT NULL,
                 `description` LONGTEXT NULL,
                 `created_at` DATETIME(3) NOT NULL,
                 `updated_at` DATETIME(3) NULL,
-                PRIMARY KEY (`swag_app_id`,`language_id`),
-                KEY `fk.app_translation.swag_app_id` (`swag_app_id`),
+                PRIMARY KEY (`saas_app_id`,`language_id`),
+                KEY `fk.app_translation.saas_app_id` (`saas_app_id`),
                 KEY `fk.app_translation.language_id` (`language_id`),
-                CONSTRAINT `fk.app_translation.swag_app_id` FOREIGN KEY (`swag_app_id`) REFERENCES `swag_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+                CONSTRAINT `fk.app_translation.saas_app_id` FOREIGN KEY (`saas_app_id`) REFERENCES `saas_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
                 CONSTRAINT `fk.app_translation.language_id` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');

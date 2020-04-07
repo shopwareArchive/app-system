@@ -18,14 +18,14 @@ class AppLoadedSubscriberTest extends TestCase
     public function testGetSubscribedEvents(): void
     {
         static::assertEquals([
-            'swag_app.loaded' => 'unserialize',
+            'saas_app.loaded' => 'unserialize',
         ], AppLoadedSubscriber::getSubscribedEvents());
     }
 
     public function testUnserialize(): void
     {
         /** @var EntityRepositoryInterface $appRepository */
-        $appRepository = $this->getContainer()->get('swag_app.repository');
+        $appRepository = $this->getContainer()->get('saas_app.repository');
 
         $id = Uuid::randomHex();
 

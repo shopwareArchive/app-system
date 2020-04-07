@@ -31,7 +31,7 @@ class EntityTemplateLoader implements LoaderInterface, EventSubscriberInterface
 
     public static function getSubscribedEvents(): array
     {
-        return ['swag_template.written' => 'clearInternalCache'];
+        return ['saas_template.written' => 'clearInternalCache'];
     }
 
     public function clearInternalCache(): void

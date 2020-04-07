@@ -17,7 +17,7 @@ trait AppSystemTestBehaviour
     {
         $appService = new AppService(
             new AppLifecycleIterator(
-                $this->getContainer()->get('swag_app.repository'),
+                $this->getContainer()->get('saas_app.repository'),
                 new AppLoader($appDir)
             ),
             $this->getContainer()->get(AppLifecycle::class)
