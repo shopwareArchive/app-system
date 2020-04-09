@@ -190,6 +190,7 @@
             <xs:enumeration value="product"/>
             <xs:enumeration value="order"/>
             <xs:enumeration value="catalogue"/>
+            <xs:enumeration value="promotion"/>
         </xs:restriction>
     </xs:simpleType>
     <xs:complexType name="option-collection">
@@ -212,6 +213,7 @@
     <xs:complexType name="entity-list">
         <xs:choice maxOccurs="unbounded">
             <xs:element name="product" type="empty" minOccurs="0"/>
+            <xs:element name="order" type="empty" minOccurs="0"/>
             <xs:element name="category" type="empty" minOccurs="0"/>
             <xs:element name="customer" type="empty" minOccurs="0"/>
             <xs:element name="customer_address" type="empty" minOccurs="0"/>
@@ -225,17 +227,6 @@
             <xs:restriction base="xs:anyType"/>
         </xs:complexContent>
     </xs:complexType>
-    <xs:simpleType name="custom-field-entities">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="product"/>
-            <xs:enumeration value="catalogue"/>
-            <xs:enumeration value="customer"/>
-            <xs:enumeration value="customer_address"/>
-            <xs:enumeration value="product_manufacturer"/>
-            <xs:enumeration value="media"/>
-            <xs:enumeration value="sales_channel"/>
-        </xs:restriction>
-    </xs:simpleType>
     <xs:complexType name="translatableString">
         <xs:simpleContent>
             <xs:extension base="xs:string">
