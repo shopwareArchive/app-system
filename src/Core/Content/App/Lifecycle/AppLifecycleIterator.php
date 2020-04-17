@@ -16,13 +16,13 @@ class AppLifecycleIterator
     private $appRepository;
 
     /**
-     * @var AppLoader
+     * @var AppLoaderInterface
      */
     private $appLoader;
 
     public function __construct(
         EntityRepositoryInterface $appRepository,
-        AppLoader $appLoader
+        AppLoaderInterface $appLoader
     ) {
         $this->appRepository = $appRepository;
         $this->appLoader = $appLoader;
