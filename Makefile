@@ -4,7 +4,7 @@ GROUP_ID := $(shell id -g)
 TOOLS_BIN := dev-ops/tools/vendor/bin
 
 # TARGETS
-.PHONY: help static-analysis psalm phpstan php-insights test ecs-dry ecs-fix init install-tools administration-unit administration-lint vendor administration-e2e-open administration-e2e-cli-proxy administration-e2e-open
+.PHONY: help static-analysis psalm phpstan php-insights test ecs-dry ecs-fix init install-tools administration-unit administration-lint vendor e2e-init e2e-open e2e-cli-proxy e2e-open
 
 .DEFAULT_GOAL := help
 
@@ -67,6 +67,9 @@ $(TOOLS_BIN):
 
 vendor:
 	composer install --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
+
+e2e-init: ## installs dependencies for e2e tests
+	npm --prefix src/Resources/app/e2e install
 
 e2e-cli-proxy: ## starts an express server to add additional commands for e2e tests
 	npm --prefix src/Resources/app/e2e run start-e2e-proxy
