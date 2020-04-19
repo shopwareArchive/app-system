@@ -6,14 +6,18 @@ import resetDB from './actions/reset-db.js';
 import clearCache from './actions/clear-cache.js';
 import cypressEnv from '../cypress.env.json';
 
-const projectRoot = join(process.env.PWD, '../../../../../../../../');
-const e2eRoot = join(process.env.PWD, '../');
-const appService = new AppService(
-    projectRoot,
-    e2eRoot
-);
+const e2eRoot = join(process.cwd());
+const projectRoot = join(e2eRoot, '../../../../../../../');
 
 const proxyPort = cypressEnv.cliProxy.port;
+const cliProxyUrl = `${cypressEnv.schema}://${cypressEnv.host}:${cypressEnv.cliProxy.port}`;
+
+const appService = new AppService(
+    projectRoot,
+    e2eRoot,
+    cliProxyUrl,
+);
+
 const server = express();
 
 server.post('/install-e2e-apps', function (req, res) {
@@ -59,7 +63,7 @@ server.delete('/cleanup', function (req, res) {
 });
 
 server.get('/show-app-action', function(req, res) {
-    res.sendFile(resolve(dirname('')+'/view/show-product-app.html' ));
+    res.sendFile(resolve(`${e2eRoot}/cli-tools/view/show-product-app.html`));
 });
 
 server.listen(proxyPort, () => {

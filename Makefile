@@ -69,12 +69,7 @@ vendor:
 	composer install --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
 
 e2e-cli-proxy: ## starts an express server to add additional commands for e2e tests
-ifneq ($(wildcard ./src/Resources/app/e2e/cli-tools/node_modules/.),)
-	npm --prefix src/Resources/app/e2e/cli-tools run start
-else
-	npm --prefix src/Resources/app/e2e/cli-tools install --production
-	npm --prefix src/Resources/app/e2e/cli-tools run start
-endif
+	npm --prefix src/Resources/app/e2e run start-e2e-proxy
 
 e2e-open: ## open cypress
 	- cd ../../../ && ./psh.phar cache --DB_NAME="shopware_e2e" --APP_ENV="prod"
