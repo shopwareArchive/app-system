@@ -60,7 +60,7 @@ class Manifest
         $this->webhooks = $webhooks;
     }
 
-    public static function createFromXmlFile(string $xmlFile, ?string $path = null): self
+    public static function createFromXmlFile(string $xmlFile): self
     {
         try {
             $doc = XmlUtils::loadFile($xmlFile, self::XSD_FILE);
@@ -84,16 +84,17 @@ class Manifest
         $webhooks = $doc->getElementsByTagName('webhooks')->item(0);
         $webhooks = $webhooks === null ? null : Webhooks::fromXml($webhooks);
 
-        if (!$path) {
-            $path = dirname($xmlFile);
-        }
-
-        return new self($path, $metadata, $admin, $permissions, $customFields, $webhooks);
+        return new self(dirname($xmlFile), $metadata, $admin, $permissions, $customFields, $webhooks);
     }
 
     public function getPath(): string
     {
         return $this->path;
+    }
+
+    public function setPath(string $path): void
+    {
+        $this->path = $path;
     }
 
     public function getMetadata(): Metadata
