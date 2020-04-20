@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swag\SaasConnect\Test\Core\Content\App;
+namespace Swag\SaasConnect\Test\Core\Content\App\Lifecycle;
 
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
@@ -18,9 +18,13 @@ use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonEntity;
 use Swag\SaasConnect\Core\Content\App\AppCollection;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppDeletedEvent;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppInstalledEvent;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppUpdatedEvent;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 use Swag\SaasConnect\Core\Framework\Template\TemplateEntity;
 use Swag\SaasConnect\Core\Framework\Webhook\WebhookEntity;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class AppLifecycleTest extends TestCase
 {
@@ -46,6 +50,11 @@ class AppLifecycleTest extends TestCase
      */
     private $actionButtonRepository;
 
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
     public function setUp(): void
     {
         $this->appRepository = $this->getContainer()->get('saas_app.repository');
@@ -53,23 +62,39 @@ class AppLifecycleTest extends TestCase
 
         $this->appLifecycle = $this->getContainer()->get(AppLifecycle::class);
         $this->context = Context::createDefaultContext();
+
+        $this->eventDispatcher = $this->getContainer()->get('event_dispatcher');
     }
 
     public function testInstall(): void
     {
-        $manifest = Manifest::createFromXmlFile(__DIR__ . '/Manifest/_fixtures/test/manifest.xml');
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/../Manifest/_fixtures/test/manifest.xml');
+
+        $eventWasThrown = false;
+        $appId = null;
+        $onAppInstalled = function (AppInstalledEvent $event) use (&$eventWasThrown, &$appId, $manifest): void {
+            $eventWasThrown = true;
+            $appId = $event->getAppId();
+            static::assertEquals($this->context, $event->getContext());
+            static::assertEquals($manifest, $event->getApp());
+        };
+        $this->eventDispatcher->addListener(AppInstalledEvent::class, $onAppInstalled);
+
         $this->appLifecycle->install($manifest, $this->context);
 
+        static::assertTrue($eventWasThrown);
+        $this->eventDispatcher->removeListener(AppInstalledEvent::class, $onAppInstalled);
         /** @var AppCollection $apps */
         $apps = $this->appRepository->search(new Criteria(), $this->context)->getEntities();
 
         static::assertCount(1, $apps);
         static::assertEquals('SwagApp', $apps->first()->getName());
         static::assertEquals(
-            base64_encode(file_get_contents(__DIR__ . '/Manifest/_fixtures/test/icon.png')),
+            base64_encode(file_get_contents(__DIR__ . '/../Manifest/_fixtures/test/icon.png')),
             $apps->first()->getIcon()
         );
 
+        static::assertEquals($appId, $apps->first()->getId());
         $this->assertDefaultActionButtons();
         $this->assertDefaultModules($apps->first());
         $this->assertDefaultPrivileges($apps->first()->getAclRoleId());
@@ -80,7 +105,7 @@ class AppLifecycleTest extends TestCase
 
     public function testInstallMinimalManifest(): void
     {
-        $manifest = Manifest::createFromXmlFile(__DIR__ . '/Manifest/_fixtures/minimal/manifest.xml');
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/../Manifest/_fixtures/minimal/manifest.xml');
         $this->appLifecycle->install($manifest, $this->context);
 
         /** @var AppCollection $apps */
@@ -98,7 +123,7 @@ class AppLifecycleTest extends TestCase
         $this->appRepository->create([[
             'id' => $id,
             'name' => 'SwagApp',
-            'path' => __DIR__ . '/Manifest/_fixtures/test',
+            'path' => __DIR__ . '/../Manifest/_fixtures/test',
             'version' => '0.0.1',
             'label' => 'test',
             'accessToken' => 'test',
@@ -179,16 +204,28 @@ class AppLifecycleTest extends TestCase
             'roleId' => $roleId,
         ];
 
-        $manifest = Manifest::createFromXmlFile(__DIR__ . '/Manifest/_fixtures/test/manifest.xml');
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/../Manifest/_fixtures/test/manifest.xml');
+
+        $eventWasThrown = false;
+        $onAppUpdated = function (AppUpdatedEvent $event) use (&$eventWasThrown, $id, $manifest): void {
+            $eventWasThrown = true;
+            static::assertEquals($id, $event->getAppId());
+            static::assertEquals($this->context, $event->getContext());
+            static::assertEquals($manifest, $event->getApp());
+        };
+        $this->eventDispatcher->addListener(AppUpdatedEvent::class, $onAppUpdated);
+
         $this->appLifecycle->update($manifest, $app, $this->context);
 
+        static::assertTrue($eventWasThrown);
+        $this->eventDispatcher->removeListener(AppInstalledEvent::class, $onAppUpdated);
         /** @var AppCollection $apps */
         $apps = $this->appRepository->search(new Criteria(), $this->context)->getEntities();
 
         static::assertCount(1, $apps);
         static::assertEquals('SwagApp', $apps->first()->getName());
         static::assertEquals(
-            base64_encode(file_get_contents(__DIR__ . '/Manifest/_fixtures/test/icon.png')),
+            base64_encode(file_get_contents(__DIR__ . '/../Manifest/_fixtures/test/icon.png')),
             $apps->first()->getIcon()
         );
         static::assertEquals('1.0.0', $apps->first()->getVersion());
@@ -208,7 +245,7 @@ class AppLifecycleTest extends TestCase
         $this->appRepository->create([[
             'id' => $appId,
             'name' => 'Test',
-            'path' => __DIR__ . '/Manifest/_fixtures/test',
+            'path' => __DIR__ . '/../Manifest/_fixtures/test',
             'version' => '0.0.1',
             'label' => 'test',
             'accessToken' => 'test',
@@ -236,8 +273,18 @@ class AppLifecycleTest extends TestCase
             'id' => $appId,
         ];
 
+        $eventWasThrown = false;
+        $onAppDeleted = function (AppDeletedEvent $event) use (&$eventWasThrown, $appId): void {
+            $eventWasThrown = true;
+            static::assertEquals($appId, $event->getAppId());
+            static::assertEquals($this->context, $event->getContext());
+        };
+        $this->eventDispatcher->addListener(AppDeletedEvent::class, $onAppDeleted);
+
         $this->appLifecycle->delete('Test', $app, $this->context);
 
+        static::assertTrue($eventWasThrown);
+        $this->eventDispatcher->removeListener(AppInstalledEvent::class, $onAppDeleted);
         $apps = $this->appRepository->searchIds(new Criteria([$appId]), $this->context)->getIds();
         static::assertCount(0, $apps);
 
@@ -398,7 +445,7 @@ class AppLifecycleTest extends TestCase
         $template = $templates->first();
         static::assertEquals('storefront/layout/header/logo.html.twig', $template->getPath());
         static::assertStringEqualsFile(
-            __DIR__ . '/Manifest/_fixtures/test/Resources/views/storefront/layout/header/logo.html.twig',
+            __DIR__ . '/../Manifest/_fixtures/test/Resources/views/storefront/layout/header/logo.html.twig',
             $template->getTemplate()
         );
         static::assertTrue($template->isActive());

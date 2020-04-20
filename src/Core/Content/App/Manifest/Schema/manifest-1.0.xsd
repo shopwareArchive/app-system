@@ -4,8 +4,19 @@
     <xs:element name="manifest">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="meta" type="meta"/>
+                <xs:element name="meta" type="meta">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            The Meta-Information about your app.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
                 <xs:element name="admin" type="admin" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            Define the administration customizations of your app.
+                        </xs:documentation>
+                    </xs:annotation>
                     <xs:unique name="uniqueActionName">
                         <xs:selector xpath="action-button"/>
                         <xs:field xpath="@action"/>
@@ -15,9 +26,26 @@
                         <xs:field xpath="@name"/>
                     </xs:unique>
                 </xs:element>
-                <xs:element name="permissions" type="permissions" minOccurs="0"/>
-                <xs:element name="custom-fields" type="custom-fields" minOccurs="0"/>
+                <xs:element name="permissions" type="permissions" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            Define all permissions your app needs.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="custom-fields" type="custom-fields" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            Register custom-fields your app needs.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
                 <xs:element name="webhooks" type="webhooks" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            Register webhooks your app wants to receive..
+                        </xs:documentation>
+                    </xs:annotation>
                     <xs:unique name="uniqueWebhookName">
                         <xs:selector xpath="webhook"/>
                         <xs:field xpath="@name"/>
