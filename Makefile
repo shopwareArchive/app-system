@@ -4,7 +4,7 @@ GROUP_ID := $(shell id -g)
 TOOLS_BIN := dev-ops/tools/vendor/bin
 
 # TARGETS
-.PHONY: help static-analysis psalm phpstan php-insights test ecs-dry ecs-fix init install-tools administration-unit administration-lint vendor e2e-init e2e-open e2e-cli-proxy e2e-open
+.PHONY: help static-analysis psalm phpstan php-insights test ecs-dry ecs-fix init install-tools administration-unit administration-lint vendor e2e-init e2e-open e2e-cli-proxy
 
 .DEFAULT_GOAL := help
 

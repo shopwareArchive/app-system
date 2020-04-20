@@ -10,7 +10,7 @@ const e2eRoot = join(process.cwd());
 const projectRoot = join(e2eRoot, '../../../../../../../');
 
 const proxyPort = cypressEnv.cliProxy.port;
-const cliProxyUrl = `${cypressEnv.schema}://${cypressEnv.host}:${cypressEnv.cliProxy.port}`;
+const cliProxyUrl = `${cypressEnv.schema}://${cypressEnv.host}:${proxyPort}`;
 
 const appService = new AppService(
     projectRoot,
