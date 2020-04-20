@@ -107,6 +107,7 @@
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\TemplatePersister"/>
             <argument type="service" id="Swag\SaasConnect\Storefront\Theme\Lifecycle\ThemeLifecycleHandler"/>
+            <argument type="service" id="event_dispatcher"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\ActionButtonPersister">

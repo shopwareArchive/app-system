@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swag\SaasConnect\Test\Core\Content\App;
+namespace Swag\SaasConnect\Test\Core\Content\App\Lifecycle;
 
 use PHPUnit\Framework\TestCase;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader;
@@ -10,7 +10,7 @@ class AppLoaderTest extends TestCase
 {
     public function testLoad(): void
     {
-        $appLoader = new AppLoader(__DIR__ . '/Manifest/_fixtures/test');
+        $appLoader = new AppLoader(__DIR__ . '/../Manifest/_fixtures/test');
 
         $manifests = $appLoader->load();
 
@@ -20,7 +20,7 @@ class AppLoaderTest extends TestCase
 
     public function testLoadIgnoresInvalid(): void
     {
-        $appLoader = new AppLoader(__DIR__ . '/Manifest/_fixtures/invalid');
+        $appLoader = new AppLoader(__DIR__ . '/../Manifest/_fixtures/invalid');
 
         $manifests = $appLoader->load();
 
@@ -29,7 +29,7 @@ class AppLoaderTest extends TestCase
 
     public function testLoadCombinesFolders(): void
     {
-        $appLoader = new AppLoader(__DIR__ . '/Manifest/_fixtures');
+        $appLoader = new AppLoader(__DIR__ . '/../Manifest/_fixtures');
 
         $manifests = $appLoader->load();
 
@@ -41,7 +41,7 @@ class AppLoaderTest extends TestCase
 
     public function testGetIcon(): void
     {
-        $appLoader = new AppLoader(__DIR__ . '/Manifest/_fixtures/test');
+        $appLoader = new AppLoader(__DIR__ . '/../Manifest/_fixtures/test');
 
         $manifests = $appLoader->load();
 
@@ -50,13 +50,13 @@ class AppLoaderTest extends TestCase
         $manifest = $manifests[0];
 
         static::assertStringEqualsFile(
-            __DIR__ . '/Manifest/_fixtures/test/icon.png', $appLoader->getIcon($manifest)
+            __DIR__ . '/../Manifest/_fixtures/test/icon.png', $appLoader->getIcon($manifest)
         );
     }
 
     public function testGetIconReturnsNullOnInvalidIconPath(): void
     {
-        $appLoader = new AppLoader(__DIR__ . '/Manifest/_fixtures/test');
+        $appLoader = new AppLoader(__DIR__ . '/../Manifest/_fixtures/test');
 
         $manifests = $appLoader->load();
 

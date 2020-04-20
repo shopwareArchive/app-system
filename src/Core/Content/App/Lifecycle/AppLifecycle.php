@@ -6,6 +6,9 @@ use Shopware\Core\Framework\Api\Util\AccessKeyHelper;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppDeletedEvent;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppInstalledEvent;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppUpdatedEvent;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\ActionButtonPersister;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\CustomFieldPersister;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionPersister;
@@ -14,6 +17,7 @@ use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\WebhookPersister;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Module;
 use Swag\SaasConnect\Storefront\Theme\Lifecycle\ThemeLifecycleHandler;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class AppLifecycle implements AppLifecycleInterface
 {
@@ -57,6 +61,11 @@ class AppLifecycle implements AppLifecycleInterface
      */
     private $themeLifecycleHandler;
 
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
     public function __construct(
         EntityRepositoryInterface $appRepository,
         ActionButtonPersister $actionButtonPersister,
@@ -65,7 +74,8 @@ class AppLifecycle implements AppLifecycleInterface
         WebhookPersister $webhookPersister,
         AppLoaderInterface $appLoader,
         TemplatePersister $templatePersister,
-        ThemeLifecycleHandler $themeLifecycleHandler
+        ThemeLifecycleHandler $themeLifecycleHandler,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->appRepository = $appRepository;
         $this->actionButtonPersister = $actionButtonPersister;
@@ -75,6 +85,7 @@ class AppLifecycle implements AppLifecycleInterface
         $this->appLoader = $appLoader;
         $this->templatePersister = $templatePersister;
         $this->themeLifecycleHandler = $themeLifecycleHandler;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function install(Manifest $manifest, Context $context): void
@@ -85,6 +96,10 @@ class AppLifecycle implements AppLifecycleInterface
         $metadata = $this->enrichInstallMetadata($manifest, $metadata, $roleId);
 
         $this->updateApp($manifest, $metadata, $appId, $roleId, $context);
+
+        $this->eventDispatcher->dispatch(
+            new AppInstalledEvent($appId, $manifest, $context)
+        );
     }
 
     /**
@@ -94,6 +109,10 @@ class AppLifecycle implements AppLifecycleInterface
     {
         $metadata = $manifest->getMetadata()->toArray();
         $this->updateApp($manifest, $metadata, $app['id'], $app['roleId'], $context);
+
+        $this->eventDispatcher->dispatch(
+            new AppUpdatedEvent($app['id'], $manifest, $context)
+        );
     }
 
     /**
@@ -103,6 +122,10 @@ class AppLifecycle implements AppLifecycleInterface
     {
         $this->themeLifecycleHandler->handleUninstall($appName, $context);
         $this->appRepository->delete([['id' => $app['id']]], $context);
+
+        $this->eventDispatcher->dispatch(
+            new AppDeletedEvent($app['id'], $context)
+        );
     }
 
     /**
