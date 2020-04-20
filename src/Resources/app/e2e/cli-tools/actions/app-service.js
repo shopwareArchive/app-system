@@ -13,10 +13,12 @@ const appFolder = 'custom/apps/shopware-e2e';
  * Creates an AppService object
  * @param {string} projectRoot 
  * @param {string} e2eRootDir 
+ * @param {string} cliProxyUrl
  */
-export default function AppService(projectRoot, e2eRootDir) {
+export default function AppService(projectRoot, e2eRootDir, cliProxyUrl) {
     this.projectRoot = projectRoot;
     this.e2eRootDir = e2eRootDir;
+    this.cliProxyUrl = cliProxyUrl;
 }
 
 AppService.prototype = {
@@ -27,12 +29,23 @@ AppService.prototype = {
      */
     installApps(appNames) {
         return Promise.all(appNames.map((appName) => {
-            return fs.copy(
-                join(this.e2eRootDir, `${fixturesFolder}/${appName}`),
-                join(this.projectRoot, `${appFolder}/${appName}`)
-            );
+            const source = join(this.e2eRootDir, `${fixturesFolder}/${appName}`);
+            const destination = join(this.projectRoot, `${appFolder}/${appName}`);
+
+            return this.installApp(source, destination);
         })).then(() => {
             return this.updateApps();
+        });
+    },
+
+    installApp(source, destination) {
+        return fs.copy(source, destination).then(() => {
+            return fs.readFile(`${destination}/manifest.xml`);
+        }).then((manifest) => {
+            const content = manifest.toString()
+                .replace(/__PROXY_URL__/g, this.cliProxyUrl);
+
+            return fs.writeFile(`${destination}/manifest.xml`, content);
         });
     },
 

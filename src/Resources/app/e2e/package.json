@@ -1,6 +1,7 @@
 {
   "name": "saasconnecte2etestsuite",
   "version": "1.0.0",
+  "type": "module",
   "description": "E2E testsuite for Shopware SaasConnect",
   "public": false,
   "license": "MIT",
@@ -15,14 +16,19 @@
     "open": "cypress open",
     "run": "cypress run",
     "lint": "eslint --ext .js",
-    "lint-fix": "eslint --ext .js"
+    "lint-fix": "eslint --ext .js",
+    "start-e2e-proxy": "node --experimental-modules --experimental-json-modules cli-tools/index.js"
   },
   "dependencies": {
     "@babel/core": "^7.8.7",
     "@babel/preset-env": "^7.8.7",
-    "@shopware-ag/e2e-testsuite-platform": "~1.1.9"
+    "@shopware-ag/e2e-testsuite-platform": "^1.2.4",
+    "body": "^5.1.0",
+    "express": "^4.17.1",
+    "fs-extra": "^8.1.0"
   },
   "devDependencies": {
+    "cypress": "^4.4.0",
     "eslint": "^6.8.0",
     "eslint-plugin-cypress": "^2.10.3",
     "eslint-plugin-import": "^2.20.0"

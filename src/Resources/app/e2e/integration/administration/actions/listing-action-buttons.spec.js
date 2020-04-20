@@ -102,7 +102,7 @@ describe('action buttons in administration', () => {
         cy.get('.sw-button').contains('Add product').click();
 
         cy.get('.sw-page .smart-bar__header h2').contains('New product');
-        cy.get('.sw-page div.smart-bar__content .sw-context-button')
+        cy.get('.sw-page div.smart-bar__content .sw-context-button.sw-page__connect-action-buttons')
             .should('not.exist');
     });
 });

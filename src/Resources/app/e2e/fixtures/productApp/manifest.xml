@@ -17,7 +17,7 @@
             action="viewProduct"
             entity="product"
             view="detail"
-            url="https://docker.vm:8000/your-product"
+            url="__PROXY_URL__/your-product"
             openNewTab="false">
             <label>Action product detail</label>
             <label lang="de-DE">Aktion Produktdetailseite</label>
@@ -26,7 +26,7 @@
             action="viewProductExtern"
             entity="product"
             view="detail"
-            url="https://docker.vm:8000/your-order"
+            url="__PROXY_URL__/your-order"
             openNewTab="true">
             <label>Action product detail external</label>
             <label lang="de-DE">Aktion Produktdetailseite extern</label>
@@ -35,14 +35,14 @@
             action="doStuffWithProducts"
             entity="product"
             view="index"
-            url="https://docker.vm:8000/do-stuff">
+            url="__PROXY_URL__/do-stuff">
             <label>Do Stuff with products</label>
         </action-button>
-        <module name="external-module" source="http://docker.vm:8005/show-app-action">
+        <module name="external-module" source="__PROXY_URL__/show-app-action">
             <label>Product module</label>
             <label lang="de-DE">Produktmodul</label>
         </module>
-        <module name="external-module-broken" source="http://docker.vm:8005/somewhere">
+        <module name="external-module-broken" source="__PROXY_URL__/somewhere">
             <label>404 module</label>
             <label lang="de-DE">404 Modul</label>
         </module>

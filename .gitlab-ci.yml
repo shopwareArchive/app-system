@@ -205,10 +205,10 @@ Connect E2E:
         - ./psh.phar e2e:dump-db
         - cp -v custom/plugins/SaasConnect/dev-ops/gitlab/cypress.env.json custom/plugins/SaasConnect/src/Resources/app/e2e/cypress.env.json
         - chown -R 1000:1000 .
-        - npm --prefix custom/plugins/SaasConnect/src/Resources/app/e2e/cli-tools install --production
-        - forever start -c "npm run start" --workingDir custom/plugins/SaasConnect/src/Resources/app/e2e/cli-tools ./custom/plugins/SaasConnect/src/Resources/app/e2e/cli-tools
+        - npm --prefix custom/plugins/SaasConnect/src/Resources/app/e2e install --production
+        - forever start -c "npm run start-e2e-proxy" --workingDir custom/plugins/SaasConnect/src/Resources/app/e2e/ ./custom/plugins/SaasConnect/src/Resources/app/e2e/
         - forever list
-        - docker run --name cypress --add-host="docker.vm:$(hostname -I)" -v $(pwd)/custom/plugins/SaasConnect/src/Resources/app/e2e:/e2e -v $(pwd)/build:/build -w /e2e --entrypoint "sh" cypress/included:3.8.1 -c "npm install --production --prefix /e2e && node_modules/.bin/cypress run --project /e2e --browser chrome --config numTestsKeptInMemory=0"
+        - docker run --name cypress --add-host="docker.vm:$(hostname -I)" -v $(pwd)/custom/plugins/SaasConnect/src/Resources/app/e2e:/e2e -v $(pwd)/build:/build -w /e2e cypress/included:4.4.0 
         - docker rm -f cypress
     artifacts:
         when: always
