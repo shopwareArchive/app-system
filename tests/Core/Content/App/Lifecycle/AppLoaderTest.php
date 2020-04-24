@@ -33,7 +33,7 @@ class AppLoaderTest extends TestCase
 
         $manifests = $appLoader->load();
 
-        static::assertCount(2, $manifests);
+        static::assertCount(3, $manifests);
         foreach ($manifests as $manifest) {
             static::assertInstanceOf(Manifest::class, $manifest);
         }
