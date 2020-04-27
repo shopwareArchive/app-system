@@ -35,16 +35,6 @@ class Metadata extends XmlElement
     protected $version;
 
     /**
-     * @var string
-     */
-    protected $registrationUrl;
-
-    /**
-     * @var string|null
-     */
-    protected $secret;
-
-    /**
      * @var string|null
      */
     protected $icon;
@@ -98,16 +88,6 @@ class Metadata extends XmlElement
     public function getVersion(): string
     {
         return $this->version;
-    }
-
-    public function getRegistrationUrl(): string
-    {
-        return $this->registrationUrl;
-    }
-
-    public function getSecret(): ?string
-    {
-        return $this->secret;
     }
 
     public function getIcon(): ?string

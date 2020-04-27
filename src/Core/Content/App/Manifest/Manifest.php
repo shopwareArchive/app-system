@@ -7,6 +7,7 @@ use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Admin;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFields;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Metadata;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Permissions;
+use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Setup;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Webhooks;
 use Symfony\Component\Config\Util\XmlUtils;
 
@@ -23,6 +24,11 @@ class Manifest
      * @var Metadata
      */
     private $metadata;
+
+    /**
+     * @var Setup
+     */
+    private $setup;
 
     /**
      * @var Admin|null
@@ -47,6 +53,7 @@ class Manifest
     private function __construct(
         string $path,
         Metadata $metadata,
+        Setup $setup,
         ?Admin $admin,
         ?Permissions $permissions,
         ?CustomFields $customFields,
@@ -54,6 +61,7 @@ class Manifest
     ) {
         $this->path = $path;
         $this->metadata = $metadata;
+        $this->setup = $setup;
         $this->admin = $admin;
         $this->permissions = $permissions;
         $this->customFields = $customFields;
@@ -71,6 +79,9 @@ class Manifest
         /** @var \DOMElement $meta */
         $meta = $doc->getElementsByTagName('meta')->item(0);
         $metadata = Metadata::fromXml($meta);
+        /** @var \DOMElement $setup */
+        $setup = $doc->getElementsByTagName('setup')->item(0);
+        $setup = Setup::fromXml($setup);
         /** @var \DOMElement|null $admin */
         $admin = $doc->getElementsByTagName('admin')->item(0);
         $admin = $admin === null ? null : Admin::fromXml($admin);
@@ -84,7 +95,7 @@ class Manifest
         $webhooks = $doc->getElementsByTagName('webhooks')->item(0);
         $webhooks = $webhooks === null ? null : Webhooks::fromXml($webhooks);
 
-        return new self(dirname($xmlFile), $metadata, $admin, $permissions, $customFields, $webhooks);
+        return new self(dirname($xmlFile), $metadata, $setup, $admin, $permissions, $customFields, $webhooks);
     }
 
     public function getPath(): string
@@ -100,6 +111,11 @@ class Manifest
     public function getMetadata(): Metadata
     {
         return $this->metadata;
+    }
+
+    public function getSetup(): Setup
+    {
+        return $this->setup;
     }
 
     public function getAdmin(): ?Admin

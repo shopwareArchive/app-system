@@ -10,7 +10,9 @@
         <author>shopware AG</author>
         <copyright>(c) by shopware AG</copyright>
         <version>1.0.0</version>
-        <registrationUrl>https://my.app.com/registration</registrationUrl>
         <icon>icon.png</icon>
     </meta>
+    <setup>
+        <registrationUrl>https://my.app.com/registration</registrationUrl>
+    </setup>
 </manifest>

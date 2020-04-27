@@ -5,7 +5,7 @@ variables:
     WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/development/public
     REPOSITORY_HOST: "gitlab.shopware.com:5005"
     PLATFORM_BRANCH: "master"
-    IMAGE_NAME: "${REPOSITORY_HOST}/shopware/shopware-cloud/connect/php-static-analysis"
+    IMAGE_NAME: "${REPOSITORY_HOST}/shopware-cloud/connect/php-static-analysis"
 
 stages:
     - Build
@@ -107,7 +107,7 @@ PhpInsights:
     image: "${IMAGE_NAME}:latest"
     script:
         - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
-        - phpinsights --no-interaction
+        - phpinsights --no-interaction --min-quality=100 --min-complexity=75 --min-architecture=100 --min-style=100
 
 Eslint Administration:
     stage: Static analysis

@@ -18,13 +18,15 @@ class HandshakeFactory
 
     public function create(Manifest $manifest): AppHandshakeInterface
     {
-        $metadata = $manifest->getMetadata();
-        $privateSecret = $metadata->getSecret();
+        $setup = $manifest->getSetup();
+        $privateSecret = $setup->getSecret();
         if ($privateSecret) {
+            $metadata = $manifest->getMetadata();
+
             return new PrivateHandshake(
                 $this->shopUrl,
                 $privateSecret,
-                $metadata->getRegistrationUrl(),
+                $setup->getRegistrationUrl(),
                 $metadata->getName());
         }
 

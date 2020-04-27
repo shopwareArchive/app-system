@@ -11,6 +11,13 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
+                <xs:element name="setup" type="setup">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            Authentication data for your app.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
                 <xs:element name="admin" type="admin" minOccurs="0">
                     <xs:annotation>
                         <xs:documentation xml:lang="en">
@@ -62,9 +69,27 @@
             <xs:element type="xs:string" name="author"/>
             <xs:element type="xs:string" name="copyright"/>
             <xs:element type="xs:string" name="version"/>
-            <xs:element type="xs:string" name="registrationUrl"/>
-            <xs:element type="xs:string" name="secret" minOccurs="0"/>
             <xs:element type="xs:string" name="icon" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="setup">
+        <xs:sequence>
+            <xs:element type="xs:anyURI" name="registrationUrl">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This url is used by a shop to register to your app.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element type="xs:string" name="secret" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Optional: This secret can be used to develop your app locally and to provide authentication
+                        for unpublished apps. If this secret is set, the shop will not use the plugin store
+                        to authenticate itself with your app.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="admin">
@@ -130,7 +155,8 @@
             <xs:element name="text-area" type="custom-field-text-area-type" maxOccurs="unbounded" minOccurs="0"/>
             <xs:element name="bool" type="custom-field-bool-type" maxOccurs="unbounded" minOccurs="0"/>
             <xs:element name="datetime" type="custom-field-datetime-type" maxOccurs="unbounded" minOccurs="0"/>
-            <xs:element name="single-select" type="custom-field-single-select-type" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element name="single-select" type="custom-field-single-select-type" maxOccurs="unbounded"
+                        minOccurs="0"/>
             <xs:element name="multi-select" type="custom-field-multi-select-type" maxOccurs="unbounded" minOccurs="0"/>
             <xs:element name="color-picker" type="custom-field-color-picker-type" maxOccurs="unbounded" minOccurs="0"/>
             <xs:element name="media-selection" type="custom-field-media-type" maxOccurs="unbounded" minOccurs="0"/>
