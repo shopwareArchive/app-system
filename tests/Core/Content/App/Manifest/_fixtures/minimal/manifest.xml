@@ -11,4 +11,7 @@
         <copyright>(c) by shopware AG</copyright>
         <version>1.0.0</version>
     </meta>
+    <setup>
+        <registrationUrl>https://my.app.com/registration</registrationUrl>
+    </setup>
 </manifest>

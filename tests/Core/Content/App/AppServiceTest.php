@@ -246,7 +246,7 @@ class AppServiceTest extends TestCase
         );
         $refreshableApps = $appService->getRefreshableAppInfo($this->context);
 
-        static::assertCount(1, $refreshableApps->getToBeInstalled());
+        static::assertCount(2, $refreshableApps->getToBeInstalled());
         static::assertCount(1, $refreshableApps->getToBeUpdated());
         static::assertCount(1, $refreshableApps->getToBeDeleted());
 

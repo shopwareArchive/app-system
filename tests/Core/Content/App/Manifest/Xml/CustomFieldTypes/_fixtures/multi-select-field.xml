@@ -12,6 +12,9 @@
         <version>1.0.0</version>
         <icon>icon.png</icon>
     </meta>
+    <setup>
+        <registrationUrl>https://my.app.com/registration</registrationUrl>
+    </setup>
     <custom-fields>
         <custom-field-set>
             <name>custom_field_test</name>

@@ -12,4 +12,7 @@
         <version>1.0.0</version>
         <icon>icon.png</icon>
     </meta>
+    <setup>
+        <registrationUrl>https://my.app.com/registration</registrationUrl>
+    </setup>
 </manifest>
