@@ -8,6 +8,9 @@
                     <service class="GuzzleHttp\HandlerStack">
                         <factory class="GuzzleHttp\HandlerStack" method="create" />
                         <argument type="service" id="GuzzleHttp\Handler\MockHandler"/>
+                        <call method="push">
+                            <argument type="service" id="test.guzzle.history.middleware"/>
+                        </call>
                     </service>
                 </argument>
             </argument>
@@ -16,6 +19,13 @@
         <service id="GuzzleHttp\Handler\MockHandler" public="true">
             <argument type="collection">
             </argument>
+        </service>
+
+        <service id="test.guzzle.history.middleware" class="callable">
+            <factory service="Swag\SaasConnect\Test\GuzzleHistoryCollector" method="getHistoryMiddleWare"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Test\GuzzleHistoryCollector" public="true">
         </service>
     </services>
 </container>

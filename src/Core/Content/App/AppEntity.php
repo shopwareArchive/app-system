@@ -88,6 +88,11 @@ class AppEntity extends Entity
     protected $accessToken;
 
     /**
+     * @var string|null
+     */
+    protected $appSecret;
+
+    /**
      * @var string
      */
     protected $integrationId;
@@ -380,5 +385,15 @@ class AppEntity extends Entity
     final public function getNameAsSnakeCase(): string
     {
         return (new CamelCaseToSnakeCaseNameConverter())->normalize($this->getName());
+    }
+
+    public function getAppSecret(): ?string
+    {
+        return $this->appSecret;
+    }
+
+    public function setAppSecret(?string $appSecret): void
+    {
+        $this->appSecret = $appSecret;
     }
 }
