@@ -4,7 +4,7 @@ variables:
     MYSQL_ROOT_PASSWORD: app
     WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/development/public
     REPOSITORY_HOST: "gitlab.shopware.com:5005"
-    PLATFORM_BRANCH: "master"
+    PLATFORM_BRANCH: "6.2"
     IMAGE_NAME: "${REPOSITORY_HOST}/shopware-cloud/connect/php-static-analysis"
 
 stages:
@@ -208,7 +208,7 @@ Connect E2E:
         - npm --prefix custom/plugins/SaasConnect/src/Resources/app/e2e install --production
         - forever start -c "npm run start-e2e-proxy" --workingDir custom/plugins/SaasConnect/src/Resources/app/e2e/ ./custom/plugins/SaasConnect/src/Resources/app/e2e/
         - forever list
-        - docker run --name cypress --add-host="docker.vm:$(hostname -I)" -v $(pwd)/custom/plugins/SaasConnect/src/Resources/app/e2e:/e2e -v $(pwd)/build:/build -w /e2e cypress/included:4.4.0 
+        - docker run --name cypress --add-host="docker.vm:$(hostname -I)" -v $(pwd)/custom/plugins/SaasConnect/src/Resources/app/e2e:/e2e -v $(pwd)/build:/build -w /e2e cypress/included:4.4.0
         - docker rm -f cypress
     artifacts:
         when: always
