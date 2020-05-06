@@ -4,7 +4,7 @@ variables:
     MYSQL_ROOT_PASSWORD: app
     WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/development/public
     REPOSITORY_HOST: "gitlab.shopware.com:5005"
-    PLATFORM_BRANCH: "master"
+    PLATFORM_BRANCH: "6.2"
     IMAGE_NAME: "${REPOSITORY_HOST}/shopware-cloud/connect/php-static-analysis"
 
 stages:
