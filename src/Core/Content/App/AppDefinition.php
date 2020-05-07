@@ -70,6 +70,10 @@ class AppDefinition extends EntityDefinition
                 new WriteProtected(Context::SYSTEM_SCOPE),
                 new ReadProtected(SalesChannelApiSource::class, AdminApiSource::class)
             ),
+            (new StringField('app_secret', 'appSecret'))->addFlags(
+                new WriteProtected(Context::SYSTEM_SCOPE),
+                new ReadProtected(SalesChannelApiSource::class, AdminApiSource::class)
+            ),
 
             new ListField('modules', 'modules', JsonField::class),
 

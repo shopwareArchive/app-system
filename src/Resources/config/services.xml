@@ -110,6 +110,16 @@
             <argument type="service" id="event_dispatcher"/>
         </service>
 
+        <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\AppRegistrationService" public="true">
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\HandshakeFactory"/>
+            <argument type="service" id="GuzzleHttp\Client"/>
+            <argument type="service" id="saas_app.repository"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\HandshakeFactory">
+            <argument type="string">%env(APP_URL)%</argument>
+        </service>
+
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\ActionButtonPersister">
             <argument type="service" id="saas_app_action_button.repository"/>
         </service>

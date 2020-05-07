@@ -25,6 +25,7 @@ class Migration1578558350App extends MigrationStep
                 `version` VARCHAR(255) NOT NULL,
                 `icon` MEDIUMBLOB NULL,
                 `access_token` VARCHAR(255) NOT NULL,
+                `app_secret` VARCHAR(255) NULL,
                 `modules` JSON NULL,
                 `integration_id` BINARY(16) NOT NULL,
                 `acl_role_id` BINARY(16) NOT NULL,
