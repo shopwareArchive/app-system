@@ -149,8 +149,8 @@ class AppLifecycle implements AppLifecycleInterface
 
         $this->updateMetadata($metadata, $context);
         $this->actionButtonPersister->updateActions($manifest, $id, $context);
-        $this->permissionPersister->updatePrivileges($manifest->getPermissions(), $roleId);
-        $this->customFieldPersister->updateCustomFields($manifest->getCustomFields(), $id, $context);
+        $this->permissionPersister->updatePrivileges($manifest, $roleId);
+        $this->customFieldPersister->updateCustomFields($manifest, $id, $context);
         $this->webhookPersister->updateWebhooks($manifest, $id, $context);
         $this->templatePersister->updateTemplates($manifest, $id, $context);
         $this->themeLifecycleHandler->handleAppUpdate($manifest, $context);
