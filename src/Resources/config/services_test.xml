@@ -7,13 +7,17 @@
                 <argument key="handler" type="service">
                     <service class="GuzzleHttp\HandlerStack">
                         <factory class="GuzzleHttp\HandlerStack" method="create" />
-                        <argument type="service" id="GuzzleHttp\Handler\MockHandler"/>
+                        <argument type="service" id="Swag\SaasConnect\Test\TestAppServer"/>
                         <call method="push">
                             <argument type="service" id="test.guzzle.history.middleware"/>
                         </call>
                     </service>
                 </argument>
             </argument>
+        </service>
+
+        <service id="Swag\SaasConnect\Test\TestAppServer">
+            <argument type="service" id="GuzzleHttp\Handler\MockHandler"/>
         </service>
 
         <service id="GuzzleHttp\Handler\MockHandler" public="true">

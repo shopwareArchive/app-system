@@ -17,11 +17,15 @@ trait StorefrontAppRegistryTestBehaviour
         $registry = $this->getContainer()
             ->get(StorefrontPluginRegistry::class);
 
-        $reflection = new \ReflectionClass($registry);
-        $prop = $reflection->getProperty('pluginConfigurations');
+        $inner = (new \ReflectionClass($registry))->getProperty('inner');
+        $inner->setAccessible(true);
 
-        $prop->setAccessible(true);
-        $prop->setValue($registry, null);
+        $reset = function (): void {
+            $this->pluginConfigurations = null;
+        };
+
+        $reset->call($registry);
+        $reset->call($inner->getValue($registry));
     }
 
     /**

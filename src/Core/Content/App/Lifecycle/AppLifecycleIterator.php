@@ -7,6 +7,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Swag\SaasConnect\Core\Content\App\AppCollection;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
+use Swag\SaasConnect\Core\Content\App\Exception\SaasConnectException;
 
 class AppLifecycleIterator
 {
@@ -34,18 +35,22 @@ class AppLifecycleIterator
         $appsFromDb = $this->getRegisteredApps($context);
 
         foreach ($appsFromFileSystem as $manifest) {
-            if (!array_key_exists($manifest->getMetadata()->getName(), $appsFromDb)) {
-                $appLifecycle->install($manifest, $context);
+            try {
+                if (!array_key_exists($manifest->getMetadata()->getName(), $appsFromDb)) {
+                    $appLifecycle->install($manifest, $context);
 
+                    continue;
+                }
+
+                $app = $appsFromDb[$manifest->getMetadata()->getName()];
+                if (version_compare($manifest->getMetadata()->getVersion(), $app['version']) > 0) {
+                    $appLifecycle->update($manifest, $app, $context);
+                }
+            } catch (SaasConnectException $exception) {
                 continue;
+            } finally {
+                unset($appsFromDb[$manifest->getMetadata()->getName()]);
             }
-
-            $app = $appsFromDb[$manifest->getMetadata()->getName()];
-            if (version_compare($manifest->getMetadata()->getVersion(), $app['version']) > 0) {
-                $appLifecycle->update($manifest, $app, $context);
-            }
-
-            unset($appsFromDb[$manifest->getMetadata()->getName()]);
         }
 
         foreach ($appsFromDb as $appName => $app) {

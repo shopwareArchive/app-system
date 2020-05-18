@@ -15,6 +15,7 @@ use Swag\SaasConnect\Core\Content\App\Exception\AppRegistrationException;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\AppRegistrationService;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 use Swag\SaasConnect\Test\GuzzleTestClientBehaviour;
+use Swag\SaasConnect\Test\TestAppServer;
 
 class AppRegistrationServiceTest extends TestCase
 {
@@ -47,7 +48,7 @@ class AppRegistrationServiceTest extends TestCase
         $id = Uuid::randomHex();
         $this->createApp($id);
 
-        $manifest = Manifest::createFromXmlFile(__DIR__ . '/../../Manifest/_fixtures/private/manifest.xml');
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/_fixtures/minimal/manifest.xml');
 
         $appSecret = 'dont_tell';
         $appResponseBody = $this->buildAppResponse($manifest, $appSecret);
@@ -66,7 +67,7 @@ class AppRegistrationServiceTest extends TestCase
 
         $app = $this->fetchApp($id);
 
-        static::assertEquals($appSecret, $app->getAppSecret());
+        static::assertEquals(TestAppServer::APP_SECRET, $app->getAppSecret());
 
         static::assertEquals(2, $this->getRequestCount());
 
@@ -87,7 +88,7 @@ class AppRegistrationServiceTest extends TestCase
 
     public function testRegistrationFailsWithWrongProof(): void
     {
-        $manifest = Manifest::createFromXmlFile(__DIR__ . '/../../Manifest/_fixtures/private/manifest.xml');
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/_fixtures/minimal/manifest.xml');
 
         $this->appendNewResponse(new Response(200, [], '{"proof": "wrong proof"}'));
 
@@ -97,7 +98,7 @@ class AppRegistrationServiceTest extends TestCase
 
     public function testRegistrationFailsWithoutProof(): void
     {
-        $manifest = Manifest::createFromXmlFile(__DIR__ . '/../../Manifest/_fixtures/private/manifest.xml');
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/_fixtures/minimal/manifest.xml');
 
         $this->appendNewResponse(new Response(200, [], '{}'));
 
@@ -108,7 +109,7 @@ class AppRegistrationServiceTest extends TestCase
     // currently not implemented
     public function testRegisterStoreApp(): void
     {
-        $manifest = Manifest::createFromXmlFile(__DIR__ . '/../../Manifest/_fixtures/test/manifest.xml');
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/_fixtures/minimal/manifest.xml');
 
         static::expectException(\RuntimeException::class);
         $this->registrator->registerApp($manifest, '', Context::createDefaultContext());

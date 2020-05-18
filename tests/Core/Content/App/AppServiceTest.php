@@ -7,6 +7,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonEntity;
@@ -16,10 +17,12 @@ use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycleIterator;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
+use Swag\SaasConnect\Test\StorefrontAppRegistryTestBehaviour;
 
 class AppServiceTest extends TestCase
 {
     use IntegrationTestBehaviour;
+    use StorefrontAppRegistryTestBehaviour;
 
     /**
      * @var AppService
@@ -253,6 +256,30 @@ class AppServiceTest extends TestCase
         static::assertInstanceOf(Manifest::class, $refreshableApps->getToBeInstalled()[0]);
         static::assertInstanceOf(Manifest::class, $refreshableApps->getToBeUpdated()[0]);
         static::assertEquals('Test', $refreshableApps->getToBeDeleted()[0]);
+    }
+
+    public function testInstallFailureDoesNotAffectAllApps(): void
+    {
+        $appService = new AppService(
+            new AppLifecycleIterator(
+                $this->appRepository,
+                new AppLoader(__DIR__ . '/Manifest/_fixtures/')
+            ),
+            $this->getContainer()->get(AppLifecycle::class)
+        );
+        $appService->refreshApps($this->context);
+
+        $appsWithFailedInstall = new Criteria();
+        $appsWithFailedInstall->addFilter(new NotFilter('or', [new EqualsFilter('appSecret', null)]));
+        $apps = $this->appRepository->search($appsWithFailedInstall, $this->context)->getEntities();
+
+        static::assertCount(2, $apps);
+
+        $appsWithFailedInstall = new Criteria();
+        $appsWithFailedInstall->addFilter(new EqualsFilter('appSecret', null));
+        $apps = $this->appRepository->search($appsWithFailedInstall, $this->context)->getEntities();
+
+        static::assertCount(1, $apps);
     }
 
     private function assertDefaultActionButtons(): void

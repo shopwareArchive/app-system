@@ -12,6 +12,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\PlatformRequest;
 use Swag\SaasConnect\Test\AppSystemTestBehaviour;
+use Swag\SaasConnect\Test\StorefrontAppRegistryTestBehaviour;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 class ApiRequestContextResolverDecoratorTest extends TestCase
@@ -19,6 +20,7 @@ class ApiRequestContextResolverDecoratorTest extends TestCase
     use IntegrationTestBehaviour;
     use AdminApiTestBehaviour;
     use AppSystemTestBehaviour;
+    use StorefrontAppRegistryTestBehaviour;
 
     public function testCanReadWithPermission(): void
     {

@@ -2,15 +2,17 @@
 
 namespace Swag\SaasConnect\Core\Content\App\Lifecycle\Registration;
 
+use Swag\SaasConnect\Core\Content\App\Exception\AppRegistrationException;
+
 class StoreHandshake implements AppHandshakeInterface
 {
     public function fetchUrl(): string
     {
-        throw new \RuntimeException('Not implemented');
+        throw new AppRegistrationException('Not implemented');
     }
 
     public function fetchAppProof(): string
     {
-        throw new \RuntimeException('Not implemented');
+        throw new AppRegistrationException('Not implemented');
     }
 }

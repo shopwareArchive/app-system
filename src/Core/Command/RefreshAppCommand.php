@@ -70,6 +70,7 @@ class RefreshAppCommand extends Command
         $this->appService->refreshApps($context);
 
         $this->appPrinter->printInstalledApps($io, $context);
+        $this->appPrinter->printIncompleteInstallations($io, $context);
 
         return 0;
     }

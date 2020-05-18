@@ -108,9 +108,10 @@
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\TemplatePersister"/>
             <argument type="service" id="Swag\SaasConnect\Storefront\Theme\Lifecycle\ThemeLifecycleHandler"/>
             <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\AppRegistrationService"/>
         </service>
 
-        <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\AppRegistrationService" public="true">
+        <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\AppRegistrationService">
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\HandshakeFactory"/>
             <argument type="service" id="GuzzleHttp\Client"/>
             <argument type="service" id="saas_app.repository"/>
