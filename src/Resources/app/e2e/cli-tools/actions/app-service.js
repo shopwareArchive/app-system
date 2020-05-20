@@ -11,8 +11,8 @@ const appFolder = 'custom/apps/shopware-e2e';
 
 /**
  * Creates an AppService object
- * @param {string} projectRoot 
- * @param {string} e2eRootDir 
+ * @param {string} projectRoot
+ * @param {string} e2eRootDir
  * @param {string} cliProxyUrl
  */
 export default function AppService(projectRoot, e2eRootDir, cliProxyUrl) {
@@ -78,16 +78,20 @@ AppService.prototype = {
                 outputBuffer.push(chunk);
             });
 
-            updateProcess.stdout.on('end', () => {
+            const copyOutput = new Promise((resolve1) => updateProcess.stdout.on('end', () => {
                 output = Buffer.concat(outputBuffer).toString();
-            });
+                resolve1(output);
+            }));
 
             updateProcess.on('exit', (code) => {
                 if (code === 0) {
                     resolve();
                     return;
                 }
-                reject({ message: output, code });
+                copyOutput.then((output) => {
+                    console.log(output);
+                    reject({message: output, code})
+                })
             });
         });
     },

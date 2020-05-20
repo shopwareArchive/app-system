@@ -27,7 +27,7 @@ class TestAppServer
     {
         if ($this->isRegistration($request)) {
             $promise = new Promise();
-            $promise->resolve(new Response(200, [], $this->buildAppResponse($this->getAppname($request))));
+            $promise->resolve(new Response(200, [], $this->buildAppResponse($request)));
 
             return $promise;
         }
@@ -42,10 +42,11 @@ class TestAppServer
         return \call_user_func($this->inner, $request, $options);
     }
 
-    private function buildAppResponse(string $appName)
+    private function buildAppResponse(RequestInterface $request)
     {
-        $shopUrl = (string) getenv('APP_URL');
-        $proof = \hash_hmac('sha256', $shopUrl . $appName, self::TEST_SETUP_SECRET);
+        $shopUrl = $this->getShopUrl($request);
+        $appname = $this->getAppname($request);
+        $proof = \hash_hmac('sha256', $shopUrl . $appname, self::TEST_SETUP_SECRET);
 
         return \json_encode(['proof' => $proof, 'secret' => self::APP_SECRET, 'confirmation_url' => self::CONFIRMATION_URL]);
     }
@@ -61,6 +62,14 @@ class TestAppServer
     private function isRegistrationConfirmation(RequestInterface $request): bool
     {
         return ((string) $request->getUri()) === self::CONFIRMATION_URL;
+    }
+
+    private function getShopUrl(RequestInterface $request): string
+    {
+        $query = [];
+        \parse_str($request->getUri()->getQuery(), $query);
+
+        return $query['shop'];
     }
 
     private function getAppname(RequestInterface $request): string

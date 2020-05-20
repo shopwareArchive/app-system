@@ -13,8 +13,8 @@
     }
   ],
   "scripts": {
-    "open": "cypress open",
-    "run": "cypress run",
+    "open": "Cypress open",
+    "run": "Cypress run",
     "lint": "eslint --ext .js",
     "lint-fix": "eslint --ext .js",
     "start-e2e-proxy": "node --experimental-modules --experimental-json-modules cli-tools/index.js"
@@ -28,7 +28,7 @@
     "fs-extra": "^8.1.0"
   },
   "devDependencies": {
-    "cypress": "^4.4.0",
+    "cypress": "^4.5.0",
     "eslint": "^6.8.0",
     "eslint-plugin-cypress": "^2.10.3",
     "eslint-plugin-import": "^2.20.0"
