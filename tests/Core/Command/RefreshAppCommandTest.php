@@ -12,11 +12,13 @@ use Swag\SaasConnect\Core\Content\App\AppService;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycleIterator;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader;
+use Swag\SaasConnect\Test\StorefrontAppRegistryTestBehaviour;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class RefreshAppCommandTest extends TestCase
 {
     use IntegrationTestBehaviour;
+    use StorefrontAppRegistryTestBehaviour;
 
     /**
      * @var EntityRepositoryInterface
@@ -203,6 +205,22 @@ class RefreshAppCommandTest extends TestCase
         static::assertEquals(0, $commandTester->getStatusCode());
 
         static::assertStringContainsString('Nothing to install, update or delete.', $commandTester->getDisplay());
+    }
+
+    public function testRefreshRegistrationFailure(): void
+    {
+        $commandTester = new CommandTester($this->createCommand(__DIR__ . '/_fixtures/registrationFailure'));
+        $commandTester->setInputs(['yes']);
+
+        $commandTester->execute([]);
+
+        static::assertEquals(0, $commandTester->getStatusCode());
+        $display = $commandTester->getDisplay();
+
+        // header
+        static::assertRegExp('/.*Failed\s+\n.*/', $display);
+        // content
+        static::assertRegExp('/.*Swag App Test\s+\n.*/', $display);
     }
 
     private function createCommand(string $appFolder): RefreshAppCommand

@@ -6,6 +6,8 @@ use Shopware\Core\Framework\Api\Acl\Resource\AclResourceDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Swag\SaasConnect\Core\Content\App\AppCollection;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 
@@ -31,8 +33,10 @@ class AppPrinter
 
     public function printInstalledApps(ShopwareSaasStyle $io, Context $context): void
     {
+        $criteria = new Criteria();
+        $criteria->addFilter(new NotFilter('or', [new EqualsFilter('appSecret', null)]));
         /** @var AppCollection $apps */
-        $apps = $this->appRepository->search(new Criteria(), $context)->getEntities();
+        $apps = $this->appRepository->search($criteria, $context)->getEntities();
 
         $appTable = [];
 
@@ -47,6 +51,27 @@ class AppPrinter
 
         $io->table(
             ['Plugin', 'Label', 'Version', 'Author'],
+            $appTable
+        );
+    }
+
+    public function printIncompleteInstallations(ShopwareSaasStyle $io, Context $context): void
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('appSecret', null));
+        /** @var AppCollection $apps */
+        $apps = $this->appRepository->search($criteria, $context)->getEntities();
+
+        $appTable = [];
+
+        foreach ($apps as $app) {
+            $appTable[] = [
+                $app->getLabel(),
+            ];
+        }
+
+        $io->table(
+            ['Failed'],
             $appTable
         );
     }

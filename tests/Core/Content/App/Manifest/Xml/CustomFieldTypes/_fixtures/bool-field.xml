@@ -13,7 +13,8 @@
         <icon>icon.png</icon>
     </meta>
     <setup>
-        <registrationUrl>https://my.app.com/registration</registrationUrl>
+        <registrationUrl>https://my.app.com/SwagApp/registration</registrationUrl>
+        <secret>s3cr3t</secret>
     </setup>
     <custom-fields>
         <custom-field-set>

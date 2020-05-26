@@ -12,4 +12,8 @@
         <version>1.0.0</version>
         <icon>icon.png</icon>
     </meta>
+    <setup>
+        <registrationUrl>__PROXY_URL__/SwagTheme/registration</registrationUrl>
+        <secret>s3cr3t</secret>
+    </setup>
 </manifest>

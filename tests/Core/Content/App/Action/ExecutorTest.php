@@ -13,12 +13,11 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\SaasConnect\Core\Content\App\Action\AppAction;
 use Swag\SaasConnect\Core\Content\App\Action\Executor;
-use Swag\SaasConnect\Test\AppSystemTestBehaviour;
 
 class ExecutorTest extends \PHPUnit\Framework\TestCase
 {
     use IntegrationTestBehaviour;
-    use AppSystemTestBehaviour;
+
     const SCHEMA_LOCATION = __DIR__ . '/../../../../../appActionEndpointSchema.json';
 
     /**

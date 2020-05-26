@@ -14,6 +14,7 @@ use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\CustomFieldPersister;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionPersister;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\TemplatePersister;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\WebhookPersister;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\AppRegistrationService;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Module;
 use Swag\SaasConnect\Storefront\Theme\Lifecycle\ThemeLifecycleHandler;
@@ -66,6 +67,11 @@ class AppLifecycle implements AppLifecycleInterface
      */
     private $eventDispatcher;
 
+    /**
+     * @var AppRegistrationService
+     */
+    private $registrationService;
+
     public function __construct(
         EntityRepositoryInterface $appRepository,
         ActionButtonPersister $actionButtonPersister,
@@ -75,7 +81,8 @@ class AppLifecycle implements AppLifecycleInterface
         AppLoaderInterface $appLoader,
         TemplatePersister $templatePersister,
         ThemeLifecycleHandler $themeLifecycleHandler,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        AppRegistrationService $registrationService
     ) {
         $this->appRepository = $appRepository;
         $this->actionButtonPersister = $actionButtonPersister;
@@ -86,6 +93,7 @@ class AppLifecycle implements AppLifecycleInterface
         $this->templatePersister = $templatePersister;
         $this->themeLifecycleHandler = $themeLifecycleHandler;
         $this->eventDispatcher = $eventDispatcher;
+        $this->registrationService = $registrationService;
     }
 
     public function install(Manifest $manifest, Context $context): void
@@ -148,11 +156,14 @@ class AppLifecycle implements AppLifecycleInterface
         $metadata['iconRaw'] = $this->appLoader->getIcon($manifest);
 
         $this->updateMetadata($metadata, $context);
+        $this->permissionPersister->updatePrivileges($manifest, $roleId);
+        $this->registrationService->registerApp($manifest, $id, $context);
+
         $this->actionButtonPersister->updateActions($manifest, $id, $context);
-        $this->permissionPersister->updatePrivileges($manifest->getPermissions(), $roleId);
-        $this->customFieldPersister->updateCustomFields($manifest->getCustomFields(), $id, $context);
+        $this->customFieldPersister->updateCustomFields($manifest, $id, $context);
         $this->webhookPersister->updateWebhooks($manifest, $id, $context);
         $this->templatePersister->updateTemplates($manifest, $id, $context);
+
         $this->themeLifecycleHandler->handleAppUpdate($manifest, $context);
     }
 

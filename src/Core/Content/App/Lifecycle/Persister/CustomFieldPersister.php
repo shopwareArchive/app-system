@@ -6,6 +6,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFields;
 use Swag\SaasConnect\Core\Content\App\Manifest\Xml\CustomFieldSet;
 
@@ -21,10 +22,10 @@ class CustomFieldPersister
         $this->customFieldSetRepository = $customFieldSetRepository;
     }
 
-    public function updateCustomFields(?CustomFields $customFields, string $appId, Context $context): void
+    public function updateCustomFields(Manifest $manifest, string $appId, Context $context): void
     {
         $this->deleteCustomFieldsForApp($appId, $context);
-        $this->addCustomFields($customFields, $appId, $context);
+        $this->addCustomFields($manifest->getCustomFields(), $appId, $context);
     }
 
     private function deleteCustomFieldsForApp(string $appId, Context $context): void

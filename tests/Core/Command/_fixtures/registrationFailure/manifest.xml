@@ -13,7 +13,7 @@
         <icon>icon.png</icon>
     </meta>
     <setup>
-        <registrationUrl>https://my.app.com/SwagApp/registration</registrationUrl>
+        <registrationUrl>https://my.app.com/wrongurl/registration</registrationUrl>
         <secret>s3cr3t</secret>
     </setup>
     <admin>
@@ -34,10 +34,4 @@
             <label>Do Stuff</label>
         </action-button>
     </admin>
-    <permissions>
-        <update>product</update>
-        <delete>product</delete>
-        <create>category</create>
-        <list>order</list>
-    </permissions>
 </manifest>

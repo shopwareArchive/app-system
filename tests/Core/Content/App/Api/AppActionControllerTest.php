@@ -14,12 +14,14 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\PlatformRequest;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonEntity;
 use Swag\SaasConnect\Test\AppSystemTestBehaviour;
+use Swag\SaasConnect\Test\StorefrontAppRegistryTestBehaviour;
 
 class AppActionControllerTest extends TestCase
 {
     use IntegrationTestBehaviour;
     use AdminApiTestBehaviour;
     use AppSystemTestBehaviour;
+    use StorefrontAppRegistryTestBehaviour;
 
     public function testGetActionsPerViewEmpty(): void
     {

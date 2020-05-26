@@ -5,7 +5,7 @@ namespace Swag\SaasConnect\Core\Content\App\Lifecycle\Persister;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Permissions;
+use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 
 class PermissionPersister
 {
@@ -28,8 +28,9 @@ class PermissionPersister
         $this->privilegeDependence = $privilegeDependence;
     }
 
-    public function updatePrivileges(?Permissions $permissions, string $roleId): void
+    public function updatePrivileges(Manifest $manifest, string $roleId): void
     {
+        $permissions = $manifest->getPermissions();
         $toBeCreated = $this->generatePrivileges($permissions ? $permissions->getPermissions() : []);
 
         $toBeDeleted = $this->getExistingPrivileges($roleId);

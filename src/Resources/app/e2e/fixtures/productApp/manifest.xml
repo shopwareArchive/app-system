@@ -13,7 +13,8 @@
         <icon>icon.png</icon>
     </meta>
     <setup>
-        <registrationUrl>https://my.app.com/registration</registrationUrl>
+        <registrationUrl>__PROXY_URL__/E2E_Product/registration</registrationUrl>
+        <secret>s3cr3t</secret>
     </setup>
     <admin>
         <action-button

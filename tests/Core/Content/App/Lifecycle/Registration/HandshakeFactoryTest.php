@@ -12,7 +12,7 @@ class HandshakeFactoryTest extends TestCase
 {
     public function testManifestWithSecretProducesAPrivateHandshake(): void
     {
-        $manifest = Manifest::createFromXmlFile(__DIR__ . '/../../Manifest/_fixtures/private/manifest.xml');
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/../../Manifest/_fixtures/minimal/manifest.xml');
 
         $shopUrl = 'test.shop.com';
 
@@ -25,7 +25,7 @@ class HandshakeFactoryTest extends TestCase
 
     public function testManifestWithoutSecretProducesAStoreHandshake(): void
     {
-        $manifest = Manifest::createFromXmlFile(__DIR__ . '/../../Manifest/_fixtures/minimal/manifest.xml');
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/../../Manifest/_fixtures/public/manifest.xml');
 
         $shopUrl = 'test.shop.com';
 

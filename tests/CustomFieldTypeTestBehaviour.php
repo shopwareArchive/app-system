@@ -13,6 +13,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 trait CustomFieldTypeTestBehaviour
 {
+    use StorefrontAppRegistryTestBehaviour;
+
     abstract protected function getContainer(): ContainerInterface;
 
     protected function importCustomField(string $manifestPath): CustomFieldEntity
