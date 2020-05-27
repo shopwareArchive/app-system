@@ -14,8 +14,7 @@ use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 class AppPrinter
 {
     private const PRIVILEGE_TO_HUMAN_READABLE = [
-        AclResourceDefinition::PRIVILEGE_LIST => 'read',
-        AclResourceDefinition::PRIVILEGE_DETAIL => 'read',
+        'read' => 'read',
         AclResourceDefinition::PRIVILEGE_CREATE => 'write',
         AclResourceDefinition::PRIVILEGE_UPDATE => 'write',
         AclResourceDefinition::PRIVILEGE_DELETE => 'delete',
