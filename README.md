@@ -1,6 +1,6 @@
 # Connect
 
-App system for Shopware 6 SaaS & OnPrem.
+App system for Shopware 6 Cloud & OnPrem.
 
 ## Getting started
 
