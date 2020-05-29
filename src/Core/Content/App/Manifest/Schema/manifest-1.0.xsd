@@ -25,10 +25,20 @@
                         </xs:documentation>
                     </xs:annotation>
                     <xs:unique name="uniqueActionName">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                Add a button to a detail or list page, that triggers an event for your app.
+                            </xs:documentation>
+                        </xs:annotation>
                         <xs:selector xpath="action-button"/>
                         <xs:field xpath="@action"/>
                     </xs:unique>
                     <xs:unique name="uniqueModuleName">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                Add a module to the admin, which loads webpages provided by your app.
+                            </xs:documentation>
+                        </xs:annotation>
                         <xs:selector xpath="module"/>
                         <xs:field xpath="@name"/>
                     </xs:unique>
@@ -84,8 +94,8 @@
             <xs:element type="xs:string" name="secret" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="en">
-                        Optional: This secret can be used to develop your app locally and to provide authentication
-                        for unpublished apps. If this secret is set, the shop will not use the plugin store
+                        Optional: This secret can be used to develop your app locally.
+                        If this secret is set, the shop will not use the plugin store
                         to authenticate itself with your app.
                     </xs:documentation>
                 </xs:annotation>
