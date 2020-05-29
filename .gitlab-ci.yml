@@ -1,6 +1,4 @@
 variables:
-    DOCKER_DRIVER: overlay2
-    DOCKER_HOST: "tcp://docker:2375"
     MYSQL_ROOT_PASSWORD: app
     WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/development/public
     REPOSITORY_HOST: "gitlab.shopware.com:5005"
@@ -51,7 +49,7 @@ Build-Analysis-Container:
             - dev-ops/tools/**/*
     image: docker
     services:
-        -   name: docker:18.09.7-dind
+        -   name: docker:19.03.9-dind
             alias: docker
     script:
         - apk add git bash
@@ -180,21 +178,24 @@ Jest (Administration):
         reports:
             junit: development/build/artifacts/administration.junit.xml
 
+
 Connect E2E:
     stage: E2E
-    dependencies: []
+    allow_failure: true
     only:
         refs:
             - merge_requests
             - master
     extends:
         - .sw6_base
-        - .sw6_base_services
     services:
-        - name: docker:18.09.7-dind
-          alias: docker
+        - name: docker:19.03.5-dind
+            # copied from .sw6_base_services as it does not merge the services
         - name: mysql:5.7
           alias: mysql
+        - name: elastic/elasticsearch:7.1.1
+          alias: elasticsearch
+          command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
 
     script:
         - ./psh.phar init --APP_ENV="prod"

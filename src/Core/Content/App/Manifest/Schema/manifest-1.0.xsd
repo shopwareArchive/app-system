@@ -100,8 +100,7 @@
     </xs:complexType>
     <xs:complexType name="permissions">
         <xs:choice maxOccurs="unbounded">
-            <xs:element name="list" maxOccurs="unbounded" minOccurs="0" type="xs:string"/>
-            <xs:element name="detail" maxOccurs="unbounded" minOccurs="0" type="xs:string"/>
+            <xs:element name="read" maxOccurs="unbounded" minOccurs="0" type="xs:string"/>
             <xs:element name="create" maxOccurs="unbounded" minOccurs="0" type="xs:string"/>
             <xs:element name="update" maxOccurs="unbounded" minOccurs="0" type="xs:string"/>
             <xs:element name="delete" maxOccurs="unbounded" minOccurs="0" type="xs:string"/>

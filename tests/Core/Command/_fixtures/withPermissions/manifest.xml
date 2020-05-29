@@ -38,6 +38,6 @@
         <update>product</update>
         <delete>product</delete>
         <create>category</create>
-        <list>order</list>
+        <read>order</read>
     </permissions>
 </manifest>

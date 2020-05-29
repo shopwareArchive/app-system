@@ -91,9 +91,17 @@ class PermissionPersister
     private function generatePrivileges(array $permissions): array
     {
         $grantedPrivileges = array_map(function (array $privileges): array {
-            $grantedPrivileges = $privileges;
+            $grantedPrivileges = [];
 
             foreach ($privileges as $privilege) {
+                if ($privilege === 'read') {
+                    $privileges[] = 'list';
+                    $privileges[] = 'detail';
+
+                    continue;
+                }
+
+                $grantedPrivileges[] = $privilege;
                 $grantedPrivileges = array_merge($grantedPrivileges, $this->privilegeDependence[$privilege]);
             }
 
