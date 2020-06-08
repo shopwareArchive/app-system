@@ -77,13 +77,12 @@ class AppRegistrationServiceTest extends TestCase
         $postBody = \json_decode($confirmationReq->getBody()->getContents(), true);
         static::assertEquals($app->getAccessToken(), $postBody['secretKey']);
         static::assertEquals($app->getIntegration()->getAccessKey(), $postBody['apiKey']);
+        static::assertEquals(getenv('APP_URL'), $postBody['shopUrl']);
 
-        $data = $postBody;
-        unset($data['hmac']);
-
-        $expectedhmac = hash_hmac('sha256', json_encode($data), $appSecret);
-
-        static::assertEquals($expectedhmac, $postBody['hmac']);
+        static::assertEquals(
+            hash_hmac('sha256', json_encode($postBody), $appSecret),
+            $confirmationReq->getHeaderLine('shopware-shop-signature')
+        );
     }
 
     public function testRegistrationFailsWithWrongProof(): void
@@ -163,14 +162,10 @@ class AppRegistrationServiceTest extends TestCase
 
     private function assertRequestIsSigned(RequestInterface $registrationRequest, string $secret): void
     {
-        $queryString = $registrationRequest->getUri()->getQuery();
-        $queryParams = [];
-        \parse_str($queryString, $queryParams);
-        $signature = (string) $queryParams['hmac'];
-
-        $content = \str_replace('&hmac=' . $signature, '', $queryString);
-
-        static::assertEquals(hash_hmac('sha256', $content, $secret), $signature);
+        static::assertEquals(
+            hash_hmac('sha256', $registrationRequest->getUri()->getQuery(), $secret),
+            $registrationRequest->getHeaderLine('shopware-app-signature')
+        );
     }
 
     private function fetchApp(string $id): AppEntity

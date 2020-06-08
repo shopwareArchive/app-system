@@ -88,6 +88,8 @@ class WebhookDispatcherTest extends TestCase
                 'url' => $this->shopUrl,
             ],
         ], json_decode($body, true));
+
+        static::assertFalse($request->hasHeader('shopware-shop-signature'));
     }
 
     public function testDispatchesWrappedEntityWrittenEventToWebhookWithoutApp(): void
@@ -167,6 +169,8 @@ class WebhookDispatcherTest extends TestCase
                 'url' => $this->shopUrl,
             ],
         ], json_decode($body, true));
+
+        static::assertFalse($request->hasHeader('shopware-shop-signature'));
     }
 
     public function testNoRegisteredWebhook(): void
@@ -267,6 +271,7 @@ class WebhookDispatcherTest extends TestCase
             'version' => '0.0.1',
             'label' => 'test',
             'accessToken' => 'test',
+            'appSecret' => 's3cr3t',
             'integration' => [
                 'label' => 'test',
                 'writeAccess' => false,
@@ -316,6 +321,11 @@ class WebhookDispatcherTest extends TestCase
                 'appVersion' => '0.0.1',
             ],
         ], json_decode($body, true));
+
+        static::assertEquals(
+            hash_hmac('sha256', $body, 's3cr3t'),
+            $request->getHeaderLine('shopware-shop-signature')
+        );
     }
 }
 

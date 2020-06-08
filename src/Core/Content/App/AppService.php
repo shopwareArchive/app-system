@@ -6,6 +6,7 @@ use Shopware\Core\Framework\Context;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycleIterator;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\RefreshableAppDryRun;
+use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 
 class AppService
 {
@@ -27,9 +28,12 @@ class AppService
         $this->appLifecycle = $appLifecycle;
     }
 
-    public function refreshApps(Context $context): void
+    /**
+     * @return array<Manifest>
+     */
+    public function refreshApps(Context $context): array
     {
-        $this->appLifecycleIterator->iterate($this->appLifecycle, $context);
+        return $this->appLifecycleIterator->iterate($this->appLifecycle, $context);
     }
 
     public function getRefreshableAppInfo(Context $context): RefreshableAppDryRun

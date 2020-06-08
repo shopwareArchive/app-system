@@ -115,6 +115,7 @@
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\HandshakeFactory"/>
             <argument type="service" id="GuzzleHttp\Client"/>
             <argument type="service" id="saas_app.repository"/>
+            <argument type="string">%env(APP_URL)%</argument>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\HandshakeFactory">
@@ -190,6 +191,7 @@
 
         <service id="Swag\SaasConnect\Core\Content\App\Manifest\ModuleLoader">
             <argument type="service" id="saas_app.repository"/>
+            <argument>%env(APP_URL)%</argument>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Action\Executor">

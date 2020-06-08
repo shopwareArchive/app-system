@@ -7,11 +7,11 @@ use Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\StoreHandshake;
 
 class StoreHandshakeTest extends TestCase
 {
-    public function testGetHandshakeFetchUrlIsUnimplemented(): void
+    public function testGetHandshakeAssembleRequestIsUnimplemented(): void
     {
         $storeHandshake = new StoreHandshake();
         static::expectException(\RuntimeException::class);
-        $storeHandshake->fetchUrl();
+        $storeHandshake->assembleRequest();
     }
 
     public function testGetHandshakeFetchAppProofIsUnimplemented(): void

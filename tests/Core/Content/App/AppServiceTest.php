@@ -7,7 +7,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonEntity;
@@ -267,19 +266,13 @@ class AppServiceTest extends TestCase
             ),
             $this->getContainer()->get(AppLifecycle::class)
         );
-        $appService->refreshApps($this->context);
+        $fails = $appService->refreshApps($this->context);
 
-        $appsWithFailedInstall = new Criteria();
-        $appsWithFailedInstall->addFilter(new NotFilter('or', [new EqualsFilter('appSecret', null)]));
-        $apps = $this->appRepository->search($appsWithFailedInstall, $this->context)->getEntities();
+        $apps = $this->appRepository->search(new Criteria(), $this->context)->getEntities();
 
         static::assertCount(2, $apps);
 
-        $appsWithFailedInstall = new Criteria();
-        $appsWithFailedInstall->addFilter(new EqualsFilter('appSecret', null));
-        $apps = $this->appRepository->search($appsWithFailedInstall, $this->context)->getEntities();
-
-        static::assertCount(1, $apps);
+        static::assertCount(1, $fails);
     }
 
     private function assertDefaultActionButtons(): void

@@ -28,14 +28,21 @@ class AppRegistrationService
      */
     private $appRepository;
 
+    /**
+     * @var string
+     */
+    private $shopUrl;
+
     public function __construct(
         HandshakeFactory $handshakeFactory,
         Client $httpClient,
-        EntityRepositoryInterface $appRepository
+        EntityRepositoryInterface $appRepository,
+        string $shopUrl
     ) {
         $this->handshakeFactory = $handshakeFactory;
         $this->httpClient = $httpClient;
         $this->appRepository = $appRepository;
+        $this->shopUrl = $shopUrl;
     }
 
     public function registerApp(Manifest $manifest, string $id, Context $context): void
@@ -57,8 +64,8 @@ class AppRegistrationService
     {
         $handshake = $this->handshakeFactory->create($manifest);
 
-        $registrationUrl = $handshake->fetchUrl();
-        $response = $this->httpClient->get($registrationUrl);
+        $request = $handshake->assembleRequest();
+        $response = $this->httpClient->send($request);
 
         return $this->parseResponse($handshake, $response);
     }
@@ -76,9 +83,14 @@ class AppRegistrationService
     {
         $payload = $this->getConfirmationPayload($id, $context);
 
-        $payload = $this->signPayload($payload, $secret);
+        $signature = $this->signPayload($payload, $secret);
 
-        $this->httpClient->post($confirmationUrl, ['json' => $payload]);
+        $this->httpClient->post($confirmationUrl, [
+            'headers' => [
+                'shopware-shop-signature' => $signature,
+            ],
+            'json' => $payload,
+        ]);
     }
 
     /**
@@ -106,19 +118,17 @@ class AppRegistrationService
         return [
             'apiKey' => $app->getIntegration()->getAccessKey(),
             'secretKey' => $app->getAccessToken(),
+            'timestamp' => (string) (new \DateTime())->getTimestamp(),
+            'shopUrl' => $this->shopUrl,
         ];
     }
 
     /**
      * @param array<string,string> $body
-     * @return array<string,string>
      */
-    private function signPayload(array $body, string $secret): array
+    private function signPayload(array $body, string $secret): string
     {
-        $body['timestamp'] = (string) (new \DateTime())->getTimestamp();
-        $body['hmac'] = hash_hmac('sha256', (string) \json_encode($body), $secret);
-
-        return $body;
+        return hash_hmac('sha256', (string) \json_encode($body), $secret);
     }
 
     private function getApp(string $id, Context $context): AppEntity

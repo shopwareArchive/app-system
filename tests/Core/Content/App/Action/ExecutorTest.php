@@ -46,7 +46,8 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
             'detail',
             [Uuid::randomHex()],
             'I am  not secret',
-            'I am secret'
+            'I am secret',
+            's3cr3t'
         );
 
         $this->appServerMock->append(new Response(200));
@@ -64,6 +65,11 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
         $message = $this->parseSchemaErrors($result);
 
         static::assertTrue($result->isValid(), $message);
+
+        static::assertEquals(
+            hash_hmac('sha256', $body, $action->getAppSecret()),
+            $request->getHeaderLine('shopware-shop-signature')
+        );
     }
 
     public function testExecutorIgnoresFailedRequests(): void
@@ -76,7 +82,8 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
             'detail',
             [],
             'I am  not secret',
-            'I am secret'
+            'I am secret',
+            's3cr3t'
         );
 
         $this->appServerMock->append(new Response(500));
@@ -99,7 +106,8 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
             'detail',
             [],
             'I am  not secret',
-            'I am secret'
+            'I am secret',
+            's3cr3t'
         );
 
         $this->appServerMock->append(new Response(200));
@@ -109,6 +117,12 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
         $request = $this->appServerMock->getLastRequest();
 
         static::assertEquals($targetUrl, (string) $request->getUri());
+
+        $body = $request->getBody()->getContents();
+        static::assertEquals(
+            hash_hmac('sha256', $body, $action->getAppSecret()),
+            $request->getHeaderLine('shopware-shop-signature')
+        );
     }
 
     public function testContentIsCorrect(): void
@@ -129,7 +143,8 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
             $actionName,
             $affectedIds,
             $accessKey,
-            $secretKey
+            $secretKey,
+            's3cr3t'
         );
 
         $context = Context::createDefaultContext();
@@ -162,6 +177,11 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
         static::assertNotEmpty($data['meta']['timestamp']);
         static::assertTrue(Uuid::isValid($data['meta']['reference']));
         static::assertEquals($context->getLanguageId(), $data['meta']['language']);
+
+        static::assertEquals(
+            hash_hmac('sha256', $body, $action->getAppSecret()),
+            $request->getHeaderLine('shopware-shop-signature')
+        );
     }
 
     private function parseSchemaErrors(ValidationResult $result): string

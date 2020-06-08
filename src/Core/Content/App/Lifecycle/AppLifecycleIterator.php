@@ -8,6 +8,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Swag\SaasConnect\Core\Content\App\AppCollection;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
 use Swag\SaasConnect\Core\Content\App\Exception\SaasConnectException;
+use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 
 class AppLifecycleIterator
 {
@@ -29,33 +30,40 @@ class AppLifecycleIterator
         $this->appLoader = $appLoader;
     }
 
-    public function iterate(AppLifecycleInterface $appLifecycle, Context $context): void
+    /**
+     * @return array<Manifest>
+     */
+    public function iterate(AppLifecycleInterface $appLifecycle, Context $context): array
     {
         $appsFromFileSystem = $this->appLoader->load();
-        $appsFromDb = $this->getRegisteredApps($context);
+        $installedApps = $this->getRegisteredApps($context);
 
+        $successfulUpdates = [];
+        $fails = [];
         foreach ($appsFromFileSystem as $manifest) {
             try {
-                if (!array_key_exists($manifest->getMetadata()->getName(), $appsFromDb)) {
+                if (!array_key_exists($manifest->getMetadata()->getName(), $installedApps)) {
                     $appLifecycle->install($manifest, $context);
+                    $successfulUpdates[] = $manifest->getMetadata()->getName();
 
                     continue;
                 }
 
-                $app = $appsFromDb[$manifest->getMetadata()->getName()];
+                $app = $installedApps[$manifest->getMetadata()->getName()];
                 if (version_compare($manifest->getMetadata()->getVersion(), $app['version']) > 0) {
                     $appLifecycle->update($manifest, $app, $context);
                 }
+                $successfulUpdates[] = $manifest->getMetadata()->getName();
             } catch (SaasConnectException $exception) {
+                $fails[] = $manifest;
+
                 continue;
-            } finally {
-                unset($appsFromDb[$manifest->getMetadata()->getName()]);
             }
         }
 
-        foreach ($appsFromDb as $appName => $app) {
-            $appLifecycle->delete($appName, $app, $context);
-        }
+        $this->deleteNotFoundAndFailedInstallApps($successfulUpdates, $appLifecycle, $context);
+
+        return $fails;
     }
 
     /**
@@ -77,5 +85,23 @@ class AppLifecycleIterator
         }
 
         return $appData;
+    }
+
+    /**
+     * @param array<string> $successfulUpdates
+     */
+    private function deleteNotFoundAndFailedInstallApps(
+        array $successfulUpdates,
+        AppLifecycleInterface $appLifecycle,
+        Context $context
+    ): void {
+        // refetch registered apps so we can remove apps where the installation failed
+        $appsFromDb = $this->getRegisteredApps($context);
+        foreach ($successfulUpdates as $app) {
+            unset($appsFromDb[$app]);
+        }
+        foreach ($appsFromDb as $appName => $app) {
+            $appLifecycle->delete($appName, $app, $context);
+        }
     }
 }

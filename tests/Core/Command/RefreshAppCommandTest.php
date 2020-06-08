@@ -5,6 +5,7 @@ namespace Swag\SaasConnect\Test\Core\Command;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\SaasConnect\Core\Command\AppPrinter;
 use Swag\SaasConnect\Core\Command\RefreshAppCommand;
@@ -220,7 +221,10 @@ class RefreshAppCommandTest extends TestCase
         // header
         static::assertRegExp('/.*Failed\s+\n.*/', $display);
         // content
-        static::assertRegExp('/.*Swag App Test\s+\n.*/', $display);
+        static::assertRegExp('/.*SwagApp\s+\n.*/', $display);
+
+        $registeredApps = $this->appRepository->search(new Criteria(), Context::createDefaultContext());
+        static::assertEquals(0, $registeredApps->getTotal());
     }
 
     private function createCommand(string $appFolder): RefreshAppCommand
