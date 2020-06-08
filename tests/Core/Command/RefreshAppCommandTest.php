@@ -48,7 +48,7 @@ class RefreshAppCommandTest extends TestCase
 
     public function testRefreshWithForce(): void
     {
-        $commandTester = new CommandTester($this->createCommand(__DIR__ . '/_fixtures/withoutPermissions'));
+        $commandTester = new CommandTester($this->createCommand(__DIR__ . '/_fixtures/withPermissions'));
 
         $commandTester->execute(['-f' => true]);
 

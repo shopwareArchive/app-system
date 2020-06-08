@@ -6,6 +6,9 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Storefront\Test\Controller\StorefrontControllerTestBehaviour;
 
+/**
+ * @group ThemeCompile
+ */
 class TemplateSystemIntegrationTest extends TestCase
 {
     use IntegrationTestBehaviour;

@@ -10,6 +10,9 @@ use Swag\SaasConnect\Storefront\Theme\StorefrontAppRegistry;
 use Swag\SaasConnect\Test\AppSystemTestBehaviour;
 use Swag\SaasConnect\Test\StorefrontAppRegistryTestBehaviour;
 
+/**
+ * @group ThemeCompile
+ */
 class StorefrontAppRegistryTest extends TestCase
 {
     use IntegrationTestBehaviour;

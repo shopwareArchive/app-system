@@ -26,9 +26,12 @@ class AppConfigGeneratorTest extends TestCase
         $this->configGenerator = $this->getContainer()->get(BundleConfigGenerator::class);
     }
 
+    /**
+     * @group ThemeCompile
+     */
     public function testGenerateWithThemeAndScriptAndStylePaths(): void
     {
-        $appPath = __DIR__ . '/../../Content/App/Manifest/_fixtures/test/';
+        $appPath = __DIR__ . '/_fixtures/theme/';
         $this->loadAppsFromDir($appPath);
 
         $configs = $this->configGenerator->getConfig();
@@ -52,16 +55,19 @@ class AppConfigGeneratorTest extends TestCase
         static::assertNull($storefrontConfig['webpack']);
 
         $expectedStyles = [
-            __DIR__ . '/../../Content/App/Manifest/_fixtures/test/Resources/app/storefront/src/scss/base.scss',
-            __DIR__ . '/../../Content/App/Manifest/_fixtures/test/Resources/app/storefront/src/scss/overrides.scss',
+            $appPath . 'Resources/app/storefront/src/scss/base.scss',
+            $appPath . 'Resources/app/storefront/src/scss/overrides.scss',
         ];
 
         static::assertEquals([], array_diff($expectedStyles, $storefrontConfig['styleFiles']));
     }
 
+    /**
+     * @group ThemeCompile
+     */
     public function testGeneratedConfigStaysSameWithoutThemeRegistry(): void
     {
-        $appPath = __DIR__ . '/../../Content/App/Manifest/_fixtures/test/';
+        $appPath = __DIR__ . '/_fixtures/theme';
         $this->loadAppsFromDir($appPath);
 
         $configs = $this->configGenerator->getConfig();

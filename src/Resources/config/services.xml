@@ -165,6 +165,21 @@
             <tag name="console.command"/>
         </service>
 
+        <service id="Swag\SaasConnect\Core\Command\InstallAppCommand">
+            <argument>%saas_connect.app_dir%</argument>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Command\AppPrinter"/>
+
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Command\UninstallAppCommand">
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle"/>
+            <argument type="service" id="saas_app.repository"/>
+
+            <tag name="console.command"/>
+        </service>
+
         <service id="Swag\SaasConnect\Core\Command\AppPrinter">
             <argument type="service" id="saas_app.repository"/>
         </service>
