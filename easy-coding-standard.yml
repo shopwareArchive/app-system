@@ -1,10 +1,3 @@
-imports:
-    - { resource: '%vendor_dir%/symplify/easy-coding-standard/config/set/psr12.yaml' }
-    - { resource: '%vendor_dir%/symplify/easy-coding-standard/config/set/symfony.yaml' }
-    - { resource: '%vendor_dir%/symplify/easy-coding-standard/config/set/common/array.yaml' }
-    - { resource: '%vendor_dir%/symplify/easy-coding-standard/config/set/common/control-structures.yaml' }
-    - { resource: '%vendor_dir%/symplify/easy-coding-standard/config/set/common/strict.yaml' }
-
 services:
     PhpCsFixer\Fixer\Alias\MbStrFunctionsFixer: ~
     PhpCsFixer\Fixer\CastNotation\ModernizeTypesCastingFixer: ~
@@ -36,6 +29,13 @@ services:
     PhpCsFixerCustomFixers\Fixer\SingleSpaceAfterStatementFixer: ~
 
 parameters:
+    sets:
+        - 'psr12'
+        - 'symfony'
+        - 'array'
+        - 'control-structures'
+        - 'strict'
+
     skip:
         PhpCsFixer\Fixer\ClassNotation\SelfAccessorFixer: ~
         PhpCsFixer\Fixer\LanguageConstruct\ExplicitIndirectVariableFixer: ~
@@ -47,3 +47,4 @@ parameters:
         PhpCsFixer\Fixer\Phpdoc\PhpdocAlignFixer: ~
         PhpCsFixer\Fixer\StringNotation\ExplicitStringVariableFixer: ~
         PHP_CodeSniffer\Standards\Generic\Sniffs\CodeAnalysis\AssignmentInConditionSniff: ~
+        PhpCsFixer\Fixer\Operator\NotOperatorWithSuccessorSpaceFixer: ~

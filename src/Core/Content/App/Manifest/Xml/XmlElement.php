@@ -9,7 +9,7 @@ class XmlElement extends Struct
     private const FALLBACK_LOCALE = 'en-GB';
 
     /**
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ReturnTypeHint
      */
     public function toArray(): array
     {
@@ -21,7 +21,8 @@ class XmlElement extends Struct
     }
 
     /**
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ReturnTypeHint
      */
     protected static function mapTranslatedTag(\DOMElement $child, array $values): array
     {
@@ -39,7 +40,7 @@ class XmlElement extends Struct
     }
 
     /**
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ReturnTypeHint
      */
     protected static function parseChildNodes(\DOMElement $child, callable $transformer): array
     {

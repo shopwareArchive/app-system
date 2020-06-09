@@ -53,7 +53,7 @@ Build-Analysis-Container:
             alias: docker
     script:
         - apk add git bash
-        - docker login "${REPOSITORY_HOST}" -u $REGISTRY_USERNAME --password-stdin < $REGISTRY_PASSWORD_FILE
+        - docker login "${REPOSITORY_HOST}" -u $CI_REGISTRY_USER -p "$CI_REGISTRY_PASSWORD"
         - docker build dev-ops/tools -t "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"
         - docker tag "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}" "${IMAGE_NAME}:latest"
         - docker push "${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}"

@@ -72,6 +72,8 @@ return [
         \SlevomatCodingStandard\Sniffs\Classes\SuperfluousInterfaceNamingSniff::class,
         \SlevomatCodingStandard\Sniffs\Classes\SuperfluousExceptionNamingSniff::class,
         \PhpCsFixer\Fixer\ReturnNotation\ReturnAssignmentFixer::class,
+        // reports on @var annotations on props if running in php7.4, can be removed once we use typed properties
+        \SlevomatCodingStandard\Sniffs\TypeHints\PropertyTypeHintSniff::class,
     ],
 
     'config' => [
@@ -88,9 +90,6 @@ return [
         ],
         \ObjectCalisthenics\Sniffs\Metrics\MaxNestingLevelSniff::class => [
             'maxNestingLevel' => 3,
-        ],
-        \SlevomatCodingStandard\Sniffs\TypeHints\TypeHintDeclarationSniff::class => [
-            'allAnnotationsAreUseful' => true,
         ],
         \SlevomatCodingStandard\Sniffs\TypeHints\DeclareStrictTypesSniff::class => [
             'newlinesCountAfterDeclare' => 2,

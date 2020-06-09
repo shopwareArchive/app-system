@@ -7,7 +7,7 @@ interface Hookable
     public function getName(): string;
 
     /**
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ReturnTypeHint
      */
     public function getWebhookPayload(): array;
 }
