@@ -1,7 +1,7 @@
 parameters:
     checkMissingIterableValueType: false
     level: 8
-    autoload_files:
+    bootstrapFiles:
         - %currentWorkingDirectory%/../../../vendor/autoload.php
     checkGenericClassInNonGenericObjectType: false
     ignoreErrors:

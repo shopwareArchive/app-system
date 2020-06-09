@@ -12,7 +12,7 @@ help:
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 static-analysis: | install-tools vendor ## runs psalm and phpstan and phpinsights
-	$(TOOLS_BIN)/psalm --output-format=compact
+	$(TOOLS_BIN)/psalm
 	$(TOOLS_BIN)/phpstan analyze --configuration phpstan.neon src
 	$(TOOLS_BIN)/phpinsights --no-interaction --min-quality=100 --min-complexity=75 --min-architecture=100 --min-style=100
 

@@ -146,7 +146,8 @@ class AppLifecycle implements AppLifecycleInterface
         unset($metadata['icon']);
         $metadata['path'] = $manifest->getPath();
         $metadata['id'] = $id;
-        $metadata['modules'] = array_reduce(
+        /** @var array<array<string, string>> $modules */
+        $modules = array_reduce(
             $manifest->getAdmin() ? $manifest->getAdmin()->getModules() : [],
             static function (array $modules, Module $module) {
                 $modules[] = $module->toArray();
@@ -155,6 +156,7 @@ class AppLifecycle implements AppLifecycleInterface
             },
             []
         );
+        $metadata['modules'] = $modules;
         $metadata['iconRaw'] = $this->appLoader->getIcon($manifest);
 
         $this->updateMetadata($metadata, $context);
@@ -169,7 +171,7 @@ class AppLifecycle implements AppLifecycleInterface
     }
 
     /**
-     * @param array<string, string|array<string, string|bool>|null> $metadata
+     * @param array<string, string|array<string, string|bool|array<string, string>>|null> $metadata
      */
     private function updateMetadata(array $metadata, Context $context): void
     {

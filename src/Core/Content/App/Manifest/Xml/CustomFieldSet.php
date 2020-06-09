@@ -43,7 +43,7 @@ class CustomFieldSet extends XmlElement
     }
 
     /**
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ReturnTypeHint
      */
     public function toEntityArray(string $appId): array
     {
