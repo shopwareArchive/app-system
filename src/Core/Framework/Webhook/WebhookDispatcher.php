@@ -167,7 +167,14 @@ class WebhookDispatcher implements EventDispatcherInterface
             /** @var string $jsonPayload */
             $jsonPayload = \json_encode($payload);
 
-            $request = new Request('POST', $webhookConfig['url'], [], $jsonPayload);
+            $request = new Request(
+                'POST',
+                $webhookConfig['url'],
+                [
+                    'Content-Type' => 'application/json',
+                ],
+                $jsonPayload
+            );
 
             if ($webhookConfig['app_secret']) {
                 $request = $request->withHeader(
