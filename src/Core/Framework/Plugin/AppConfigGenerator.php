@@ -64,14 +64,8 @@ class AppConfigGenerator implements BundleConfigGeneratorInterface
 
         /** @var AppEntity $app */
         foreach ($apps as $app) {
-            $path = $app->getPath();
-            if (mb_strpos($app->getPath(), $this->projectDir) === 0) {
-                // make relative
-                $path = ltrim(mb_substr($path, mb_strlen($this->projectDir)), '/');
-            }
-
             $config[$app->getName()] = [
-                'basePath' => $path . '/',
+                'basePath' => $app->getPath() . '/',
                 'views' => ['Resources/views'],
                 'technicalName' => str_replace('_', '-', $app->getNameAsSnakeCase()),
                 'storefront' => [
@@ -89,7 +83,7 @@ class AppConfigGenerator implements BundleConfigGeneratorInterface
     private function getEntryFile(AppEntity $app, string $componentPath): ?string
     {
         $path = trim($componentPath, '/');
-        $absolutePath = $app->getPath() . '/' . $path;
+        $absolutePath = $this->projectDir . '/' . $app->getPath() . '/' . $path;
 
         return file_exists($absolutePath . '/main.ts') ? $path . '/main.ts'
             : (file_exists($absolutePath . '/main.js') ? $path . '/main.js'
@@ -99,7 +93,7 @@ class AppConfigGenerator implements BundleConfigGeneratorInterface
     private function getWebpackConfig(AppEntity $app, string $componentPath): ?string
     {
         $path = trim($componentPath, '/');
-        $absolutePath = $app->getPath() . '/' . $path;
+        $absolutePath = $this->projectDir . '/' . $app->getPath() . '/' . $path;
         if (!file_exists($absolutePath . '/build/webpack.config.js')) {
             return null;
         }
@@ -121,7 +115,7 @@ class AppConfigGenerator implements BundleConfigGeneratorInterface
             }
         }
 
-        $path = $app->getPath() . DIRECTORY_SEPARATOR . 'Resources/app/storefront/src/scss';
+        $path = $this->projectDir . '/' . $app->getPath() . '/Resources/app/storefront/src/scss';
         if (is_dir($path)) {
             $finder = new Finder();
             $finder->in($path)->files()->depth(0);

@@ -44,6 +44,7 @@
 
         <service id="Swag\SaasConnect\Storefront\Theme\StorefrontPluginConfiguration\StorefrontPluginConfigurationAppFactory">
             <argument type="service" id="Shopware\Storefront\Theme\StorefrontPluginConfiguration\StorefrontPluginConfigurationFactory" />
+            <argument type="string">%kernel.project_dir%</argument>
         </service>
 
         <service id="Swag\SaasConnect\Storefront\Theme\StorefrontAppRegistry" decorates="Shopware\Storefront\Theme\StorefrontPluginRegistry">
@@ -56,6 +57,7 @@
             <argument type="service" id="Shopware\Storefront\Theme\StorefrontPluginRegistry"/>
             <argument type="service" id="Swag\SaasConnect\Storefront\Theme\StorefrontPluginConfiguration\StorefrontPluginConfigurationAppFactory"/>
             <argument type="service" id="Shopware\Storefront\Theme\ThemeLifecycleHandler"/>
+            <argument type="string">%kernel.project_dir%</argument>
         </service>
 
         <service id="Swag\SaasConnect\Core\Framework\Webhook\WebhookDispatcher" decorates="event_dispatcher" decoration-priority="100">
@@ -63,7 +65,7 @@
             <argument type="service" id="Doctrine\DBAL\Connection"/>
             <argument type="service" id="GuzzleHttp\Client"/>
             <argument type="service" id="Swag\SaasConnect\Core\Framework\Webhook\BusinessEventEncoder"/>
-            <argument>%env(APP_URL)%</argument>
+            <argument type="string">%env(APP_URL)%</argument>
         </service>
 
         <service id="Swag\SaasConnect\Core\Framework\Webhook\WebhookCacheClearer">
@@ -109,6 +111,7 @@
             <argument type="service" id="Swag\SaasConnect\Storefront\Theme\Lifecycle\ThemeLifecycleHandler"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\AppRegistrationService"/>
+            <argument type="string">%kernel.project_dir%</argument>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\AppRegistrationService">

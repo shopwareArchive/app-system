@@ -162,6 +162,9 @@ class AppEntity extends Entity
         $this->name = $name;
     }
 
+    /**
+     * @return string the path relative to project dir
+     */
     public function getPath(): string
     {
         return $this->path;
