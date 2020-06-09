@@ -11,7 +11,7 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
-                <xs:element name="setup" type="setup">
+                <xs:element name="setup" type="setup" minOccurs="0">
                     <xs:annotation>
                         <xs:documentation xml:lang="en">
                             Authentication data for your app.

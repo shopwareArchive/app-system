@@ -5,7 +5,9 @@ namespace Swag\SaasConnect\Core\Content\App\Lifecycle;
 use Shopware\Core\Framework\Api\Util\AccessKeyHelper;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\SaasConnect\Core\Content\App\AppEntity;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppDeletedEvent;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppInstalledEvent;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppUpdatedEvent;
@@ -103,9 +105,7 @@ class AppLifecycle implements AppLifecycleInterface
         $roleId = Uuid::randomHex();
         $metadata = $this->enrichInstallMetadata($manifest, $metadata, $roleId);
 
-        $this->updateApp($manifest, $metadata, $appId, $roleId, $context);
-
-        $this->registrationService->registerApp($manifest, $appId, $context);
+        $this->updateApp($manifest, $metadata, $appId, $roleId, $context, true);
 
         $this->eventDispatcher->dispatch(
             new AppInstalledEvent($appId, $manifest, $context)
@@ -118,7 +118,7 @@ class AppLifecycle implements AppLifecycleInterface
     public function update(Manifest $manifest, array $app, Context $context): void
     {
         $metadata = $manifest->getMetadata()->toArray();
-        $this->updateApp($manifest, $metadata, $app['id'], $app['roleId'], $context);
+        $this->updateApp($manifest, $metadata, $app['id'], $app['roleId'], $context, false);
 
         $this->eventDispatcher->dispatch(
             new AppUpdatedEvent($app['id'], $manifest, $context)
@@ -141,37 +141,44 @@ class AppLifecycle implements AppLifecycleInterface
     /**
      * @param array<string, string|array<string, string|bool>> $metadata
      */
-    private function updateApp(Manifest $manifest, array $metadata, string $id, string $roleId, Context $context): void
-    {
+    private function updateApp(
+        Manifest $manifest,
+        array $metadata,
+        string $id,
+        string $roleId,
+        Context $context,
+        bool $install
+    ): void {
         unset($metadata['icon']);
         $metadata['path'] = $manifest->getPath();
         $metadata['id'] = $id;
-        /** @var array<array<string, string>> $modules */
-        $modules = array_reduce(
-            $manifest->getAdmin() ? $manifest->getAdmin()->getModules() : [],
-            static function (array $modules, Module $module) {
-                $modules[] = $module->toArray();
-
-                return $modules;
-            },
-            []
-        );
-        $metadata['modules'] = $modules;
+        $metadata['modules'] = [];
         $metadata['iconRaw'] = $this->appLoader->getIcon($manifest);
 
         $this->updateMetadata($metadata, $context);
         $this->permissionPersister->updatePrivileges($manifest, $roleId);
 
-        $this->actionButtonPersister->updateActions($manifest, $id, $context);
+        if ($install && $manifest->getSetup()) {
+            $this->registrationService->registerApp($manifest, $id, $context);
+        }
+
+        $app = $this->loadApp($id, $context);
+        // we need a app secret to securely communicate with apps
+        // therefore we only install action-buttons, webhooks and modules if we have a secret
+        if ($app->getAppSecret()) {
+            $this->actionButtonPersister->updateActions($manifest, $id, $context);
+            $this->webhookPersister->updateWebhooks($manifest, $id, $context);
+            $this->updateModules($manifest, $id, $context);
+        }
+
         $this->customFieldPersister->updateCustomFields($manifest, $id, $context);
-        $this->webhookPersister->updateWebhooks($manifest, $id, $context);
         $this->templatePersister->updateTemplates($manifest, $id, $context);
 
         $this->themeLifecycleHandler->handleAppUpdate($manifest, $context);
     }
 
     /**
-     * @param array<string, string|array<string, string|bool|array<string, string>>|null> $metadata
+     * @param array<string, string|array<string, string|bool>|null> $metadata
      */
     private function updateMetadata(array $metadata, Context $context): void
     {
@@ -201,5 +208,35 @@ class AppLifecycle implements AppLifecycleInterface
         $metadata['accessToken'] = $secret;
 
         return $metadata;
+    }
+
+    private function loadApp(string $id, Context $context): AppEntity
+    {
+        /** @var AppEntity $app */
+        $app = $this->appRepository->search(new Criteria([$id]), $context)->first();
+
+        return $app;
+    }
+
+    private function updateModules(Manifest $manifest, string $id, Context $context): void
+    {
+        if (!$manifest->getAdmin()) {
+            return;
+        }
+
+        $payload = [
+            'id' => $id,
+            'modules' => array_reduce(
+                $manifest->getAdmin()->getModules(),
+                static function (array $modules, Module $module) {
+                    $modules[] = $module->toArray();
+
+                    return $modules;
+                },
+                []
+            ),
+        ];
+
+        $this->appRepository->update([$payload], $context);
     }
 }

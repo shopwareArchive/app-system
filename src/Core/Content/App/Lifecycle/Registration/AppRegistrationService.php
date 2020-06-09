@@ -47,6 +47,10 @@ class AppRegistrationService
 
     public function registerApp(Manifest $manifest, string $id, Context $context): void
     {
+        if (!$manifest->getSetup()) {
+            return;
+        }
+
         $appResponse = $this->registerWithApp($manifest);
 
         $secret = $appResponse['secret'];

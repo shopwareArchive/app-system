@@ -106,5 +106,8 @@ return [
         \ObjectCalisthenics\Sniffs\NamingConventions\ElementNameMinimalLengthSniff::class => [
             'allowedShortNames' => ['i', 'id', 'e', 'io'],
         ],
+        \ObjectCalisthenics\Sniffs\Files\ClassTraitAndInterfaceLengthSniff::class => [
+            'maxLength' => 300,
+        ],
     ],
 ];
