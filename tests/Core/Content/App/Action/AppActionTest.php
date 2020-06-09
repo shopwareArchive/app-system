@@ -25,7 +25,8 @@ class AppActionTest extends TestCase
             $action,
             $ids,
             'i am not secret',
-            'i am secret'
+            'i am secret',
+            's3cr3t'
         );
 
         $expected = [
@@ -62,7 +63,8 @@ class AppActionTest extends TestCase
             $action,
             $ids,
             'i am not secret',
-            'i am secret'
+            'i am secret',
+            's3cr3t'
         );
     }
 
@@ -83,7 +85,8 @@ class AppActionTest extends TestCase
             $action,
             $ids,
             'i am not secret',
-            'i am secret'
+            'i am secret',
+            's3cr3t'
         );
     }
 
@@ -104,7 +107,8 @@ class AppActionTest extends TestCase
             $action,
             $ids,
             'i am not secret',
-            'i am secret'
+            'i am secret',
+            's3cr3t'
         );
     }
 
@@ -125,7 +129,8 @@ class AppActionTest extends TestCase
             $action,
             $ids,
             'i am not secret',
-            'i am secret'
+            'i am secret',
+            's3cr3t'
         );
     }
 
@@ -146,7 +151,8 @@ class AppActionTest extends TestCase
             $action,
             $ids,
             'i am not secret',
-            'i am secret'
+            'i am secret',
+            's3cr3t'
         );
     }
 
@@ -167,7 +173,8 @@ class AppActionTest extends TestCase
             $action,
             $ids,
             'i am not secret',
-            'i am secret'
+            'i am secret',
+            's3cr3t'
         );
     }
 
@@ -188,7 +195,8 @@ class AppActionTest extends TestCase
             $action,
             $ids,
             '',
-            'i am secret'
+            'i am secret',
+            's3cr3t'
         );
     }
 
@@ -209,6 +217,29 @@ class AppActionTest extends TestCase
             $action,
             $ids,
             'i am not secret',
+            '',
+            's3cr3t'
+        );
+    }
+
+    public function testInvalidAppSecret(): void
+    {
+        static::expectException(InvalidArgumentException::class);
+        $targetUrl = 'https://my-server.com/action';
+        $shopUrl = 'https://my-shop.com';
+        $appVersion = '1.0.0';
+        $entity = 'product';
+        $action = 'detail';
+        $ids = [Uuid::randomHex()];
+        new AppAction(
+            $targetUrl,
+            $shopUrl,
+            $appVersion,
+            $entity,
+            $action,
+            $ids,
+            'i am not secret',
+            'i am secret',
             ''
         );
     }

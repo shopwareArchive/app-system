@@ -4,7 +4,7 @@ GROUP_ID := $(shell id -g)
 TOOLS_BIN := dev-ops/tools/vendor/bin
 
 # TARGETS
-.PHONY: help static-analysis psalm phpstan php-insights test ecs-dry ecs-fix init install-tools administration-unit administration-lint vendor e2e-init e2e-open e2e-cli-proxy
+.PHONY: help static-analysis psalm phpstan php-insights test test-fast ecs-dry ecs-fix init install-tools administration-unit administration-lint vendor e2e-init e2e-open e2e-cli-proxy
 
 .DEFAULT_GOAL := help
 
@@ -31,6 +31,14 @@ test: ## runs phpunit
        --configuration phpunit.xml.dist \
        --coverage-clover build/artifacts/phpunit.clover.xml \
        --coverage-html build/artifacts/phpunit-coverage-html
+
+test-fast: ## runs phpunit but skips all tests that lead to theme compilation
+	composer dump-autoload
+	php -d pcov.enabled=1 -d pcov.directory=./src ../../../vendor/bin/phpunit \
+		--configuration phpunit.xml.dist \
+		--coverage-clover build/artifacts/phpunit.clover.xml \
+		--coverage-html build/artifacts/phpunit-coverage-html \
+		--exclude ThemeCompile
 
 test-no-cov: ## runs phpunit
 	composer dump-autoload

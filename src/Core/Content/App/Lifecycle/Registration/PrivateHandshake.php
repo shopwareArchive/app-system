@@ -2,6 +2,9 @@
 
 namespace Swag\SaasConnect\Core\Content\App\Lifecycle\Registration;
 
+use GuzzleHttp\Psr7\Request;
+use Psr\Http\Message\RequestInterface;
+
 class PrivateHandshake implements AppHandshakeInterface
 {
     /**
@@ -32,13 +35,19 @@ class PrivateHandshake implements AppHandshakeInterface
         $this->appName = $appName;
     }
 
-    public function fetchUrl(): string
+    public function assembleRequest(): RequestInterface
     {
         $date = new \DateTime();
-        $queryString = 'shop=' . urlencode($this->shopUrl) . '&timestamp=' . $date->getTimestamp();
+        $queryString = 'shop-url=' . urlencode($this->shopUrl) . '&timestamp=' . $date->getTimestamp();
         $signature = hash_hmac('sha256', $queryString, $this->secret);
 
-        return $this->appEndpoint . '?' . $queryString . '&hmac=' . $signature;
+        return new Request(
+            'GET',
+            $this->appEndpoint . '?' . $queryString,
+            [
+                'shopware-app-signature' => $signature,
+            ]
+        );
     }
 
     public function fetchAppProof(): string

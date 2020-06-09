@@ -9,71 +9,29 @@ class PrivateHandshakeTest extends TestCase
 {
     public function testUrlContainsAllNecessaryElements(): void
     {
-        $appEndpoint = 'https://test.com/install';
-
-        $handshake = new PrivateHandshake('', '', $appEndpoint, '');
-
-        $registrationUrl = $handshake->fetchUrl();
-        static::assertStringStartsWith($appEndpoint, $registrationUrl);
-
-        $queryParams = [];
-        \parse_str(\parse_url($registrationUrl, PHP_URL_QUERY), $queryParams);
-
-        static::assertArrayHasKey('shop', $queryParams);
-        static::assertArrayHasKey('timestamp', $queryParams);
-        static::assertArrayHasKey('hmac', $queryParams);
-    }
-
-    public function testUrlHasCorrectShopUrl(): void
-    {
-        $shopUrl = 'test.shop.com';
-        $appEndpoint = 'https://test.com/install';
-
-        $handshake = new PrivateHandshake($shopUrl, '', $appEndpoint, '');
-
-        $registrationUrl = $handshake->fetchUrl();
-
-        $queryParams = [];
-        \parse_str(\parse_url($registrationUrl, PHP_URL_QUERY), $queryParams);
-
-        static::assertEquals(urlencode($shopUrl), $queryParams['shop']);
-    }
-
-    public function testTimestampIsSet(): void
-    {
-        $appEndpoint = 'https://test.com/install';
-
-        $handshake = new PrivateHandshake('', '', $appEndpoint, '');
-
-        $registrationUrl = $handshake->fetchUrl();
-
-        $queryParams = [];
-        \parse_str(\parse_url($registrationUrl, PHP_URL_QUERY), $queryParams);
-
-        $timestamp = (string) $queryParams['timestamp'];
-
-        static::assertNotEmpty($timestamp);
-    }
-
-    public function testSignatureIsCorrect(): void
-    {
         $shopUrl = 'test.shop.com';
         $secret = 's3cr3t';
         $appEndpoint = 'https://test.com/install';
 
         $handshake = new PrivateHandshake($shopUrl, $secret, $appEndpoint, '');
 
-        $registrationUrl = $handshake->fetchUrl();
+        $request = $handshake->assembleRequest();
+        static::assertStringStartsWith($appEndpoint, (string) $request->getUri());
 
         $queryParams = [];
-        \parse_str(\parse_url($registrationUrl, PHP_URL_QUERY), $queryParams);
+        \parse_str($request->getUri()->getQuery(), $queryParams);
 
-        $signature = (string) $queryParams['hmac'];
+        static::assertArrayHasKey('shop-url', $queryParams);
+        static::assertEquals(urlencode($shopUrl), $queryParams['shop-url']);
 
-        $content = \parse_url($registrationUrl, PHP_URL_QUERY);
-        $content = \str_replace('&hmac=' . $signature, '', $content);
+        static::assertArrayHasKey('timestamp', $queryParams);
+        static::assertNotEmpty((string) $queryParams['timestamp']);
 
-        static::assertEquals(hash_hmac('sha256', $content, $secret), $signature);
+        static::assertTrue($request->hasHeader('shopware-app-signature'));
+        static::assertEquals(
+            hash_hmac('sha256', $request->getUri()->getQuery(), $secret),
+            $request->getHeaderLine('shopware-app-signature')
+        );
     }
 
     public function testAppProof(): void

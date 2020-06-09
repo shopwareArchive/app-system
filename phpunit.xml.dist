@@ -42,5 +42,6 @@
                 </array>
             </arguments>
         </listener>
+        <listener class="JohnKary\PHPUnit\Listener\SpeedTrapListener" />
     </listeners>
 </phpunit>

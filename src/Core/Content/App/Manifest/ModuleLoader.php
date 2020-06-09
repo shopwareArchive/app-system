@@ -19,13 +19,19 @@ class ModuleLoader
      */
     private $appRepository;
 
-    public function __construct(EntityRepositoryInterface $appRepository)
+    /**
+     * @var string
+     */
+    private $shopUrl;
+
+    public function __construct(EntityRepositoryInterface $appRepository, string $shopUrl)
     {
         $this->appRepository = $appRepository;
+        $this->shopUrl = $shopUrl;
     }
 
     /**
-     * @return array<string, array<string, string|array<string, string>>>
+     * @return array<array<string, string|array<string, string>|array<array<string|array<string, string>>>>>
      */
     public function loadModules(Context $context): array
     {
@@ -43,7 +49,7 @@ class ModuleLoader
     }
 
     /**
-     * @return array<array<string, string|array<string, string>>>
+     * @return array<array<string, string|array<string, string>|array<array<string|array<string, string>>>>>
      */
     private function formatPayload(AppCollection $apps): array
     {
@@ -54,8 +60,39 @@ class ModuleLoader
             $modules[] = [
                 'name' => $app->getName(),
                 'label' => $this->mapTranslatedLabels($app),
-                'modules' => $app->getModules(),
+                'modules' => $this->formatModules($app),
             ];
+        }
+
+        return $modules;
+    }
+
+    /**
+     * @return array<array<string|array<string, string>>>
+     */
+    private function formatModules(AppEntity $app): array
+    {
+        $modules = [];
+
+        /** @var array<string|array<string, string>> $module */
+        foreach ($app->getModules() as $module) {
+            $date = new \DateTime();
+            $queryString = 'shop-url=' . urlencode($this->shopUrl) . '&timestamp=' . $date->getTimestamp();
+            /** @var string $secret */
+            $secret = $app->getAppSecret();
+            $signature = hash_hmac('sha256', $queryString, $secret);
+
+            /** @var string $source */
+            $source = $module['source'];
+
+            $module['source'] = sprintf(
+                '%s?%s&shopware-shop-signature=%s',
+                $source,
+                $queryString,
+                $signature
+            );
+
+            $modules[] = $module;
         }
 
         return $modules;

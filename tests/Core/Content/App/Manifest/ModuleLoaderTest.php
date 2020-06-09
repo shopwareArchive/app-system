@@ -44,6 +44,8 @@ class ModuleLoaderTest extends TestCase
             return $a['name'] <=> $b['name'];
         });
 
+        $this->validateSources($loadedModules);
+
         static::assertEquals([
             [
                 'name' => 'App1',
@@ -56,14 +58,12 @@ class ModuleLoaderTest extends TestCase
                             'en-GB' => 'first App',
                             'de-DE' => 'Erste App',
                         ],
-                        'source' => 'https://first.app.com',
                         'name' => 'first-module',
                     ],
                     [
                         'label' => [
                             'en-GB' => 'first App second Module',
                         ],
-                        'source' => 'https://first.app.com/second',
                         'name' => 'second-module',
                     ],
                 ],
@@ -78,7 +78,6 @@ class ModuleLoaderTest extends TestCase
                         'label' => [
                             'en-GB' => 'second App',
                         ],
-                        'source' => 'https://second.app.com',
                         'name' => 'second-app',
                     ],
                 ],
@@ -94,6 +93,7 @@ class ModuleLoaderTest extends TestCase
             'version' => '0.0.1',
             'label' => 'test App1',
             'accessToken' => 'test',
+            'appSecret' => 's3cr3t',
             'modules' => [
                 [
                     'label' => [
@@ -126,6 +126,7 @@ class ModuleLoaderTest extends TestCase
             'version' => '0.0.1',
             'label' => 'test App2',
             'accessToken' => 'test',
+            'appSecret' => 's3cr3t2',
             'modules' => [
                 [
                     'label' => [
@@ -145,5 +146,35 @@ class ModuleLoaderTest extends TestCase
                 'name' => 'App2',
             ],
         ]], $this->context);
+    }
+
+    private function validateSources(array &$loadedModules): void
+    {
+        $this->validateSource($loadedModules[0]['modules'][0]['source'], 'https://first.app.com', 's3cr3t');
+        unset($loadedModules[0]['modules'][0]['source']);
+
+        $this->validateSource($loadedModules[0]['modules'][1]['source'], 'https://first.app.com/second', 's3cr3t');
+        unset($loadedModules[0]['modules'][1]['source']);
+
+        $this->validateSource($loadedModules[1]['modules'][0]['source'], 'https://second.app.com', 's3cr3t2');
+        unset($loadedModules[1]['modules'][0]['source']);
+    }
+
+    private function validateSource(string $givenSource, string $urlPath, string $secret): void
+    {
+        $url = \parse_url($givenSource);
+        $queryString = $url['query'];
+        unset($url['query']);
+
+        $expectedUrl = \parse_url($urlPath);
+        static::assertEquals($expectedUrl, $url);
+
+        \parse_str($queryString, $query);
+        static::assertEquals(getenv('APP_URL'), $query['shop-url']);
+
+        $hmac = $query['shopware-shop-signature'];
+        $content = \str_replace('&shopware-shop-signature=' . $hmac, '', $queryString);
+
+        static::assertEquals(hash_hmac('sha256', $content, $secret), $hmac);
     }
 }

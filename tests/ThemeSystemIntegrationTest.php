@@ -14,6 +14,9 @@ use Shopware\Storefront\Test\Controller\StorefrontControllerTestBehaviour;
 use Shopware\Storefront\Theme\ThemeEntity;
 use Shopware\Storefront\Theme\ThemeService;
 
+/**
+ * @group ThemeCompile
+ */
 class ThemeSystemIntegrationTest extends TestCase
 {
     use IntegrationTestBehaviour;

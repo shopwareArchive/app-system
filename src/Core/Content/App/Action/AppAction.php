@@ -50,6 +50,11 @@ class AppAction
     private $secretAccessKey;
 
     /**
+     * @var string
+     */
+    private $appSecret;
+
+    /**
      * @param array<string> $ids
      */
     public function __construct(
@@ -60,7 +65,8 @@ class AppAction
         string $action,
         array $ids,
         string $accessKey,
-        string $secretAccessKey
+        string $secretAccessKey,
+        string $appSecret
     ) {
         $this->setAction($action);
         $this->setAppVersion($appVersion);
@@ -70,6 +76,7 @@ class AppAction
         $this->setTargetUrl($targetUrl);
         $this->setAccessKey($accessKey);
         $this->setSecretAccessKey($secretAccessKey);
+        $this->setAppSecret($appSecret);
     }
 
     public function getTargetUrl(): string
@@ -95,6 +102,11 @@ class AppAction
                 'action' => $this->action,
             ],
         ];
+    }
+
+    public function getAppSecret(): string
+    {
+        return $this->appSecret;
     }
 
     /**
@@ -164,5 +176,14 @@ class AppAction
             throw new InvalidArgumentException('secret access key must not be empty');
         }
         $this->secretAccessKey = $secretAccessKey;
+    }
+
+    private function setAppSecret(string $appSecret): void
+    {
+        if ($appSecret === '') {
+            throw new InvalidArgumentException('app secret must not be empty');
+        }
+
+        $this->appSecret = $appSecret;
     }
 }

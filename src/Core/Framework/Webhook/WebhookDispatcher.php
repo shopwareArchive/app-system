@@ -167,7 +167,16 @@ class WebhookDispatcher implements EventDispatcherInterface
             /** @var string $jsonPayload */
             $jsonPayload = \json_encode($payload);
 
-            $requests[] = new Request('POST', $webhookConfig['url'], [], $jsonPayload);
+            $request = new Request('POST', $webhookConfig['url'], [], $jsonPayload);
+
+            if ($webhookConfig['app_secret']) {
+                $request = $request->withHeader(
+                    'shopware-shop-signature',
+                    hash_hmac('sha256', $jsonPayload, $webhookConfig['app_secret'])
+                );
+            }
+
+            $requests[] = $request;
         }
 
         $pool = new Pool($this->guzzle, $requests);
@@ -181,7 +190,7 @@ class WebhookDispatcher implements EventDispatcherInterface
         }
 
         $result = $this->connection->fetchAll('
-            SELECT `webhook`.`event_name`, `webhook`.`url`, `app`.`access_token`, `app`.`version`, `integration`.`access_key`
+            SELECT `webhook`.`event_name`, `webhook`.`url`, `app`.`access_token`, `app`.`version`, `app`.`app_secret`, `integration`.`access_key`
             FROM `saas_webhook` AS `webhook`
             LEFT JOIN `saas_app` AS `app` ON `webhook`.`app_id` = `app`.`id`
             LEFT JOIN `integration` ON `app`.`integration_id` = `integration`.`id`

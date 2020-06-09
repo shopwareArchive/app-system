@@ -14,6 +14,9 @@ use Swag\SaasConnect\Storefront\Theme\Lifecycle\ThemeLifecycleHandler;
 use Swag\SaasConnect\Test\AppSystemTestBehaviour;
 use Swag\SaasConnect\Test\StorefrontAppRegistryTestBehaviour;
 
+/**
+ * @group ThemeCompile
+ */
 class ThemeLifecycleHandlerTest extends TestCase
 {
     use IntegrationTestBehaviour;

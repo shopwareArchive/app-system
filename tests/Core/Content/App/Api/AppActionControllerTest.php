@@ -181,6 +181,11 @@ class AppActionControllerTest extends TestCase
 
         $result = json_decode($this->getBrowser()->getResponse()->getContent(), true);
 
+        // the query strings of the sources contain non-deterministic values like timestamps
+        // they are validated in `\Swag\SaasConnect\Test\Core\Content\App\Action\ModuleLoaderTest::validateSources`
+        // so we remove them here and don't check them
+        $result = $this->removeQueryStringsFromResult($result);
+
         static::assertEquals([
             'modules' => [
                 [
@@ -209,5 +214,24 @@ class AppActionControllerTest extends TestCase
                 ],
             ],
         ], $result);
+    }
+
+    private function removeQueryStringsFromResult(array $result): array
+    {
+        $queryString = parse_url($result['modules'][0]['modules'][0]['source'], PHP_URL_QUERY);
+        $result['modules'][0]['modules'][0]['source'] = \str_replace(
+            '?' . $queryString,
+            '',
+            $result['modules'][0]['modules'][0]['source']
+        );
+
+        $queryString = parse_url($result['modules'][0]['modules'][1]['source'], PHP_URL_QUERY);
+        $result['modules'][0]['modules'][1]['source'] = \str_replace(
+            '?' . $queryString,
+            '',
+            $result['modules'][0]['modules'][1]['source']
+        );
+
+        return $result;
     }
 }

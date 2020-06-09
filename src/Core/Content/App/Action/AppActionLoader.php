@@ -42,6 +42,9 @@ class AppActionLoader
             throw new ActionNotFoundException();
         }
 
+        /** @var string $secret */
+        $secret = $actionButton->getApp()->getAppSecret();
+
         return new AppAction(
             $actionButton->getUrl(),
             $this->url,
@@ -50,7 +53,8 @@ class AppActionLoader
             $actionButton->getAction(),
             $ids,
             $actionButton->getApp()->getIntegration()->getAccessKey(),
-            $actionButton->getApp()->getAccessToken()
+            $actionButton->getApp()->getAccessToken(),
+            $secret
         );
     }
 }

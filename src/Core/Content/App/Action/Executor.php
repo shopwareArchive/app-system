@@ -29,7 +29,19 @@ class Executor
         ];
 
         try {
-            $this->guzzleClient->post($action->getTargetUrl(), ['json' => $payload]);
+            $this->guzzleClient->post(
+                $action->getTargetUrl(),
+                [
+                    'headers' => [
+                        'shopware-shop-signature' => hash_hmac(
+                            'sha256',
+                            (string) \json_encode($payload),
+                            $action->getAppSecret()
+                        ),
+                    ],
+                    'json' => $payload,
+                ]
+            );
         } catch (ServerException $e) {
             // ignore failing requests
         }

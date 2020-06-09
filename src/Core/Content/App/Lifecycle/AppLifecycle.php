@@ -105,6 +105,8 @@ class AppLifecycle implements AppLifecycleInterface
 
         $this->updateApp($manifest, $metadata, $appId, $roleId, $context);
 
+        $this->registrationService->registerApp($manifest, $appId, $context);
+
         $this->eventDispatcher->dispatch(
             new AppInstalledEvent($appId, $manifest, $context)
         );
@@ -157,7 +159,6 @@ class AppLifecycle implements AppLifecycleInterface
 
         $this->updateMetadata($metadata, $context);
         $this->permissionPersister->updatePrivileges($manifest, $roleId);
-        $this->registrationService->registerApp($manifest, $id, $context);
 
         $this->actionButtonPersister->updateActions($manifest, $id, $context);
         $this->customFieldPersister->updateCustomFields($manifest, $id, $context);

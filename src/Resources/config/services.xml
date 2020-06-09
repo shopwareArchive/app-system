@@ -115,6 +115,7 @@
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\HandshakeFactory"/>
             <argument type="service" id="GuzzleHttp\Client"/>
             <argument type="service" id="saas_app.repository"/>
+            <argument type="string">%env(APP_URL)%</argument>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\HandshakeFactory">
@@ -165,6 +166,21 @@
             <tag name="console.command"/>
         </service>
 
+        <service id="Swag\SaasConnect\Core\Command\InstallAppCommand">
+            <argument>%saas_connect.app_dir%</argument>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Command\AppPrinter"/>
+
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Command\UninstallAppCommand">
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle"/>
+            <argument type="service" id="saas_app.repository"/>
+
+            <tag name="console.command"/>
+        </service>
+
         <service id="Swag\SaasConnect\Core\Command\AppPrinter">
             <argument type="service" id="saas_app.repository"/>
         </service>
@@ -175,6 +191,7 @@
 
         <service id="Swag\SaasConnect\Core\Content\App\Manifest\ModuleLoader">
             <argument type="service" id="saas_app.repository"/>
+            <argument>%env(APP_URL)%</argument>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Action\Executor">

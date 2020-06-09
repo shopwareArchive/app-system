@@ -69,7 +69,7 @@ class TestAppServer
         $query = [];
         \parse_str($request->getUri()->getQuery(), $query);
 
-        return $query['shop'];
+        return $query['shop-url'];
     }
 
     private function getAppname(RequestInterface $request): string
