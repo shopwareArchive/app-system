@@ -114,6 +114,14 @@ class AppRegistrationServiceTest extends TestCase
         $this->registrator->registerApp($manifest, '', Context::createDefaultContext());
     }
 
+    public function testDoesNotRegisterIfNoSetupElementIsProvided(): void
+    {
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/_fixtures/no-setup/manifest.xml');
+
+        // mockHandler would throw if it tries to make a registration request
+        $this->registrator->registerApp($manifest, '', Context::createDefaultContext());
+    }
+
     private function createApp(string $id): void
     {
         $roleId = Uuid::randomHex();

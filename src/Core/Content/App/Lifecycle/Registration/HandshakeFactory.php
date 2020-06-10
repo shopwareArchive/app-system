@@ -27,7 +27,8 @@ class HandshakeFactory
                 $this->shopUrl,
                 $privateSecret,
                 $setup->getRegistrationUrl(),
-                $metadata->getName());
+                $metadata->getName()
+            );
         }
 
         return new StoreHandshake();

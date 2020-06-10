@@ -80,6 +80,7 @@ class AppServiceTest extends TestCase
             'version' => '0.0.1',
             'label' => 'test',
             'accessToken' => 'test',
+            'appSecret' => 's3cr3t',
             'actionButtons' => [
                 [
                     'entity' => 'order',

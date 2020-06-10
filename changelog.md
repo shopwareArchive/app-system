@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - If there is an error during App installation the app will be removed, so that it can be easily reinstalled
 - Added shop url to confirmation request and requests for loading iframes
 - Renamed `shop` header to `shop-url` in registration request
+- Allowed that `setup` element in manifest file can be omitted, in that case action-buttons, modules and webhooks won't be registered, but it allows themes to work without a registration endpoint
 
 ## 0.1.0
 

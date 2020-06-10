@@ -13,4 +13,12 @@ class ManifestTest extends TestCase
 
         static::assertEquals(__DIR__ . '/_fixtures/test', $manifest->getPath());
     }
+
+    public function testSetPath(): void
+    {
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/_fixtures/test/manifest.xml');
+
+        $manifest->setPath('test');
+        static::assertEquals('test', $manifest->getPath());
+    }
 }

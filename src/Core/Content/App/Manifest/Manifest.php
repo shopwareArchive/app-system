@@ -26,7 +26,7 @@ class Manifest
     private $metadata;
 
     /**
-     * @var Setup
+     * @var Setup|null
      */
     private $setup;
 
@@ -53,7 +53,7 @@ class Manifest
     private function __construct(
         string $path,
         Metadata $metadata,
-        Setup $setup,
+        ?Setup $setup,
         ?Admin $admin,
         ?Permissions $permissions,
         ?CustomFields $customFields,
@@ -79,9 +79,9 @@ class Manifest
         /** @var \DOMElement $meta */
         $meta = $doc->getElementsByTagName('meta')->item(0);
         $metadata = Metadata::fromXml($meta);
-        /** @var \DOMElement $setup */
+        /** @var \DOMElement|null $setup */
         $setup = $doc->getElementsByTagName('setup')->item(0);
-        $setup = Setup::fromXml($setup);
+        $setup = $setup === null ? null : Setup::fromXml($setup);
         /** @var \DOMElement|null $admin */
         $admin = $doc->getElementsByTagName('admin')->item(0);
         $admin = $admin === null ? null : Admin::fromXml($admin);
@@ -113,7 +113,7 @@ class Manifest
         return $this->metadata;
     }
 
-    public function getSetup(): Setup
+    public function getSetup(): ?Setup
     {
         return $this->setup;
     }

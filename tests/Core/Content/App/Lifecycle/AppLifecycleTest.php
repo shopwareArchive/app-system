@@ -115,6 +115,24 @@ class AppLifecycleTest extends TestCase
         static::assertEquals('SwagAppMinimal', $apps->first()->getName());
     }
 
+    public function testInstallDoesNotInstallElementsThatNeedSecretIfNoSetupIsProvided(): void
+    {
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/Registration/_fixtures/no-setup/manifest.xml');
+        $this->appLifecycle->install($manifest, $this->context);
+
+        $criteria = new Criteria();
+        $criteria->addAssociation('actionButtons');
+        $criteria->addAssociation('webhooks');
+        /** @var AppCollection $apps */
+        $apps = $this->appRepository->search($criteria, $this->context)->getEntities();
+
+        static::assertCount(1, $apps);
+
+        static::assertCount(0, $apps->first()->getActionButtons());
+        static::assertCount(0, $apps->first()->getModules());
+        static::assertCount(0, $apps->first()->getWebhooks());
+    }
+
     public function testUpdate(): void
     {
         $id = Uuid::randomHex();
@@ -127,6 +145,7 @@ class AppLifecycleTest extends TestCase
             'version' => '0.0.1',
             'label' => 'test',
             'accessToken' => 'test',
+            'appSecret' => 's3cr3t',
             'modules' => [
                 [
                     'label' => [
@@ -218,7 +237,7 @@ class AppLifecycleTest extends TestCase
         $this->appLifecycle->update($manifest, $app, $this->context);
 
         static::assertTrue($eventWasThrown);
-        $this->eventDispatcher->removeListener(AppInstalledEvent::class, $onAppUpdated);
+        $this->eventDispatcher->removeListener(AppUpdatedEvent::class, $onAppUpdated);
         /** @var AppCollection $apps */
         $apps = $this->appRepository->search(new Criteria(), $this->context)->getEntities();
 
@@ -237,6 +256,76 @@ class AppLifecycleTest extends TestCase
         $this->assertDefaultCustomFields($id);
         $this->assertDefaultWebhooks($apps->first()->getId());
         $this->assertDefaultTemplate($apps->first()->getId());
+    }
+
+    public function testUpdateDoesNotInstallElementsNeedingAppSecretIfItIsMissing(): void
+    {
+        $id = Uuid::randomHex();
+        $roleId = Uuid::randomHex();
+
+        $this->appRepository->create([[
+            'id' => $id,
+            'name' => 'SwagApp',
+            'path' => __DIR__ . '/../Manifest/_fixtures/test',
+            'version' => '0.0.1',
+            'label' => 'test',
+            'accessToken' => 'test',
+            'integration' => [
+                'label' => 'test',
+                'writeAccess' => false,
+                'accessKey' => 'test',
+                'secretAccessKey' => 'test',
+            ],
+            'customFieldSets' => [
+                [
+                    'name' => 'test',
+                ],
+            ],
+            'aclRole' => [
+                'id' => $roleId,
+                'name' => 'SwagApp',
+            ],
+            'templates' => [
+                [
+                    'path' => 'storefront/layout/header/logo.html.twig',
+                    'template' => 'will be overwritten',
+                    'active' => true,
+                ],
+                [
+                    'path' => 'storefront/got/removed',
+                    'template' => 'will be removed',
+                    'active' => true,
+                ],
+            ],
+        ]], $this->context);
+
+        /** @var Connection $connection */
+        $connection = $this->getContainer()->get(Connection::class);
+        $connection->executeUpdate('
+            INSERT INTO `acl_resource` (`resource`, `privilege`, `acl_role_id`, `created_at`)
+            VALUES ("test", "list", UNHEX(:roleId), NOW()), ("product", "detail", UNHEX(:roleId), NOW())
+        ', ['roleId' => $roleId]);
+
+        $app = [
+            'id' => $id,
+            'roleId' => $roleId,
+        ];
+
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/../Manifest/_fixtures/test/manifest.xml');
+
+        $this->appLifecycle->update($manifest, $app, $this->context);
+
+        $criteria = new Criteria();
+        $criteria->addAssociation('actionButtons');
+        $criteria->addAssociation('webhooks');
+        /** @var AppCollection $apps */
+        $apps = $this->appRepository->search($criteria, $this->context)->getEntities();
+
+        static::assertCount(1, $apps);
+
+        static::assertCount(0, $apps->first()->getActionButtons());
+        static::assertCount(0, $apps->first()->getModules());
+        static::assertCount(0, $apps->first()->getWebhooks());
     }
 
     public function testDelete(): void
@@ -284,7 +373,7 @@ class AppLifecycleTest extends TestCase
         $this->appLifecycle->delete('Test', $app, $this->context);
 
         static::assertTrue($eventWasThrown);
-        $this->eventDispatcher->removeListener(AppInstalledEvent::class, $onAppDeleted);
+        $this->eventDispatcher->removeListener(AppDeletedEvent::class, $onAppDeleted);
         $apps = $this->appRepository->searchIds(new Criteria([$appId]), $this->context)->getIds();
         static::assertCount(0, $apps);
 
