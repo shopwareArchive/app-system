@@ -54,6 +54,7 @@ return [
         'BusinessEventEncoder.php',
         'WebhookDispatcher.php',
         'EntityTemplateLoader.php',
+        'AppLifecycle.php',
     ],
 
     'add' => [

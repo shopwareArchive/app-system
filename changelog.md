@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - Added shop url to confirmation request and requests for loading iframes
 - Renamed `shop` header to `shop-url` in registration request
 - Allowed that `setup` element in manifest file can be omitted, in that case action-buttons, modules and webhooks won't be registered, but it allows themes to work without a registration endpoint
+- Made `saas_app.path` field in DB store relative file paths instead of absolute once
 
 ## 0.1.0
 

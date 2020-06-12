@@ -74,6 +74,11 @@ class AppLifecycle implements AppLifecycleInterface
      */
     private $registrationService;
 
+    /**
+     * @var string
+     */
+    private $projectDir;
+
     public function __construct(
         EntityRepositoryInterface $appRepository,
         ActionButtonPersister $actionButtonPersister,
@@ -84,7 +89,8 @@ class AppLifecycle implements AppLifecycleInterface
         TemplatePersister $templatePersister,
         ThemeLifecycleHandler $themeLifecycleHandler,
         EventDispatcherInterface $eventDispatcher,
-        AppRegistrationService $registrationService
+        AppRegistrationService $registrationService,
+        string $projectDir
     ) {
         $this->appRepository = $appRepository;
         $this->actionButtonPersister = $actionButtonPersister;
@@ -96,6 +102,7 @@ class AppLifecycle implements AppLifecycleInterface
         $this->themeLifecycleHandler = $themeLifecycleHandler;
         $this->eventDispatcher = $eventDispatcher;
         $this->registrationService = $registrationService;
+        $this->projectDir = $projectDir;
     }
 
     public function install(Manifest $manifest, Context $context): void
@@ -150,7 +157,7 @@ class AppLifecycle implements AppLifecycleInterface
         bool $install
     ): void {
         unset($metadata['icon']);
-        $metadata['path'] = $manifest->getPath();
+        $metadata['path'] = str_replace($this->projectDir . '/', '', $manifest->getPath());
         $metadata['id'] = $id;
         $metadata['modules'] = [];
         $metadata['iconRaw'] = $this->appLoader->getIcon($manifest);

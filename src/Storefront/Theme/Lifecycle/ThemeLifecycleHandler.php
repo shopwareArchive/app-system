@@ -26,14 +26,21 @@ class ThemeLifecycleHandler
      */
     private $themeLifecycleHandler;
 
+    /**
+     * @var string
+     */
+    private $projectDir;
+
     public function __construct(
         StorefrontPluginRegistryInterface $themeRegistry,
         StorefrontPluginConfigurationAppFactoryInterface $themeConfigFactory,
-        CoreThemeLifecycleHandler $themeLifecycleHandler
+        CoreThemeLifecycleHandler $themeLifecycleHandler,
+        string $projectDir
     ) {
         $this->themeRegistry = $themeRegistry;
         $this->themeConfigFactory = $themeConfigFactory;
         $this->themeLifecycleHandler = $themeLifecycleHandler;
+        $this->projectDir = $projectDir;
     }
 
     public function handleAppUpdate(Manifest $app, Context $context): void
@@ -44,7 +51,7 @@ class ThemeLifecycleHandler
         if (!$config) {
             $appEntity = (new AppEntity())->assign([
                 'name' => $app->getMetadata()->getName(),
-                'path' => $app->getPath(),
+                'path' => str_replace($this->projectDir . '/', '', $app->getPath()),
             ]);
             $config = $this->themeConfigFactory->createFromApp($appEntity);
             $configurationCollection = clone $configurationCollection;

@@ -16,17 +16,24 @@ class StorefrontPluginConfigurationAppFactory implements StorefrontPluginConfigu
      */
     private $configurationFactory;
 
-    public function __construct(StorefrontPluginConfigurationFactory $configurationFactory)
+    /**
+     * @var string
+     */
+    private $projectDir;
+
+    public function __construct(StorefrontPluginConfigurationFactory $configurationFactory, string $projectDir)
     {
         $this->configurationFactory = $configurationFactory;
+        $this->projectDir = $projectDir;
     }
 
     public function createFromApp(AppEntity $app): StorefrontPluginConfiguration
     {
-        if (file_exists($app->getPath() . '/Resources/theme.json')) {
-            return $this->configurationFactory->createThemeConfig($app->getName(), $app->getPath());
+        $absolutePath = $this->projectDir . '/' . $app->getPath();
+        if (file_exists($absolutePath . '/Resources/theme.json')) {
+            return $this->configurationFactory->createThemeConfig($app->getName(), $absolutePath);
         }
 
-        return $this->configurationFactory->createPluginConfig($app->getName(), $app->getPath());
+        return $this->configurationFactory->createPluginConfig($app->getName(), $absolutePath);
     }
 }
