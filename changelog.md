@@ -9,9 +9,10 @@ All notable changes to this project will be documented in this file.
 - Added signature to every outgoing request
 - If there is an error during App installation the app will be removed, so that it can be easily reinstalled
 - Added shop url to confirmation request and requests for loading iframes
-- Renamed `shop` header to `shop-url` in registration request
+- Renamed `shop` query parameter to `shop-url` in registration request
 - Allowed that `setup` element in manifest file can be omitted, in that case action-buttons, modules and webhooks won't be registered, but it allows themes to work without a registration endpoint
 - Made `saas_app.path` field in DB store relative file paths instead of absolute once
+- Added Content-Type `application/json` to webhook requests
 
 ## 0.1.0
 
