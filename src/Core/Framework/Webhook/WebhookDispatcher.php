@@ -3,14 +3,18 @@
 namespace Swag\SaasConnect\Core\Framework\Webhook;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\FetchMode;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Request;
+use Shopware\Core\Framework\Api\Acl\Permission\AclPermission;
+use Shopware\Core\Framework\Api\Acl\Permission\AclPermissionCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Doctrine\FetchModeHelper;
 use Shopware\Core\Framework\Event\BusinessEvent;
 use Shopware\Core\Framework\Event\BusinessEventInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
+use Swag\SaasConnect\Core\Framework\Webhook\EventWrapper\HookableBusinessEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -87,6 +91,10 @@ class WebhookDispatcher implements EventDispatcherInterface
             return $event;
         }
 
+        if ($event instanceof BusinessEventInterface) {
+            $event = HookableBusinessEvent::fromBusinessEvent($event, $this->eventEncoder);
+        }
+
         $this->callWebhooks($event->getName(), $event);
 
         return $event;
@@ -151,18 +159,21 @@ class WebhookDispatcher implements EventDispatcherInterface
         $this->webhooks = null;
     }
 
-    /**
-     * @param BusinessEventInterface|Hookable $event
-     */
-    private function callWebhooks(string $eventName, $event): void
+    private function callWebhooks(string $eventName, Hookable $event): void
     {
         if (!array_key_exists($eventName, $this->getWebhooks())) {
             return;
         }
 
-        $payload = $this->getPayloadFor($event);
+        $payload = $event->getWebhookPayload();
         $requests = [];
         foreach ($this->getWebhooks()[$eventName] as $webhookConfig) {
+            if ($webhookConfig['acl_role_id'] && $webhookConfig['app_id']) {
+                if (!$this->isEventDispatchingAllowed($webhookConfig, $event)) {
+                    continue;
+                }
+            }
+
             $payload = ['data' => ['payload' => $payload]];
             $payload['source']['url'] = $this->shopUrl;
             $payload['data']['event'] = $eventName;
@@ -222,7 +233,8 @@ class WebhookDispatcher implements EventDispatcherInterface
                    `app`.`version`,
                    `app`.`app_secret`,
                    `integration`.`access_key`,
-                   `app`.`id` AS `app_id`
+                   `app`.`id` AS `app_id`,
+                   `app`.`acl_role_id`
             FROM `saas_webhook` AS `webhook`
             LEFT JOIN `saas_app` AS `app` ON `webhook`.`app_id` = `app`.`id`
             LEFT JOIN `integration` ON `app`.`integration_id` = `integration`.`id`
@@ -232,15 +244,42 @@ class WebhookDispatcher implements EventDispatcherInterface
     }
 
     /**
-     * @param BusinessEventInterface|Hookable $event
+     * @return array<array<string, string>>
      */
-    private function getPayloadFor($event): array
+    private function fetchPermissions(string $roleId): array
     {
-        if ($event instanceof BusinessEventInterface) {
-            return $this->eventEncoder->encode($event);
+        return $this->connection->executeQuery(
+            'SELECT `resource`, `privilege`
+            FROM `acl_resource`
+            WHERE `acl_role_id` = :roleId',
+            ['roleId' => $roleId]
+        )->fetchAll(FetchMode::ASSOCIATIVE);
+    }
+
+    private function isEventDispatchingAllowed(array $webhookConfig, Hookable $event): bool
+    {
+        $permissions = $this->getPermissions($webhookConfig['acl_role_id']);
+
+        if (!$event->isAllowed(Uuid::fromBytesToHex($webhookConfig['app_id']), $permissions)) {
+            return false;
         }
 
-        return $event->getWebhookPayload();
+        return true;
+    }
+
+    /**
+     * @param string $aclRoleId in binary
+     */
+    private function getPermissions(string $aclRoleId): AclPermissionCollection
+    {
+        $permissions = new AclPermissionCollection();
+
+        foreach ($this->fetchPermissions($aclRoleId) as $permission) {
+            $permission = new AclPermission($permission['resource'], $permission['privilege']);
+            $permissions->add($permission);
+        }
+
+        return $permissions;
     }
 
     private function getShopIdProvider(): ShopIdProvider
