@@ -14,6 +14,7 @@ use Swag\SaasConnect\Core\Content\App\AppEntity;
 use Swag\SaasConnect\Core\Content\App\Exception\AppRegistrationException;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\AppRegistrationService;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
+use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 use Swag\SaasConnect\Test\GuzzleTestClientBehaviour;
 use Swag\SaasConnect\Test\TestAppServer;
 
@@ -36,11 +37,17 @@ class AppRegistrationServiceTest extends TestCase
      */
     private $appRepository;
 
+    /**
+     * @var ShopIdProvider
+     */
+    private $shopIdProvider;
+
     public function setup(): void
     {
         $this->appRepository = $this->getContainer()->get('saas_app.repository');
         $this->registrator = $this->getContainer()->get(AppRegistrationService::class);
         $this->shopUrl = (string) getenv('APP_URL');
+        $this->shopIdProvider = $this->getContainer()->get(ShopIdProvider::class);
     }
 
     public function testRegisterPrivateApp(): void
@@ -51,7 +58,7 @@ class AppRegistrationServiceTest extends TestCase
         $manifest = Manifest::createFromXmlFile(__DIR__ . '/_fixtures/minimal/manifest.xml');
 
         $appSecret = 'dont_tell';
-        $appResponseBody = $this->buildAppResponse($manifest, $appSecret);
+        $appResponseBody = $this->buildAppResponse($manifest, $appSecret, $id);
 
         $this->appendNewResponse(new Response(200, [], $appResponseBody));
         $this->appendNewResponse(new Response(200, []));
@@ -78,6 +85,7 @@ class AppRegistrationServiceTest extends TestCase
         static::assertEquals($app->getAccessToken(), $postBody['secretKey']);
         static::assertEquals($app->getIntegration()->getAccessKey(), $postBody['apiKey']);
         static::assertEquals(getenv('APP_URL'), $postBody['shopUrl']);
+        static::assertEquals($this->shopIdProvider->getShopId($id), $postBody['shopId']);
 
         static::assertEquals(
             hash_hmac('sha256', json_encode($postBody), $appSecret),
@@ -158,9 +166,11 @@ class AppRegistrationServiceTest extends TestCase
         ', ['roleId' => $roleId]);
     }
 
-    private function buildAppResponse(Manifest $manifest, string $appSecret)
+    private function buildAppResponse(Manifest $manifest, string $appSecret, string $appId): string
     {
-        $proof = \hash_hmac('sha256', $this->shopUrl . $manifest->getMetadata()->getName(), $manifest->getSetup()->getSecret());
+        $shopId = $this->shopIdProvider->getShopId($appId);
+
+        $proof = \hash_hmac('sha256', $shopId . $this->shopUrl . $manifest->getMetadata()->getName(), $manifest->getSetup()->getSecret());
 
         $confirmationUrl = 'https://my-app.com/confirm';
         $appResponseBody = \json_encode(['proof' => $proof, 'secret' => $appSecret, 'confirmation_url' => $confirmationUrl]);

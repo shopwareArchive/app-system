@@ -28,16 +28,14 @@ class ShopIdProviderTest extends TestCase
     {
         $this->shopIdProvider = $this->getContainer()->get(ShopIdProvider::class);
         $this->systemConfigService = $this->getContainer()->get(SystemConfigService::class);
+
+        // necessary because some tests before may have already generated shop ids
+        $this->resetInternalSystemConfgCache();
     }
 
     public function tearDown(): void
     {
-        // reset internal system config cache
-        $reflection = new \ReflectionClass($this->systemConfigService);
-
-        $property = $reflection->getProperty('configs');
-        $property->setAccessible(true);
-        $property->setValue($this->systemConfigService, []);
+        $this->resetInternalSystemConfgCache();
     }
 
     public function testGetShopIdWithoutStoredShopIds(): void
@@ -101,5 +99,15 @@ class ShopIdProviderTest extends TestCase
         ]);
 
         static::assertEquals('justATest', $this->shopIdProvider->getShopId($appId));
+    }
+
+    private function resetInternalSystemConfgCache(): void
+    {
+        // reset internal system config cache
+        $reflection = new \ReflectionClass($this->systemConfigService);
+
+        $property = $reflection->getProperty('configs');
+        $property->setAccessible(true);
+        $property->setValue($this->systemConfigService, []);
     }
 }

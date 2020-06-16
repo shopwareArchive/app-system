@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file.
 - Allowed that `setup` element in manifest file can be omitted, in that case action-buttons, modules and webhooks won't be registered, but it allows themes to work without a registration endpoint
 - Made `saas_app.path` field in DB store relative file paths instead of absolute once
 - Added Content-Type `application/json` to webhook requests
+- Add shop id to all outgoing requests
+- Added shop id as first part for the generation of the registration proof
 
 ## 0.1.0
 

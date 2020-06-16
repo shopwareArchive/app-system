@@ -55,6 +55,11 @@ class AppAction
     private $appSecret;
 
     /**
+     * @var string
+     */
+    private $shopId;
+
+    /**
      * @param array<string> $ids
      */
     public function __construct(
@@ -66,7 +71,8 @@ class AppAction
         array $ids,
         string $accessKey,
         string $secretAccessKey,
-        string $appSecret
+        string $appSecret,
+        string $shopId
     ) {
         $this->setAction($action);
         $this->setAppVersion($appVersion);
@@ -77,6 +83,7 @@ class AppAction
         $this->setAccessKey($accessKey);
         $this->setSecretAccessKey($secretAccessKey);
         $this->setAppSecret($appSecret);
+        $this->setShopId($shopId);
     }
 
     public function getTargetUrl(): string
@@ -95,6 +102,7 @@ class AppAction
                 'appVersion' => $this->appVersion,
                 'apiKey' => $this->accessKey,
                 'secretKey' => $this->secretAccessKey,
+                'shopId' => $this->shopId,
             ],
             'data' => [
                 'ids' => $this->ids,
@@ -107,6 +115,15 @@ class AppAction
     public function getAppSecret(): string
     {
         return $this->appSecret;
+    }
+
+    public function setShopId(string $shopId): void
+    {
+        if ($shopId === '') {
+            throw new InvalidArgumentException('shop id must not be empty');
+        }
+
+        $this->shopId = $shopId;
     }
 
     /**

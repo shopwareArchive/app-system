@@ -7,6 +7,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonEntity;
 use Swag\SaasConnect\Core\Content\App\Exception\ActionNotFoundException;
+use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 
 class AppActionLoader
 {
@@ -20,10 +21,16 @@ class AppActionLoader
      */
     private $url;
 
-    public function __construct(string $url, EntityRepository $actionButtonRepo)
+    /**
+     * @var ShopIdProvider
+     */
+    private $shopIdProvider;
+
+    public function __construct(string $url, EntityRepository $actionButtonRepo, ShopIdProvider $shopIdProvider)
     {
         $this->actionButtonRepo = $actionButtonRepo;
         $this->url = $url;
+        $this->shopIdProvider = $shopIdProvider;
     }
 
     /**
@@ -54,7 +61,8 @@ class AppActionLoader
             $ids,
             $actionButton->getApp()->getIntegration()->getAccessKey(),
             $actionButton->getApp()->getAccessToken(),
-            $secret
+            $secret,
+            $this->shopIdProvider->getShopId($actionButton->getAppId())
         );
     }
 }

@@ -10,6 +10,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
 use Swag\SaasConnect\Core\Content\App\Exception\AppRegistrationException;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
+use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 
 class AppRegistrationService
 {
@@ -33,16 +34,23 @@ class AppRegistrationService
      */
     private $shopUrl;
 
+    /**
+     * @var ShopIdProvider
+     */
+    private $shopIdProvider;
+
     public function __construct(
         HandshakeFactory $handshakeFactory,
         Client $httpClient,
         EntityRepositoryInterface $appRepository,
-        string $shopUrl
+        string $shopUrl,
+        ShopIdProvider $shopIdProvider
     ) {
         $this->handshakeFactory = $handshakeFactory;
         $this->httpClient = $httpClient;
         $this->appRepository = $appRepository;
         $this->shopUrl = $shopUrl;
+        $this->shopIdProvider = $shopIdProvider;
     }
 
     public function registerApp(Manifest $manifest, string $id, Context $context): void
@@ -51,7 +59,7 @@ class AppRegistrationService
             return;
         }
 
-        $appResponse = $this->registerWithApp($manifest);
+        $appResponse = $this->registerWithApp($manifest, $id);
 
         $secret = $appResponse['secret'];
         $confirmationUrl = $appResponse['confirmation_url'];
@@ -64,9 +72,9 @@ class AppRegistrationService
     /**
      * @return array<string,string>
      */
-    private function registerWithApp(Manifest $manifest): array
+    private function registerWithApp(Manifest $manifest, string $appId): array
     {
-        $handshake = $this->handshakeFactory->create($manifest);
+        $handshake = $this->handshakeFactory->create($manifest, $appId);
 
         $request = $handshake->assembleRequest();
         $response = $this->httpClient->send($request);
@@ -124,6 +132,7 @@ class AppRegistrationService
             'secretKey' => $app->getAccessToken(),
             'timestamp' => (string) (new \DateTime())->getTimestamp(),
             'shopUrl' => $this->shopUrl,
+            'shopId' => $this->shopIdProvider->getShopId($id),
         ];
     }
 

@@ -9,6 +9,9 @@ use GuzzleHttp\Psr7\Request;
 use Shopware\Core\Framework\DataAbstractionLayer\Doctrine\FetchModeHelper;
 use Shopware\Core\Framework\Event\BusinessEvent;
 use Shopware\Core\Framework\Event\BusinessEventInterface;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -44,18 +47,27 @@ class WebhookDispatcher implements EventDispatcherInterface
      */
     private $shopUrl;
 
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
     public function __construct(
         EventDispatcherInterface $dispatcher,
         Connection $connection,
         Client $guzzle,
         BusinessEventEncoder $eventEncoder,
-        string $shopUrl
+        string $shopUrl,
+        ContainerInterface $container
     ) {
         $this->dispatcher = $dispatcher;
         $this->connection = $connection;
         $this->guzzle = $guzzle;
         $this->eventEncoder = $eventEncoder;
         $this->shopUrl = $shopUrl;
+        // inject container, so we can later get the ShopIdProvider
+        // ShopIdProvider can not be injected directly as it would lead to a circular reference
+        $this->container = $container;
     }
 
     /**
@@ -164,6 +176,13 @@ class WebhookDispatcher implements EventDispatcherInterface
                 $payload['source']['secretKey'] = $webhookConfig['access_token'];
             }
 
+            if ($webhookConfig['app_id']) {
+                $shopIdProvider = $this->getShopIdProvider();
+                $payload['source']['shopId'] = $shopIdProvider->getShopId(
+                    Uuid::fromBytesToHex($webhookConfig['app_id'])
+                );
+            }
+
             /** @var string $jsonPayload */
             $jsonPayload = \json_encode($payload);
 
@@ -197,7 +216,13 @@ class WebhookDispatcher implements EventDispatcherInterface
         }
 
         $result = $this->connection->fetchAll('
-            SELECT `webhook`.`event_name`, `webhook`.`url`, `app`.`access_token`, `app`.`version`, `app`.`app_secret`, `integration`.`access_key`
+            SELECT `webhook`.`event_name`,
+                   `webhook`.`url`,
+                   `app`.`access_token`,
+                   `app`.`version`,
+                   `app`.`app_secret`,
+                   `integration`.`access_key`,
+                   `app`.`id` AS `app_id`
             FROM `saas_webhook` AS `webhook`
             LEFT JOIN `saas_app` AS `app` ON `webhook`.`app_id` = `app`.`id`
             LEFT JOIN `integration` ON `app`.`integration_id` = `integration`.`id`
@@ -216,5 +241,13 @@ class WebhookDispatcher implements EventDispatcherInterface
         }
 
         return $event->getWebhookPayload();
+    }
+
+    private function getShopIdProvider(): ShopIdProvider
+    {
+        /** @var ShopIdProvider $shopIdProvider */
+        $shopIdProvider = $this->container->get(ShopIdProvider::class);
+
+        return $shopIdProvider;
     }
 }

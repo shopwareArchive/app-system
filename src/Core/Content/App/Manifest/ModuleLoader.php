@@ -11,6 +11,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationEntity;
 use Swag\SaasConnect\Core\Content\App\AppCollection;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
+use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 
 class ModuleLoader
 {
@@ -24,10 +25,19 @@ class ModuleLoader
      */
     private $shopUrl;
 
-    public function __construct(EntityRepositoryInterface $appRepository, string $shopUrl)
-    {
+    /**
+     * @var ShopIdProvider
+     */
+    private $shopIdProvider;
+
+    public function __construct(
+        EntityRepositoryInterface $appRepository,
+        string $shopUrl,
+        ShopIdProvider $shopIdProvider
+    ) {
         $this->appRepository = $appRepository;
         $this->shopUrl = $shopUrl;
+        $this->shopIdProvider = $shopIdProvider;
     }
 
     /**
@@ -76,8 +86,7 @@ class ModuleLoader
 
         /** @var array<string|array<string, string>> $module */
         foreach ($app->getModules() as $module) {
-            $date = new \DateTime();
-            $queryString = 'shop-url=' . urlencode($this->shopUrl) . '&timestamp=' . $date->getTimestamp();
+            $queryString = $this->generateQueryString($app);
             /** @var string $secret */
             $secret = $app->getAppSecret();
             $signature = hash_hmac('sha256', $queryString, $secret);
@@ -111,5 +120,18 @@ class ModuleLoader
         }
 
         return $labels;
+    }
+
+    private function generateQueryString(AppEntity $app): string
+    {
+        $date = new \DateTime();
+        $shopId = $this->shopIdProvider->getShopId($app->getId());
+
+        return sprintf(
+            'shop-id=%s&shop-url=%s&timestamp=%s',
+            $shopId,
+            urlencode($this->shopUrl),
+            $date->getTimestamp()
+        );
     }
 }

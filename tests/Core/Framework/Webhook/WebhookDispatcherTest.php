@@ -18,6 +18,7 @@ use Shopware\Core\Framework\Event\BusinessEvent;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
+use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 use Swag\SaasConnect\Core\Framework\Webhook\BusinessEventEncoder;
 use Swag\SaasConnect\Core\Framework\Webhook\WebhookDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -189,7 +190,8 @@ class WebhookDispatcherTest extends TestCase
             $this->getContainer()->get(Connection::class),
             $clientMock,
             $this->getContainer()->get(BusinessEventEncoder::class),
-            $this->shopUrl
+            $this->shopUrl,
+            $this->getContainer()
         );
 
         $webhookDispatcher->dispatch($event);
@@ -222,7 +224,8 @@ class WebhookDispatcherTest extends TestCase
             $this->getContainer()->get(Connection::class),
             $clientMock,
             $this->getContainer()->get(BusinessEventEncoder::class),
-            $this->shopUrl
+            $this->shopUrl,
+            $this->getContainer()
         );
 
         $webhookDispatcher->dispatch($event);
@@ -239,7 +242,8 @@ class WebhookDispatcherTest extends TestCase
             $this->getContainer()->get(Connection::class),
             $this->getContainer()->get(Client::class),
             $this->getContainer()->get(BusinessEventEncoder::class),
-            $this->shopUrl
+            $this->shopUrl,
+            $this->getContainer()
         );
 
         $webhookDispatcher->addSubscriber(new MockSubscriber());
@@ -256,7 +260,8 @@ class WebhookDispatcherTest extends TestCase
             $this->getContainer()->get(Connection::class),
             $this->getContainer()->get(Client::class),
             $this->getContainer()->get(BusinessEventEncoder::class),
-            $this->shopUrl
+            $this->shopUrl,
+            $this->getContainer()
         );
 
         $webhookDispatcher->removeSubscriber(new MockSubscriber());
@@ -264,8 +269,11 @@ class WebhookDispatcherTest extends TestCase
 
     public function testDispatchesAccessKeyIfWebhookHasApp(): void
     {
+        $appId = Uuid::randomHex();
+
         $appRepository = $this->getContainer()->get('saas_app.repository');
         $appRepository->create([[
+            'id' => $appId,
             'name' => 'SwagApp',
             'path' => __DIR__ . '/Manifest/_fixtures/test',
             'version' => '0.0.1',
@@ -307,6 +315,9 @@ class WebhookDispatcherTest extends TestCase
         static::assertEquals('POST', $request->getMethod());
         $body = $request->getBody()->getContents();
         static::assertJson($body);
+
+        /** @var ShopIdProvider $shopIdProvider */
+        $shopIdProvider = $this->getContainer()->get(ShopIdProvider::class);
         static::assertEquals([
             'data' => [
                 'payload' => [
@@ -319,6 +330,7 @@ class WebhookDispatcherTest extends TestCase
                 'secretKey' => 'test',
                 'url' => $this->shopUrl,
                 'appVersion' => '0.0.1',
+                'shopId' => $shopIdProvider->getShopId($appId),
             ],
         ], json_decode($body, true));
 

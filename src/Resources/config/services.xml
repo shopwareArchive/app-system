@@ -66,6 +66,7 @@
             <argument type="service" id="GuzzleHttp\Client"/>
             <argument type="service" id="Swag\SaasConnect\Core\Framework\Webhook\BusinessEventEncoder"/>
             <argument type="string">%env(APP_URL)%</argument>
+            <argument type="service" id="service_container"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Framework\Webhook\WebhookCacheClearer">
@@ -119,10 +120,12 @@
             <argument type="service" id="GuzzleHttp\Client"/>
             <argument type="service" id="saas_app.repository"/>
             <argument type="string">%env(APP_URL)%</argument>
+            <argument type="service" id="Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\HandshakeFactory">
             <argument type="string">%env(APP_URL)%</argument>
+            <argument type="service" id="Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\ActionButtonPersister">
@@ -195,6 +198,7 @@
         <service id="Swag\SaasConnect\Core\Content\App\Manifest\ModuleLoader">
             <argument type="service" id="saas_app.repository"/>
             <argument>%env(APP_URL)%</argument>
+            <argument type="service" id="Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Action\Executor">
@@ -207,6 +211,7 @@
         <service id="Swag\SaasConnect\Core\Content\App\Action\AppActionLoader">
             <argument>%env(APP_URL)%</argument>
             <argument type="service" id="saas_app_action_button.repository"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Subscriber\AppLoadedSubscriber">
