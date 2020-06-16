@@ -10,6 +10,7 @@ use Opis\JsonSchema\ValidationResult;
 use Opis\JsonSchema\Validator;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\Framework\Util\Random;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\SaasConnect\Core\Content\App\Action\AppAction;
 use Swag\SaasConnect\Core\Content\App\Action\Executor;
@@ -47,7 +48,8 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
             [Uuid::randomHex()],
             'I am  not secret',
             'I am secret',
-            's3cr3t'
+            's3cr3t',
+            Random::getAlphanumericString(12)
         );
 
         $this->appServerMock->append(new Response(200));
@@ -83,7 +85,8 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
             [],
             'I am  not secret',
             'I am secret',
-            's3cr3t'
+            's3cr3t',
+            Random::getAlphanumericString(12)
         );
 
         $this->appServerMock->append(new Response(500));
@@ -107,7 +110,8 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
             [],
             'I am  not secret',
             'I am secret',
-            's3cr3t'
+            's3cr3t',
+            Random::getAlphanumericString(12)
         );
 
         $this->appServerMock->append(new Response(200));
@@ -135,6 +139,7 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
         $affectedIds = [Uuid::randomHex(), Uuid::randomHex()];
         $accessKey = 'i am not secret';
         $secretKey = 'i am secret';
+        $shopId = Random::getAlphanumericString(12);
         $action = new AppAction(
             $targetUrl,
             $shopUrl,
@@ -144,7 +149,8 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
             $affectedIds,
             $accessKey,
             $secretKey,
-            's3cr3t'
+            's3cr3t',
+            $shopId
         );
 
         $context = Context::createDefaultContext();
@@ -165,6 +171,7 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
             'appVersion' => $appVersion,
             'apiKey' => $accessKey,
             'secretKey' => $secretKey,
+            'shopId' => $shopId,
         ];
         $expectedData = [
             'ids' => $affectedIds,

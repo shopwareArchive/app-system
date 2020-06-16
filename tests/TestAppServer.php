@@ -44,9 +44,11 @@ class TestAppServer
 
     private function buildAppResponse(RequestInterface $request)
     {
-        $shopUrl = $this->getShopUrl($request);
+        $shopUrl = $this->getQueryParameter($request, 'shop-url');
         $appname = $this->getAppname($request);
-        $proof = \hash_hmac('sha256', $shopUrl . $appname, self::TEST_SETUP_SECRET);
+        $shopId = $this->getQueryParameter($request, 'shop-id');
+
+        $proof = \hash_hmac('sha256', $shopId . $shopUrl . $appname, self::TEST_SETUP_SECRET);
 
         return \json_encode(['proof' => $proof, 'secret' => self::APP_SECRET, 'confirmation_url' => self::CONFIRMATION_URL]);
     }
@@ -64,12 +66,12 @@ class TestAppServer
         return ((string) $request->getUri()) === self::CONFIRMATION_URL;
     }
 
-    private function getShopUrl(RequestInterface $request): string
+    private function getQueryParameter(RequestInterface $request, string $param): string
     {
         $query = [];
         \parse_str($request->getUri()->getQuery(), $query);
 
-        return $query['shop-url'];
+        return $query[$param];
     }
 
     private function getAppname(RequestInterface $request): string

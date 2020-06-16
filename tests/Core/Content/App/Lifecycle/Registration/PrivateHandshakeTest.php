@@ -3,6 +3,7 @@
 namespace Swag\SaasConnect\Test\Core\Content\App\Lifecycle\Registration;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Util\Random;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\PrivateHandshake;
 
 class PrivateHandshakeTest extends TestCase
@@ -12,8 +13,9 @@ class PrivateHandshakeTest extends TestCase
         $shopUrl = 'test.shop.com';
         $secret = 's3cr3t';
         $appEndpoint = 'https://test.com/install';
+        $shopId = Random::getAlphanumericString(12);
 
-        $handshake = new PrivateHandshake($shopUrl, $secret, $appEndpoint, '');
+        $handshake = new PrivateHandshake($shopUrl, $secret, $appEndpoint, '', $shopId);
 
         $request = $handshake->assembleRequest();
         static::assertStringStartsWith($appEndpoint, (string) $request->getUri());
@@ -23,6 +25,9 @@ class PrivateHandshakeTest extends TestCase
 
         static::assertArrayHasKey('shop-url', $queryParams);
         static::assertEquals(urlencode($shopUrl), $queryParams['shop-url']);
+
+        static::assertArrayHasKey('shop-id', $queryParams);
+        static::assertEquals($shopId, $queryParams['shop-id']);
 
         static::assertArrayHasKey('timestamp', $queryParams);
         static::assertNotEmpty((string) $queryParams['timestamp']);
@@ -40,11 +45,12 @@ class PrivateHandshakeTest extends TestCase
         $secret = 'stuff';
         $appEndpoint = 'https://test.com/install';
         $appName = 'testapp';
+        $shopId = Random::getAlphanumericString(12);
 
-        $handshake = new PrivateHandshake($shopUrl, $secret, $appEndpoint, $appName);
+        $handshake = new PrivateHandshake($shopUrl, $secret, $appEndpoint, $appName, $shopId);
 
         $appProof = $handshake->fetchAppProof();
 
-        static::assertEquals(hash_hmac('sha256', $shopUrl . $appName, $secret), $appProof);
+        static::assertEquals(hash_hmac('sha256', $shopId . $shopUrl . $appName, $secret), $appProof);
     }
 }

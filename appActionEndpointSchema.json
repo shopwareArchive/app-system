@@ -22,9 +22,13 @@
                 "secretKey": {
                     "type": "string",
                     "description": "The secret key to authenticate the application with the api"
+                },
+                "shopId": {
+                    "type": "string",
+                    "description": "The unique identifier of the shop triggering the action"
                 }
             },
-            "required": ["url","appVersion", "apiKey", "secretKey"]
+            "required": ["url","appVersion", "apiKey", "secretKey", "shopId"]
         },
         "data": {
             "type": "object",

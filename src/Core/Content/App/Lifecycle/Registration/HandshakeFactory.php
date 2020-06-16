@@ -3,6 +3,7 @@
 namespace Swag\SaasConnect\Core\Content\App\Lifecycle\Registration;
 
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
+use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 
 class HandshakeFactory
 {
@@ -11,12 +12,18 @@ class HandshakeFactory
      */
     private $shopUrl;
 
-    public function __construct(string $shopUrl)
+    /**
+     * @var ShopIdProvider
+     */
+    private $shopIdProvider;
+
+    public function __construct(string $shopUrl, ShopIdProvider $shopIdProvider)
     {
         $this->shopUrl = $shopUrl;
+        $this->shopIdProvider = $shopIdProvider;
     }
 
-    public function create(Manifest $manifest): AppHandshakeInterface
+    public function create(Manifest $manifest, string $appId): AppHandshakeInterface
     {
         $setup = $manifest->getSetup();
         $privateSecret = $setup->getSecret();
@@ -27,7 +34,8 @@ class HandshakeFactory
                 $this->shopUrl,
                 $privateSecret,
                 $setup->getRegistrationUrl(),
-                $metadata->getName()
+                $metadata->getName(),
+                $this->shopIdProvider->getShopId($appId)
             );
         }
 

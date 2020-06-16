@@ -10,6 +10,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\SaasConnect\Core\Content\App\Action\AppActionLoader;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonEntity;
+use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 use Swag\SaasConnect\Test\AppSystemTestBehaviour;
 
 class AppActionLoaderTest extends TestCase
@@ -34,6 +35,9 @@ class AppActionLoaderTest extends TestCase
         /** @var ActionButtonEntity $action */
         $action = $actionCollection->first();
 
+        /** @var ShopIdProvider $shopIdProvider */
+        $shopIdProvider = $this->getContainer()->get(ShopIdProvider::class);
+
         $ids = [Uuid::randomHex()];
         $result = $actionLoader->loadAppAction($action->getId(), $ids, Context::createDefaultContext());
 
@@ -43,6 +47,7 @@ class AppActionLoaderTest extends TestCase
                 'appVersion' => $action->getApp()->getVersion(),
                 'apiKey' => $action->getApp()->getIntegration()->getAccessKey(),
                 'secretKey' => $action->getApp()->getAccessToken(),
+                'shopId' => $shopIdProvider->getShopId($action->getAppId()),
             ],
             'data' => [
                 'ids' => $ids,

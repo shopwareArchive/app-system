@@ -27,18 +27,29 @@ class PrivateHandshake implements AppHandshakeInterface
      */
     private $appName;
 
-    public function __construct(string $shopUrl, string $secret, string $appEndpoint, string $appName)
+    /**
+     * @var string
+     */
+    private $shopId;
+
+    public function __construct(string $shopUrl, string $secret, string $appEndpoint, string $appName, string $shopId)
     {
         $this->shopUrl = $shopUrl;
         $this->secret = $secret;
         $this->appEndpoint = $appEndpoint;
         $this->appName = $appName;
+        $this->shopId = $shopId;
     }
 
     public function assembleRequest(): RequestInterface
     {
         $date = new \DateTime();
-        $queryString = 'shop-url=' . urlencode($this->shopUrl) . '&timestamp=' . $date->getTimestamp();
+        $queryString = sprintf(
+            'shop-id=%s&shop-url=%s&timestamp=%s',
+            $this->shopId,
+            urlencode($this->shopUrl),
+            $date->getTimestamp()
+        );
         $signature = hash_hmac('sha256', $queryString, $this->secret);
 
         return new Request(
@@ -52,6 +63,6 @@ class PrivateHandshake implements AppHandshakeInterface
 
     public function fetchAppProof(): string
     {
-        return hash_hmac('sha256', $this->shopUrl . $this->appName, $this->secret);
+        return hash_hmac('sha256', $this->shopId . $this->shopUrl . $this->appName, $this->secret);
     }
 }

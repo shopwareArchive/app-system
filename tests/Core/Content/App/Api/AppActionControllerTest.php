@@ -13,6 +13,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\PlatformRequest;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonEntity;
+use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 use Swag\SaasConnect\Test\AppSystemTestBehaviour;
 use Swag\SaasConnect\Test\StorefrontAppRegistryTestBehaviour;
 
@@ -101,11 +102,15 @@ class AppActionControllerTest extends TestCase
         static::assertJson($body);
         $data = json_decode($body, true);
 
+        /** @var ShopIdProvider $shopIdProvider */
+        $shopIdProvider = $this->getContainer()->get(ShopIdProvider::class);
+
         $expectedSource = [
             'url' => getenv('APP_URL'),
             'appVersion' => $action->getApp()->getVersion(),
             'apiKey' => $action->getApp()->getIntegration()->getAccessKey(),
             'secretKey' => $action->getApp()->getAccessToken(),
+            'shopId' => $shopIdProvider->getShopId($action->getAppId()),
         ];
         $expectedData = [
             'ids' => $ids,
