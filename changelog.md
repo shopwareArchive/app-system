@@ -17,6 +17,8 @@ All notable changes to this project will be documented in this file.
 - Added shop id as first part for the generation of the registration proof
 - Made AppLifecycleEvents hookable
 - Added permission validation for webhooks
+- Removed `apiKey` and `secretKey` from action and webhook requests, if you need to authenticate with the shop save the secrets during registration, where you get those as part of the request to the confirmation url
+- Removed `accessToken` property from AppDefinition and according DB column from the `saas_app` table
 
 ## 0.1.0
 

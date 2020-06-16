@@ -65,11 +65,6 @@ class AppDefinition extends EntityDefinition
                     AdminApiSource::class)
             ),
             (new StringField('icon', 'icon'))->addFlags(new WriteProtected(), new Runtime()),
-            (new StringField('access_token', 'accessToken'))->addFlags(
-                new Required(),
-                new WriteProtected(Context::SYSTEM_SCOPE),
-                new ReadProtected(SalesChannelApiSource::class, AdminApiSource::class)
-            ),
             (new StringField('app_secret', 'appSecret'))->addFlags(
                 new WriteProtected(Context::SYSTEM_SCOPE),
                 new ReadProtected(SalesChannelApiSource::class, AdminApiSource::class)

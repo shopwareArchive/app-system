@@ -42,16 +42,6 @@ class AppAction
     /**
      * @var string
      */
-    private $accessKey;
-
-    /**
-     * @var string
-     */
-    private $secretAccessKey;
-
-    /**
-     * @var string
-     */
     private $appSecret;
 
     /**
@@ -69,8 +59,6 @@ class AppAction
         string $entity,
         string $action,
         array $ids,
-        string $accessKey,
-        string $secretAccessKey,
         string $appSecret,
         string $shopId
     ) {
@@ -80,8 +68,6 @@ class AppAction
         $this->setIds($ids);
         $this->setShopUrl($shopUrl);
         $this->setTargetUrl($targetUrl);
-        $this->setAccessKey($accessKey);
-        $this->setSecretAccessKey($secretAccessKey);
         $this->setAppSecret($appSecret);
         $this->setShopId($shopId);
     }
@@ -100,8 +86,6 @@ class AppAction
             'source' => [
                 'url' => $this->shopUrl,
                 'appVersion' => $this->appVersion,
-                'apiKey' => $this->accessKey,
-                'secretKey' => $this->secretAccessKey,
                 'shopId' => $this->shopId,
             ],
             'data' => [
@@ -177,22 +161,6 @@ class AppAction
             throw new InvalidArgumentException(sprintf('%s is not a valid url', $shopUrl));
         }
         $this->shopUrl = $shopUrl;
-    }
-
-    private function setAccessKey(string $accessKey): void
-    {
-        if ($accessKey === '') {
-            throw new InvalidArgumentException('access key must not be empty');
-        }
-        $this->accessKey = $accessKey;
-    }
-
-    private function setSecretAccessKey(string $secretAccessKey): void
-    {
-        if ($secretAccessKey === '') {
-            throw new InvalidArgumentException('secret access key must not be empty');
-        }
-        $this->secretAccessKey = $secretAccessKey;
     }
 
     private function setAppSecret(string $appSecret): void

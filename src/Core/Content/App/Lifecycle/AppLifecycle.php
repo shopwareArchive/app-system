@@ -158,7 +158,10 @@ class AppLifecycle implements AppLifecycleInterface
         Context $context,
         bool $install
     ): void {
-        unset($metadata['icon']);
+        // accessToken is not set on update, but in that case we don't run registration, so we won't need it
+        /** @var string $secretAccessKey */
+        $secretAccessKey = $metadata['accessToken'] ?? '';
+        unset($metadata['accessToken'], $metadata['icon']);
         $metadata['path'] = str_replace($this->projectDir . '/', '', $manifest->getPath());
         $metadata['id'] = $id;
         $metadata['modules'] = [];
@@ -168,7 +171,7 @@ class AppLifecycle implements AppLifecycleInterface
         $this->permissionPersister->updatePrivileges($manifest, $roleId);
 
         if ($install && $manifest->getSetup()) {
-            $this->registrationService->registerApp($manifest, $id, $context);
+            $this->registrationService->registerApp($manifest, $id, $secretAccessKey, $context);
         }
 
         $app = $this->loadApp($id, $context);

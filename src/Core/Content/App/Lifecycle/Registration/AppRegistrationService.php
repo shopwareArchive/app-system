@@ -53,7 +53,7 @@ class AppRegistrationService
         $this->shopIdProvider = $shopIdProvider;
     }
 
-    public function registerApp(Manifest $manifest, string $id, Context $context): void
+    public function registerApp(Manifest $manifest, string $id, string $secretAccessKey, Context $context): void
     {
         if (!$manifest->getSetup()) {
             return;
@@ -66,7 +66,7 @@ class AppRegistrationService
 
         $this->saveAppSecret($id, $context, $secret);
 
-        $this->confirmRegistration($id, $context, $secret, $confirmationUrl);
+        $this->confirmRegistration($id, $context, $secret, $secretAccessKey, $confirmationUrl);
     }
 
     /**
@@ -91,9 +91,14 @@ class AppRegistrationService
         });
     }
 
-    private function confirmRegistration(string $id, Context $context, string $secret, string $confirmationUrl): void
-    {
-        $payload = $this->getConfirmationPayload($id, $context);
+    private function confirmRegistration(
+        string $id,
+        Context $context,
+        string $secret,
+        string $secretAccessKey,
+        string $confirmationUrl
+    ): void {
+        $payload = $this->getConfirmationPayload($id, $secretAccessKey, $context);
 
         $signature = $this->signPayload($payload, $secret);
 
@@ -123,13 +128,13 @@ class AppRegistrationService
     /**
      * @return array<string,string>
      */
-    private function getConfirmationPayload(string $id, Context $context): array
+    private function getConfirmationPayload(string $id, string $secretAccessKey, Context $context): array
     {
         $app = $this->getApp($id, $context);
 
         return [
             'apiKey' => $app->getIntegration()->getAccessKey(),
-            'secretKey' => $app->getAccessToken(),
+            'secretKey' => $secretAccessKey,
             'timestamp' => (string) (new \DateTime())->getTimestamp(),
             'shopUrl' => $this->shopUrl,
             'shopId' => $this->shopIdProvider->getShopId($id),

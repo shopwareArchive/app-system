@@ -6,6 +6,7 @@ use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
+use Shopware\Core\Framework\Api\Util\AccessKeyHelper;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -53,6 +54,7 @@ class AppRegistrationServiceTest extends TestCase
     public function testRegisterPrivateApp(): void
     {
         $id = Uuid::randomHex();
+        $secretAccessKey = AccessKeyHelper::generateSecretAccessKey();
         $this->createApp($id);
 
         $manifest = Manifest::createFromXmlFile(__DIR__ . '/_fixtures/minimal/manifest.xml');
@@ -63,7 +65,7 @@ class AppRegistrationServiceTest extends TestCase
         $this->appendNewResponse(new Response(200, [], $appResponseBody));
         $this->appendNewResponse(new Response(200, []));
 
-        $this->registrator->registerApp($manifest, $id, Context::createDefaultContext());
+        $this->registrator->registerApp($manifest, $id, $secretAccessKey, Context::createDefaultContext());
 
         $registrationRequest = $this->getPastRequest(0);
 
@@ -82,7 +84,7 @@ class AppRegistrationServiceTest extends TestCase
         static::assertEquals('POST', $confirmationReq->getMethod());
 
         $postBody = \json_decode($confirmationReq->getBody()->getContents(), true);
-        static::assertEquals($app->getAccessToken(), $postBody['secretKey']);
+        static::assertEquals($secretAccessKey, $postBody['secretKey']);
         static::assertEquals($app->getIntegration()->getAccessKey(), $postBody['apiKey']);
         static::assertEquals(getenv('APP_URL'), $postBody['shopUrl']);
         static::assertEquals($this->shopIdProvider->getShopId($id), $postBody['shopId']);
@@ -100,7 +102,7 @@ class AppRegistrationServiceTest extends TestCase
         $this->appendNewResponse(new Response(200, [], '{"proof": "wrong proof"}'));
 
         static::expectException(AppRegistrationException::class);
-        $this->registrator->registerApp($manifest, '', Context::createDefaultContext());
+        $this->registrator->registerApp($manifest, '', '', Context::createDefaultContext());
     }
 
     public function testRegistrationFailsWithoutProof(): void
@@ -110,7 +112,7 @@ class AppRegistrationServiceTest extends TestCase
         $this->appendNewResponse(new Response(200, [], '{}'));
 
         static::expectException(AppRegistrationException::class);
-        $this->registrator->registerApp($manifest, '', Context::createDefaultContext());
+        $this->registrator->registerApp($manifest, '', '', Context::createDefaultContext());
     }
 
     // currently not implemented
@@ -119,7 +121,7 @@ class AppRegistrationServiceTest extends TestCase
         $manifest = Manifest::createFromXmlFile(__DIR__ . '/_fixtures/minimal/manifest.xml');
 
         static::expectException(\RuntimeException::class);
-        $this->registrator->registerApp($manifest, '', Context::createDefaultContext());
+        $this->registrator->registerApp($manifest, '', '', Context::createDefaultContext());
     }
 
     public function testDoesNotRegisterIfNoSetupElementIsProvided(): void
@@ -127,7 +129,7 @@ class AppRegistrationServiceTest extends TestCase
         $manifest = Manifest::createFromXmlFile(__DIR__ . '/_fixtures/no-setup/manifest.xml');
 
         // mockHandler would throw if it tries to make a registration request
-        $this->registrator->registerApp($manifest, '', Context::createDefaultContext());
+        $this->registrator->registerApp($manifest, '', '', Context::createDefaultContext());
     }
 
     private function createApp(string $id): void

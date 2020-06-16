@@ -275,16 +275,6 @@ class AppEntity extends Entity
         $this->description = $description;
     }
 
-    public function getAccessToken(): string
-    {
-        return $this->accessToken;
-    }
-
-    public function setAccessToken(string $accessToken): void
-    {
-        $this->accessToken = $accessToken;
-    }
-
     public function getIntegrationId(): string
     {
         return $this->integrationId;

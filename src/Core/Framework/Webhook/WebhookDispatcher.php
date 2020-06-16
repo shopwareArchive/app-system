@@ -182,11 +182,6 @@ class WebhookDispatcher implements EventDispatcherInterface
                 $payload['source']['appVersion'] = $webhookConfig['version'];
             }
 
-            if ($webhookConfig['access_token'] && $webhookConfig['access_key']) {
-                $payload['source']['apiKey'] = $webhookConfig['access_key'];
-                $payload['source']['secretKey'] = $webhookConfig['access_token'];
-            }
-
             if ($webhookConfig['app_id']) {
                 $shopIdProvider = $this->getShopIdProvider();
                 $payload['source']['shopId'] = $shopIdProvider->getShopId(
@@ -229,15 +224,12 @@ class WebhookDispatcher implements EventDispatcherInterface
         $result = $this->connection->fetchAll('
             SELECT `webhook`.`event_name`,
                    `webhook`.`url`,
-                   `app`.`access_token`,
                    `app`.`version`,
                    `app`.`app_secret`,
-                   `integration`.`access_key`,
                    `app`.`id` AS `app_id`,
                    `app`.`acl_role_id`
             FROM `saas_webhook` AS `webhook`
             LEFT JOIN `saas_app` AS `app` ON `webhook`.`app_id` = `app`.`id`
-            LEFT JOIN `integration` ON `app`.`integration_id` = `integration`.`id`
         ');
 
         return $this->webhooks = FetchModeHelper::group($result);
