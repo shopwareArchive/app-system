@@ -95,8 +95,7 @@ class PermissionPersister
 
             foreach ($privileges as $privilege) {
                 if ($privilege === 'read') {
-                    $privileges[] = 'list';
-                    $privileges[] = 'detail';
+                    $grantedPrivileges = array_merge($grantedPrivileges, ['list', 'detail']);
 
                     continue;
                 }

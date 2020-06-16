@@ -427,7 +427,7 @@ class AppLifecycleTest extends TestCase
         /** @var AclResourceCollection $privileges */
         $privileges = $aclResourceRepository->search($criteria, $this->context)->getEntities();
 
-        static::assertCount(14, $privileges);
+        static::assertCount(16, $privileges);
         $this->assertPrivilegesContains('list', 'product', $privileges);
         $this->assertPrivilegesContains('detail', 'product', $privileges);
         $this->assertPrivilegesContains('create', 'product', $privileges);
@@ -445,6 +445,9 @@ class AppLifecycleTest extends TestCase
         $this->assertPrivilegesContains('list', 'tax', $privileges);
         $this->assertPrivilegesContains('create', 'tax', $privileges);
         $this->assertPrivilegesContains('detail', 'tax', $privileges);
+
+        $this->assertPrivilegesContains('list', 'language', $privileges);
+        $this->assertPrivilegesContains('detail', 'language', $privileges);
     }
 
     private function assertPrivilegesContains(string $privilege, string $resource, AclResourceCollection $privileges): void
