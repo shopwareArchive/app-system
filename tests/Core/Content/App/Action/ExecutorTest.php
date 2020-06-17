@@ -46,8 +46,6 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
             'product',
             'detail',
             [Uuid::randomHex()],
-            'I am  not secret',
-            'I am secret',
             's3cr3t',
             Random::getAlphanumericString(12)
         );
@@ -83,8 +81,6 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
             'product',
             'detail',
             [],
-            'I am  not secret',
-            'I am secret',
             's3cr3t',
             Random::getAlphanumericString(12)
         );
@@ -108,8 +104,6 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
             'product',
             'detail',
             [],
-            'I am  not secret',
-            'I am secret',
             's3cr3t',
             Random::getAlphanumericString(12)
         );
@@ -137,9 +131,8 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
         $entity = 'product';
         $actionName = 'detail';
         $affectedIds = [Uuid::randomHex(), Uuid::randomHex()];
-        $accessKey = 'i am not secret';
-        $secretKey = 'i am secret';
         $shopId = Random::getAlphanumericString(12);
+
         $action = new AppAction(
             $targetUrl,
             $shopUrl,
@@ -147,8 +140,6 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
             $entity,
             $actionName,
             $affectedIds,
-            $accessKey,
-            $secretKey,
             's3cr3t',
             $shopId
         );
@@ -169,8 +160,6 @@ class ExecutorTest extends \PHPUnit\Framework\TestCase
         $expectedSource = [
             'url' => $shopUrl,
             'appVersion' => $appVersion,
-            'apiKey' => $accessKey,
-            'secretKey' => $secretKey,
             'shopId' => $shopId,
         ];
         $expectedData = [

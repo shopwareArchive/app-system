@@ -2,15 +2,17 @@
 
 namespace Swag\SaasConnect\Test\Core\Framework\Routing;
 
-use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Api\Util\AccessKeyHelper;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Test\TestCaseBase\AdminApiTestBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\PlatformRequest;
+use Swag\SaasConnect\Core\Content\App\AppEntity;
 use Swag\SaasConnect\Test\AppSystemTestBehaviour;
 use Swag\SaasConnect\Test\StorefrontAppRegistryTestBehaviour;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -159,26 +161,20 @@ class ApiRequestContextResolverDecoratorTest extends TestCase
 
     private function authorizeBrowserWithIntegrationByAppName(KernelBrowser $browser, string $appName): void
     {
-        /** @var Connection $connection */
-        $connection = $this->getContainer()->get(Connection::class);
-
-        $keys = $connection->fetchAssoc(
-            '
-            SELECT `access_key`, `access_token`
-            FROM `integration`
-            INNER JOIN `saas_app` ON `saas_app`.`integration_id` = `integration`.`id`
-            WHERE `saas_app`.`name` = :appName',
-            ['appName' => $appName]
-        );
-
-        if (!$keys) {
-            throw new \RuntimeException('No integration found for app with name: ' . $appName);
+        $app = $this->fetchApp($appName);
+        if (!$app) {
+            throw new \RuntimeException('No app found with name: ' . $appName);
         }
+
+        $accessKey = AccessKeyHelper::generateAccessKey('integration');
+        $secret = AccessKeyHelper::generateSecretAccessKey();
+
+        $this->setAccessTokenForIntegration($app->getIntegrationId(), $accessKey, $secret);
 
         $authPayload = [
             'grant_type' => 'client_credentials',
-            'client_id' => $keys['access_key'],
-            'client_secret' => $keys['access_token'],
+            'client_id' => $accessKey,
+            'client_secret' => $secret,
         ];
 
         $browser->request('POST', '/api/oauth/token', $authPayload);
@@ -217,5 +213,30 @@ class ApiRequestContextResolverDecoratorTest extends TestCase
                 'taxRate' => '25',
             ],
         ];
+    }
+
+    private function fetchApp(string $appName): ?AppEntity
+    {
+        /** @var EntityRepositoryInterface $appRepository */
+        $appRepository = $this->getContainer()->get('saas_app.repository');
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('name', $appName));
+
+        return $appRepository->search($criteria, Context::createDefaultContext())->first();
+    }
+
+    private function setAccessTokenForIntegration(string $integrationId, string $accessKey, string $secret): void
+    {
+        /** @var EntityRepositoryInterface $integrationRepository */
+        $integrationRepository = $this->getContainer()->get('integration.repository');
+
+        $integrationRepository->update([
+            [
+                'id' => $integrationId,
+                'accessKey' => $accessKey,
+                'secretAccessKey' => $secret,
+            ],
+        ], Context::createDefaultContext());
     }
 }

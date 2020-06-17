@@ -293,7 +293,6 @@ class WebhookDispatcherTest extends TestCase
             'path' => __DIR__ . '/Manifest/_fixtures/test',
             'version' => '0.0.1',
             'label' => 'test',
-            'accessToken' => 'test',
             'appSecret' => 's3cr3t',
             'integration' => [
                 'label' => 'test',
@@ -339,8 +338,6 @@ class WebhookDispatcherTest extends TestCase
                 'event' => CustomerBeforeLoginEvent::EVENT_NAME,
             ],
             'source' => [
-                'apiKey' => 'api access key',
-                'secretKey' => 'test',
                 'url' => $this->shopUrl,
                 'appVersion' => '0.0.1',
                 'shopId' => $this->shopIdProvider->getShopId($appId),
@@ -475,8 +472,6 @@ class WebhookDispatcherTest extends TestCase
                 'event' => CustomerLoginEvent::EVENT_NAME,
             ],
             'source' => [
-                'apiKey' => 'api access key',
-                'secretKey' => 'test',
                 'url' => $this->shopUrl,
                 'appVersion' => '0.0.1',
                 'shopId' => $this->shopIdProvider->getShopId($appId),
@@ -609,8 +604,6 @@ class WebhookDispatcherTest extends TestCase
                 'event' => ProductEvents::PRODUCT_WRITTEN_EVENT,
             ],
             'source' => [
-                'apiKey' => 'api access key',
-                'secretKey' => 'test',
                 'url' => $this->shopUrl,
                 'appVersion' => '0.0.1',
                 'shopId' => $this->shopIdProvider->getShopId($appId),
@@ -730,8 +723,6 @@ class WebhookDispatcherTest extends TestCase
                 'event' => AppDeletedEvent::NAME,
             ],
             'source' => [
-                'apiKey' => 'api access key',
-                'secretKey' => 'test',
                 'url' => $this->shopUrl,
                 'appVersion' => '0.0.1',
                 'shopId' => $this->shopIdProvider->getShopId($appId),

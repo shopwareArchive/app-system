@@ -15,20 +15,12 @@
                     "pattern": "^[0-9]+\\.[0-9]\\.[0-9]+$",
                     "description": "App version of the shop"
                 },
-                "apiKey": {
-                    "type": "string",
-                    "description": "The apiKey to authenticate the application with the api"
-                },
-                "secretKey": {
-                    "type": "string",
-                    "description": "The secret key to authenticate the application with the api"
-                },
                 "shopId": {
                     "type": "string",
                     "description": "The unique identifier of the shop triggering the action"
                 }
             },
-            "required": ["url","appVersion", "apiKey", "secretKey", "shopId"]
+            "required": ["url","appVersion", "shopId"]
         },
         "data": {
             "type": "object",

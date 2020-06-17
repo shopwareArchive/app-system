@@ -59,8 +59,6 @@ class AppActionLoader
             $actionButton->getEntity(),
             $actionButton->getAction(),
             $ids,
-            $actionButton->getApp()->getIntegration()->getAccessKey(),
-            $actionButton->getApp()->getAccessToken(),
             $secret,
             $this->shopIdProvider->getShopId($actionButton->getAppId())
         );
