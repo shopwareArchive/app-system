@@ -15,6 +15,8 @@ All notable changes to this project will be documented in this file.
 - Added Content-Type `application/json` to webhook requests
 - Add shop id to all outgoing requests
 - Added shop id as first part for the generation of the registration proof
+- Made AppLifecycleEvents hookable
+- Added permission validation for webhooks
 
 ## 0.1.0
 

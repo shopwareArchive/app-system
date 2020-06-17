@@ -138,11 +138,13 @@ class AppLifecycle implements AppLifecycleInterface
     public function delete(string $appName, array $app, Context $context): void
     {
         $this->themeLifecycleHandler->handleUninstall($appName, $context);
-        $this->appRepository->delete([['id' => $app['id']]], $context);
 
+        // throw event before deleting app from db as it may be delivered via webhook to the deleted app
         $this->eventDispatcher->dispatch(
             new AppDeletedEvent($app['id'], $context)
         );
+
+        $this->appRepository->delete([['id' => $app['id']]], $context);
     }
 
     /**

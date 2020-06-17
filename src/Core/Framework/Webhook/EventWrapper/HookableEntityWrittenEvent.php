@@ -2,6 +2,8 @@
 
 namespace Swag\SaasConnect\Core\Framework\Webhook\EventWrapper;
 
+use Shopware\Core\Framework\Api\Acl\Permission\AclPermissionCollection;
+use Shopware\Core\Framework\Api\Acl\Resource\AclResourceDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityDeletedEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Swag\SaasConnect\Core\Framework\Webhook\Hookable;
@@ -29,6 +31,14 @@ class HookableEntityWrittenEvent implements Hookable
     public function getWebhookPayload(): array
     {
         return $this->getPayloadFromEvent($this->event);
+    }
+
+    /**
+     * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter
+     */
+    public function isAllowed(string $appId, AclPermissionCollection $permissions): bool
+    {
+        return $permissions->isAllowed($this->event->getEntityName(), AclResourceDefinition::PRIVILEGE_LIST);
     }
 
     /**
