@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file.
 - Added permission validation for webhooks
 - Removed `apiKey` and `secretKey` from action and webhook requests, if you need to authenticate with the shop save the secrets during registration, where you get those as part of the request to the confirmation url
 - Removed `accessToken` property from AppDefinition and according DB column from the `saas_app` table
+- Loosened manifest schema: child elements of `manifest` and `setup` elements can be in any order
 
 ## 0.1.0
 
