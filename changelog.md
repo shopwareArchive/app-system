@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 - Removed `apiKey` and `secretKey` from action and webhook requests, if you need to authenticate with the shop save the secrets during registration, where you get those as part of the request to the confirmation url
 - Removed `accessToken` property from AppDefinition and according DB column from the `saas_app` table
 - Loosened manifest schema: child elements of `manifest` and `setup` elements can be in any order
+- Added possibility to ship snippets in apps (works only on Shopware 6.2.3 onwards)
 
 ## 0.1.0
 
