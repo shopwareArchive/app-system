@@ -2,7 +2,8 @@ variables:
     MYSQL_ROOT_PASSWORD: app
     WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/development/public
     REPOSITORY_HOST: "gitlab.shopware.com:5005"
-    PLATFORM_BRANCH: "6.2"
+#    ToDo: change back to 6.2 branch, once snippet loading fix is merged back
+    PLATFORM_BRANCH: "6.2.3"
     IMAGE_NAME: "${REPOSITORY_HOST}/shopware-cloud/connect/php-static-analysis"
 
 stages:

@@ -233,6 +233,12 @@
             <tag name="shopware.saas.shop_id_provider" priority="-100"/>
         </service>
 
+        <service id="Swag\SaasConnect\Core\System\Snippet\File\AppSnippetFileLoader" decorates="Shopware\Core\System\Snippet\Files\SnippetFileLoader" decoration-on-invalid="ignore">
+            <argument type="service" id="Swag\SaasConnect\Core\System\Snippet\File\AppSnippetFileLoader.inner"/>
+            <argument type="service" id="saas_app.repository"/>
+            <argument type="string">%kernel.project_dir%</argument>
+        </service>
+
         <service id="Swag\SaasConnect\Core\Content\App\AppDefinition">
             <tag name="shopware.entity.definition" entity="saas_app"/>
         </service>
