@@ -235,7 +235,7 @@
 
         <service id="Swag\SaasConnect\Core\System\Snippet\File\AppSnippetFileLoader" decorates="Shopware\Core\System\Snippet\Files\SnippetFileLoader" decoration-on-invalid="ignore">
             <argument type="service" id="Swag\SaasConnect\Core\System\Snippet\File\AppSnippetFileLoader.inner"/>
-            <argument type="service" id="saas_app.repository"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
             <argument type="string">%kernel.project_dir%</argument>
         </service>
 

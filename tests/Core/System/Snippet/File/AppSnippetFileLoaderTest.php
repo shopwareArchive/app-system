@@ -2,6 +2,7 @@
 
 namespace Swag\SaasRufus\Test\Core\System\Snippet\File;
 
+use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
@@ -32,7 +33,7 @@ class AppSnippetFileLoaderTest extends TestCase
 
         $this->appSnippetLoader = new AppSnippetFileLoader(
             $this->coreSnippetLoaderMock,
-            $this->getContainer()->get('saas_app.repository'),
+            $this->getContainer()->get(Connection::class),
             $this->getContainer()->getParameter('kernel.project_dir')
         );
     }

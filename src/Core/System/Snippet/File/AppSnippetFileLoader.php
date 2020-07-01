@@ -2,13 +2,11 @@
 
 namespace Swag\SaasConnect\Core\System\Snippet\File;
 
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\FetchMode;
 use Shopware\Core\System\Snippet\Files\GenericSnippetFile;
 use Shopware\Core\System\Snippet\Files\SnippetFileCollection;
 use Shopware\Core\System\Snippet\Files\SnippetFileLoaderInterface;
-use Swag\SaasConnect\Core\Content\App\AppEntity;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -20,31 +18,30 @@ class AppSnippetFileLoader implements SnippetFileLoaderInterface
     private $inner;
 
     /**
-     * @var EntityRepositoryInterface
-     */
-    private $appRepository;
-
-    /**
      * @var string
      */
     private $projectDir;
 
+    /**
+     * @var Connection
+     */
+    private $connection;
+
     public function __construct(
         SnippetFileLoaderInterface $inner,
-        EntityRepositoryInterface $appRepository,
+        Connection $connection,
         string $projectDir
     ) {
         $this->inner = $inner;
-        $this->appRepository = $appRepository;
         $this->projectDir = $projectDir;
+        $this->connection = $connection;
     }
 
     public function loadSnippetFilesIntoCollection(SnippetFileCollection $snippetFileCollection): void
     {
         $this->inner->loadSnippetFilesIntoCollection($snippetFileCollection);
 
-        $apps = $this->appRepository->search(new Criteria(), Context::createDefaultContext())->getEntities();
-
+        $apps = $this->getApps();
         foreach ($apps as $app) {
             foreach ($this->loadSnippetFilesFromApp($app) as $snippetFile) {
                 $snippetFileCollection->add($snippetFile);
@@ -53,9 +50,21 @@ class AppSnippetFileLoader implements SnippetFileLoaderInterface
     }
 
     /**
+     * @return array<array<string, string>>
+     */
+    private function getApps(): array
+    {
+        return $this->connection->executeQuery('
+            SELECT `path`, `author`
+            FROM `saas_app`
+        ')->fetchAll(FetchMode::ASSOCIATIVE);
+    }
+
+    /**
+     * @param array<string, string> $app
      * @return array<GenericSnippetFile>
      */
-    private function loadSnippetFilesFromApp(AppEntity $app): array
+    private function loadSnippetFilesFromApp(array $app): array
     {
         $finder = $this->getSnippetFinder($app);
 
@@ -74,9 +83,12 @@ class AppSnippetFileLoader implements SnippetFileLoaderInterface
         return $snippetFiles;
     }
 
-    private function getSnippetFinder(AppEntity $app): Finder
+    /**
+     * @param array<string, string> $app
+     */
+    private function getSnippetFinder(array $app): Finder
     {
-        $snippetDir = $this->projectDir . '/' . $app->getPath() . '/Resources/snippet';
+        $snippetDir = $this->projectDir . '/' . $app['path'] . '/Resources/snippet';
         $finder = new Finder();
         $finder->in($snippetDir)
             ->files()
@@ -87,8 +99,9 @@ class AppSnippetFileLoader implements SnippetFileLoaderInterface
 
     /**
      * @param array<string> $nameParts
+     * @param array<string, string> $app
      */
-    private function createSnippetFile(array $nameParts, SplFileInfo $fileInfo, AppEntity $app): ?GenericSnippetFile
+    private function createSnippetFile(array $nameParts, SplFileInfo $fileInfo, array $app): ?GenericSnippetFile
     {
         switch (count($nameParts)) {
             case 2:
@@ -102,28 +115,30 @@ class AppSnippetFileLoader implements SnippetFileLoaderInterface
 
     /**
      * @param array<string> $nameParts
+     * @param array<string, string> $app
      */
-    private function getSnippetFile(array $nameParts, SplFileInfo $fileInfo, AppEntity $app): GenericSnippetFile
+    private function getSnippetFile(array $nameParts, SplFileInfo $fileInfo, array $app): GenericSnippetFile
     {
         return new GenericSnippetFile(
             implode('.', $nameParts),
             $fileInfo->getPathname(),
             $nameParts[1],
-            $app->getAuthor() ?? '',
+            $app['author'] ?? '',
             false
         );
     }
 
     /**
      * @param array<string> $nameParts
+     * @param array<string, string> $app
      */
-    private function getBaseSnippetFile(array $nameParts, SplFileInfo $fileInfo, AppEntity $app): GenericSnippetFile
+    private function getBaseSnippetFile(array $nameParts, SplFileInfo $fileInfo, array $app): GenericSnippetFile
     {
         return new GenericSnippetFile(
             implode('.', [$nameParts[0], $nameParts[1]]),
             $fileInfo->getPathname(),
             $nameParts[1],
-            $app->getAuthor() ?? '',
+            $app['author'] ?? '',
             $nameParts[2] === 'base'
         );
     }
