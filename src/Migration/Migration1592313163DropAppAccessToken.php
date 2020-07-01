@@ -9,7 +9,7 @@ class Migration1592313163DropAppAccessToken extends MigrationStep
 {
     public function getCreationTimestamp(): int
     {
-        return 11592313163;
+        return 1592313163;
     }
 
     public function update(Connection $connection): void
