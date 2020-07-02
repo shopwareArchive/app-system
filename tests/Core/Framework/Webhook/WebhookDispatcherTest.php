@@ -84,8 +84,10 @@ class WebhookDispatcherTest extends TestCase
         );
 
         /** @var EventDispatcherInterface $eventDispatcher */
-        $eventDispatcher = $this->getContainer()->get('event_dispatcher');
-        $eventDispatcher->dispatch($event);
+        $eventDispatcher = $this->getContainer()->get(WebhookDispatcher::class);
+        $event = $eventDispatcher->dispatch($event);
+        get_class($event);
+        static::assertInstanceOf(CustomerBeforeLoginEvent::class, $event);
 
         /** @var Request $request */
         $request = $this->appServerMock->getLastRequest();

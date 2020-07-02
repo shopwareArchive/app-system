@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
 - Removed `accessToken` property from AppDefinition and according DB column from the `saas_app` table
 - Loosened manifest schema: child elements of `manifest` and `setup` elements can be in any order
 - Added possibility to ship snippets in apps (works only on Shopware 6.2.3 onwards)
+- Fixed bug that Actions for BusinessEvents weren't triggered
 
 ## 0.1.0
 
