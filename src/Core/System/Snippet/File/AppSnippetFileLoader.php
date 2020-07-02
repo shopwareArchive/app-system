@@ -43,10 +43,39 @@ class AppSnippetFileLoader implements SnippetFileLoaderInterface
 
         $apps = $this->getApps();
         foreach ($apps as $app) {
-            foreach ($this->loadSnippetFilesFromApp($app) as $snippetFile) {
+            foreach ($this->loadSnippetFilesFromApp($app['author'] ?? '', $app['path']) as $snippetFile) {
                 $snippetFileCollection->add($snippetFile);
             }
         }
+    }
+
+    /**
+     * @param bool $isAbsolutePath is used for remote app loading in cloud environments,
+     *                             therefore it's always false for local apps
+     * @return array<GenericSnippetFile>
+     */
+    public function loadSnippetFilesFromApp(string $author, string $appPath, bool $isAbsolutePath = false): array
+    {
+        $snippetDir = $this->getSnippetDir($appPath, $isAbsolutePath);
+        if (!is_dir($snippetDir)) {
+            return [];
+        }
+
+        $finder = $this->getSnippetFinder($snippetDir);
+
+        $snippetFiles = [];
+
+        foreach ($finder->getIterator() as $fileInfo) {
+            $nameParts = explode('.', $fileInfo->getFilenameWithoutExtension());
+
+            $snippetFile = $this->createSnippetFile($nameParts, $fileInfo, $author);
+
+            if ($snippetFile) {
+                $snippetFiles[] = $snippetFile;
+            }
+        }
+
+        return $snippetFiles;
     }
 
     /**
@@ -60,35 +89,8 @@ class AppSnippetFileLoader implements SnippetFileLoaderInterface
         ')->fetchAll(FetchMode::ASSOCIATIVE);
     }
 
-    /**
-     * @param array<string, string> $app
-     * @return array<GenericSnippetFile>
-     */
-    private function loadSnippetFilesFromApp(array $app): array
+    private function getSnippetFinder(string $snippetDir): Finder
     {
-        $finder = $this->getSnippetFinder($app);
-
-        $snippetFiles = [];
-
-        foreach ($finder->getIterator() as $fileInfo) {
-            $nameParts = explode('.', $fileInfo->getFilenameWithoutExtension());
-
-            $snippetFile = $this->createSnippetFile($nameParts, $fileInfo, $app);
-
-            if ($snippetFile) {
-                $snippetFiles[] = $snippetFile;
-            }
-        }
-
-        return $snippetFiles;
-    }
-
-    /**
-     * @param array<string, string> $app
-     */
-    private function getSnippetFinder(array $app): Finder
-    {
-        $snippetDir = $this->projectDir . '/' . $app['path'] . '/Resources/snippet';
         $finder = new Finder();
         $finder->in($snippetDir)
             ->files()
@@ -99,15 +101,14 @@ class AppSnippetFileLoader implements SnippetFileLoaderInterface
 
     /**
      * @param array<string> $nameParts
-     * @param array<string, string> $app
      */
-    private function createSnippetFile(array $nameParts, SplFileInfo $fileInfo, array $app): ?GenericSnippetFile
+    private function createSnippetFile(array $nameParts, SplFileInfo $fileInfo, string $author): ?GenericSnippetFile
     {
         switch (count($nameParts)) {
             case 2:
-                return $this->getSnippetFile($nameParts, $fileInfo, $app);
+                return $this->getSnippetFile($nameParts, $fileInfo, $author);
             case 3:
-                return $this->getBaseSnippetFile($nameParts, $fileInfo, $app);
+                return $this->getBaseSnippetFile($nameParts, $fileInfo, $author);
         }
 
         return null;
@@ -115,31 +116,39 @@ class AppSnippetFileLoader implements SnippetFileLoaderInterface
 
     /**
      * @param array<string> $nameParts
-     * @param array<string, string> $app
      */
-    private function getSnippetFile(array $nameParts, SplFileInfo $fileInfo, array $app): GenericSnippetFile
+    private function getSnippetFile(array $nameParts, SplFileInfo $fileInfo, string $author): GenericSnippetFile
     {
         return new GenericSnippetFile(
             implode('.', $nameParts),
             $fileInfo->getPathname(),
             $nameParts[1],
-            $app['author'] ?? '',
+            $author,
             false
         );
     }
 
     /**
      * @param array<string> $nameParts
-     * @param array<string, string> $app
      */
-    private function getBaseSnippetFile(array $nameParts, SplFileInfo $fileInfo, array $app): GenericSnippetFile
+    private function getBaseSnippetFile(array $nameParts, SplFileInfo $fileInfo, string $author): GenericSnippetFile
     {
         return new GenericSnippetFile(
             implode('.', [$nameParts[0], $nameParts[1]]),
             $fileInfo->getPathname(),
             $nameParts[1],
-            $app['author'] ?? '',
+            $author,
             $nameParts[2] === 'base'
         );
+    }
+
+    private function getSnippetDir(string $path, bool $isAbsolute): string
+    {
+        // add project path if path is not absolute already
+        if (!$isAbsolute) {
+            $path = $this->projectDir . '/' . $path;
+        }
+
+        return $path . '/Resources/snippet';
     }
 }
