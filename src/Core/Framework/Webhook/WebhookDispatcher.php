@@ -91,12 +91,15 @@ class WebhookDispatcher implements EventDispatcherInterface
             return $event;
         }
 
-        if ($event instanceof BusinessEventInterface) {
-            $event = HookableBusinessEvent::fromBusinessEvent($event, $this->eventEncoder);
+        $hookableEvent = $event;
+        if ($hookableEvent instanceof BusinessEventInterface) {
+            $hookableEvent = HookableBusinessEvent::fromBusinessEvent($hookableEvent, $this->eventEncoder);
         }
 
-        $this->callWebhooks($event->getName(), $event);
+        $this->callWebhooks($hookableEvent->getName(), $hookableEvent);
 
+        // always return the original event and never our wrapped events
+        // this would lead to problems in the `BusinessEventDispatcher` from core
         return $event;
     }
 
