@@ -46,7 +46,18 @@ class AppSnippetFileLoaderTest extends TestCase
         );
     }
 
-    public function testLoadSnippetsForApp(): void
+    public function testLoadSnippetFilesIntoCollectionWithoutSnippetFiles(): void
+    {
+        $this->loadAppsFromDir(__DIR__ . '/../../../Content/App/Manifest/_fixtures/test');
+
+        $collection = new SnippetFileCollection();
+
+        $this->appSnippetLoader->loadSnippetFilesIntoCollection($collection);
+
+        static::assertCount(0, $collection);
+    }
+
+    public function testLoadSnippetFilesIntoCollection(): void
     {
         $this->loadAppsFromDir(__DIR__ . '/_fixtures/AppWithSnippets');
 
@@ -77,7 +88,7 @@ class AppSnippetFileLoaderTest extends TestCase
         static::assertFalse($snippetFile->isBase());
     }
 
-    public function testLoadBaseSnippetsForApp(): void
+    public function testLLoadBaseSnippetFilesIntoCollection(): void
     {
         $this->loadAppsFromDir(__DIR__ . '/_fixtures/AppWithBaseSnippets');
 
@@ -108,7 +119,7 @@ class AppSnippetFileLoaderTest extends TestCase
         static::assertTrue($snippetFile->isBase());
     }
 
-    public function testLoadSnippetsForAppIgnoresWrongNamedFiles(): void
+    public function testLoadSnippetFilesIntoCollectionIgnoresWrongFilenames(): void
     {
         $this->loadAppsFromDir(__DIR__ . '/_fixtures/SnippetsWithWrongName');
 
