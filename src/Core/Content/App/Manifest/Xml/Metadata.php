@@ -32,6 +32,11 @@ class Metadata extends XmlElement
     /**
      * @var string
      */
+    protected $license;
+
+    /**
+     * @var string
+     */
     protected $version;
 
     /**
@@ -83,6 +88,11 @@ class Metadata extends XmlElement
     public function getCopyright(): string
     {
         return $this->copyright;
+    }
+
+    public function getLicense(): string
+    {
+        return $this->license;
     }
 
     public function getVersion(): string

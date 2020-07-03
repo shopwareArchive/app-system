@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file.
 - Loosened manifest schema: child elements of `manifest` and `setup` elements can be in any order
 - Added possibility to ship snippets in apps (works only on Shopware 6.2.3 onwards)
 - Fixed bug that Actions for BusinessEvents weren't triggered
+- Added `license` field to meta information in the manifest file
 
 ## 0.1.0
 

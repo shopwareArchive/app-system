@@ -80,6 +80,7 @@
             <xs:element type="xs:string" name="copyright"/>
             <xs:element type="xs:string" name="version"/>
             <xs:element type="xs:string" name="icon" minOccurs="0"/>
+            <xs:element type="xs:string" name="license" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="setup">

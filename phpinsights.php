@@ -55,6 +55,7 @@ return [
         'WebhookDispatcher.php',
         'EntityTemplateLoader.php',
         'AppLifecycle.php',
+        'Metadata.php',
     ],
 
     'add' => [
