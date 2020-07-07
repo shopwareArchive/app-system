@@ -33,7 +33,7 @@ class AppLifecycleIterator
     /**
      * @return array<Manifest>
      */
-    public function iterate(AppLifecycleInterface $appLifecycle, Context $context): array
+    public function iterate(AppLifecycleInterface $appLifecycle, bool $activate, Context $context): array
     {
         $appsFromFileSystem = $this->appLoader->load();
         $installedApps = $this->getRegisteredApps($context);
@@ -43,7 +43,7 @@ class AppLifecycleIterator
         foreach ($appsFromFileSystem as $manifest) {
             try {
                 if (!array_key_exists($manifest->getMetadata()->getName(), $installedApps)) {
-                    $appLifecycle->install($manifest, $context);
+                    $appLifecycle->install($manifest, $activate, $context);
                     $successfulUpdates[] = $manifest->getMetadata()->getName();
 
                     continue;

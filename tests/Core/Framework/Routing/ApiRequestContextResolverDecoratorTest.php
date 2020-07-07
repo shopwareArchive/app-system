@@ -17,6 +17,7 @@ use Swag\SaasConnect\Core\Content\App\AppEntity;
 use Swag\SaasConnect\Test\AppSystemTestBehaviour;
 use Swag\SaasConnect\Test\StorefrontAppRegistryTestBehaviour;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Component\HttpFoundation\Response;
 
 class ApiRequestContextResolverDecoratorTest extends TestCase
 {
@@ -152,6 +153,28 @@ class ApiRequestContextResolverDecoratorTest extends TestCase
 
         static::assertNotNull($product);
         static::assertEquals($newName, $product->getName());
+    }
+
+    public function testLoginFailsForInactiveApp(): void
+    {
+        $this->loadAppsFromDir(__DIR__ . '/../../Content/App/Manifest/_fixtures/test', false);
+
+        $browser = $this->createClient();
+        $app = $this->fetchApp('SwagApp');
+
+        $accessKey = AccessKeyHelper::generateAccessKey('integration');
+        $secret = AccessKeyHelper::generateSecretAccessKey();
+
+        $this->setAccessTokenForIntegration($app->getIntegrationId(), $accessKey, $secret);
+
+        $authPayload = [
+            'grant_type' => 'client_credentials',
+            'client_id' => $accessKey,
+            'client_secret' => $secret,
+        ];
+
+        $browser->request('POST', '/api/oauth/token', $authPayload);
+        static::assertEquals(Response::HTTP_UNAUTHORIZED, $browser->getResponse()->getStatusCode());
     }
 
     public function testDoesntAffectLoggedInUser(): void

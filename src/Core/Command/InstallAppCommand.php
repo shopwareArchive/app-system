@@ -57,7 +57,7 @@ class InstallAppCommand extends Command
             }
         }
 
-        $this->appLifecycle->install($manifest, Context::createDefaultContext());
+        $this->appLifecycle->install($manifest, (bool) $input->getOption('activate'), Context::createDefaultContext());
 
         $io->success('App installed successfully.');
 
@@ -79,6 +79,12 @@ class InstallAppCommand extends Command
                 'f',
                 InputOption::VALUE_NONE,
                 'Force the install of the app, it will automatically grant all requested permissions.'
+            )
+            ->addOption(
+                'activate',
+                'a',
+                InputOption::VALUE_NONE,
+                'Activate the app after installing it'
             );
     }
 

@@ -24,7 +24,7 @@ trait CustomFieldTypeTestBehaviour
         $context = Context::createDefaultContext();
         /** @var AppLifecycle $appLifecycle */
         $appLifecycle = $this->getContainer()->get(AppLifecycle::class);
-        $appLifecycle->install($manifest, $context);
+        $appLifecycle->install($manifest, true, $context);
 
         /** @var EntityRepositoryInterface $appRepository */
         $appRepository = $this->getContainer()->get('saas_app.repository');

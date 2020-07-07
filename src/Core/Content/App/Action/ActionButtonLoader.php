@@ -28,9 +28,13 @@ class ActionButtonLoader
     public function loadActionButtonsForView(string $entity, string $view, Context $context): array
     {
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('entity', $entity), new EqualsFilter('view', $view))
+        $criteria
             ->addAssociation('app')
-            ->addAssociation('translations.language.locale');
+            ->addAssociation('translations.language.locale')
+            ->addFilter(
+                new EqualsFilter('entity', $entity),
+                new EqualsFilter('view', $view),
+                new EqualsFilter('app.active', true));
 
         /** @var ActionButtonCollection $actionButtons */
         $actionButtons = $this->actionButtonRepository->search($criteria, $context)->getEntities();

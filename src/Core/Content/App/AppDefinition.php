@@ -8,6 +8,7 @@ use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BlobField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
@@ -59,6 +60,7 @@ class AppDefinition extends EntityDefinition
             new StringField('author', 'author'),
             new StringField('copyright', 'copyright'),
             new StringField('license', 'license'),
+            new BoolField('active', 'active'),
             new StringField('privacy', 'privacy'),
             (new StringField('version', 'version'))->addFlags(new Required()),
             (new BlobField('icon', 'iconRaw'))->addFlags(

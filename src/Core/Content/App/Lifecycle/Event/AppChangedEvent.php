@@ -8,10 +8,8 @@ use Swag\SaasConnect\Core\Framework\Api\Acl\AclPrivilegeCollection;
 use Swag\SaasConnect\Core\Framework\Webhook\Hookable;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class AppDeletedEvent extends Event implements ShopwareEvent, Hookable
+abstract class AppChangedEvent extends Event implements ShopwareEvent, Hookable
 {
-    public const NAME = 'app_deleted';
-
     /**
      * @var string
      */
@@ -27,6 +25,8 @@ class AppDeletedEvent extends Event implements ShopwareEvent, Hookable
         $this->appId = $appId;
         $this->context = $context;
     }
+
+    abstract public function getName(): string;
 
     public function getAppId(): string
     {
@@ -52,10 +52,5 @@ class AppDeletedEvent extends Event implements ShopwareEvent, Hookable
     public function isAllowed(string $appId, AclPrivilegeCollection $permissions): bool
     {
         return $appId === $this->getAppId();
-    }
-
-    public function getName(): string
-    {
-        return self::NAME;
     }
 }
