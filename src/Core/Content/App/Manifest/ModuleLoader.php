@@ -11,6 +11,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Swag\SaasConnect\Core\Content\App\Aggregate\AppTranslation\AppTranslationEntity;
 use Swag\SaasConnect\Core\Content\App\AppCollection;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
+use Swag\SaasConnect\Core\Framework\ShopId\AppUrlChangeDetectedException;
 use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 
 class ModuleLoader
@@ -63,18 +64,24 @@ class ModuleLoader
      */
     private function formatPayload(AppCollection $apps): array
     {
-        $modules = [];
+        $appModules = [];
 
         /** @var AppEntity $app */
         foreach ($apps as $app) {
-            $modules[] = [
+            $modules = $this->formatModules($app);
+
+            if (empty($modules)) {
+                continue;
+            }
+
+            $appModules[] = [
                 'name' => $app->getName(),
                 'label' => $this->mapTranslatedLabels($app),
-                'modules' => $this->formatModules($app),
+                'modules' => $modules,
             ];
         }
 
-        return $modules;
+        return $appModules;
     }
 
     /**
@@ -86,7 +93,12 @@ class ModuleLoader
 
         /** @var array<string|array<string, string>> $module */
         foreach ($app->getModules() as $module) {
-            $queryString = $this->generateQueryString($app);
+            $queryString = $this->generateQueryString();
+
+            if ($queryString === null) {
+                continue;
+            }
+
             /** @var string $secret */
             $secret = $app->getAppSecret();
             $signature = hash_hmac('sha256', $queryString, $secret);
@@ -122,10 +134,15 @@ class ModuleLoader
         return $labels;
     }
 
-    private function generateQueryString(AppEntity $app): string
+    private function generateQueryString(): ?string
     {
         $date = new \DateTime();
-        $shopId = $this->shopIdProvider->getShopId($app->getId());
+
+        try {
+            $shopId = $this->shopIdProvider->getShopId();
+        } catch (AppUrlChangeDetectedException $e) {
+            return null;
+        }
 
         return sprintf(
             'shop-id=%s&shop-url=%s&timestamp=%s',

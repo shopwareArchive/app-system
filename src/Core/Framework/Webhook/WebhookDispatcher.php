@@ -13,6 +13,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Doctrine\FetchModeHelper;
 use Shopware\Core\Framework\Event\BusinessEvent;
 use Shopware\Core\Framework\Event\BusinessEventInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\SaasConnect\Core\Framework\ShopId\AppUrlChangeDetectedException;
 use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 use Swag\SaasConnect\Core\Framework\Webhook\EventWrapper\HookableBusinessEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -187,9 +188,13 @@ class WebhookDispatcher implements EventDispatcherInterface
 
             if ($webhookConfig['app_id']) {
                 $shopIdProvider = $this->getShopIdProvider();
-                $payload['source']['shopId'] = $shopIdProvider->getShopId(
-                    Uuid::fromBytesToHex($webhookConfig['app_id'])
-                );
+
+                try {
+                    $shopId = $shopIdProvider->getShopId();
+                } catch (AppUrlChangeDetectedException $e) {
+                    continue;
+                }
+                $payload['source']['shopId'] = $shopId;
             }
 
             /** @var string $jsonPayload */

@@ -5,6 +5,8 @@ namespace Swag\SaasConnect\Test\Core\Content\App\Lifecycle\Registration;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\SaasConnect\Core\Content\App\Exception\AppRegistrationException;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\HandshakeFactory;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\PrivateHandshake;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\StoreHandshake;
@@ -20,13 +22,31 @@ class HandshakeFactoryTest extends TestCase
         $manifest = Manifest::createFromXmlFile(__DIR__ . '/../../Manifest/_fixtures/minimal/manifest.xml');
 
         $shopUrl = 'test.shop.com';
-        $appId = Uuid::randomHex();
 
         $factory = new HandshakeFactory($shopUrl, $this->getContainer()->get(ShopIdProvider::class));
 
-        $handshake = $factory->create($manifest, $appId);
+        $handshake = $factory->create($manifest);
 
         static::assertInstanceOf(PrivateHandshake::class, $handshake);
+    }
+
+    public function testThrowsAppRegistrationExceptionIfAppUrlChangeWasDetected(): void
+    {
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/../../Manifest/_fixtures/minimal/manifest.xml');
+
+        $shopUrl = 'test.shop.com';
+
+        /** @var SystemConfigService $systemConfigService */
+        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
+        $systemConfigService->set(ShopIdProvider::SHOP_ID_SYSTEM_CONFIG_KEY, [
+            'app_url' => 'https://test.com',
+            'value' => Uuid::randomHex(),
+        ]);
+
+        $factory = new HandshakeFactory($shopUrl, $this->getContainer()->get(ShopIdProvider::class));
+
+        static::expectException(AppRegistrationException::class);
+        $factory->create($manifest);
     }
 
     public function testManifestWithoutSecretProducesAStoreHandshake(): void
@@ -34,11 +54,10 @@ class HandshakeFactoryTest extends TestCase
         $manifest = Manifest::createFromXmlFile(__DIR__ . '/../../Manifest/_fixtures/public/manifest.xml');
 
         $shopUrl = 'test.shop.com';
-        $appId = Uuid::randomHex();
 
         $factory = new HandshakeFactory($shopUrl, $this->getContainer()->get(ShopIdProvider::class));
 
-        $handshake = $factory->create($manifest, $appId);
+        $handshake = $factory->create($manifest);
 
         static::assertInstanceOf(StoreHandshake::class, $handshake);
     }

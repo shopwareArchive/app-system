@@ -4,15 +4,17 @@ namespace Swag\SaasConnect\Core\Framework\ShopIdProvider;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\SaasConnect\Core\Framework\ShopId\NoSupportedShopIdProviderException;
+use Swag\SaasConnect\Core\Framework\ShopId\AppUrlChangeDetectedException;
 use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
-use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProviderStrategy;
+use Swag\SaasConnect\Test\EnvTestBehaviour;
+use Swag\SaasConnect\Test\SystemConfigTestBehaviour;
 
 class ShopIdProviderTest extends TestCase
 {
     use IntegrationTestBehaviour;
+    use EnvTestBehaviour;
+    use SystemConfigTestBehaviour;
 
     /**
      * @var ShopIdProvider
@@ -28,86 +30,58 @@ class ShopIdProviderTest extends TestCase
     {
         $this->shopIdProvider = $this->getContainer()->get(ShopIdProvider::class);
         $this->systemConfigService = $this->getContainer()->get(SystemConfigService::class);
-
-        // necessary because some tests before may have already generated shop ids
-        $this->resetInternalSystemConfgCache();
     }
 
-    public function tearDown(): void
+    public function testGetShopIdWithoutStoredShopId(): void
     {
-        $this->resetInternalSystemConfgCache();
-    }
-
-    public function testGetShopIdWithoutStoredShopIds(): void
-    {
-        $appId = Uuid::randomHex();
-
-        $shopId = $this->shopIdProvider->getShopId($appId);
+        $shopId = $this->shopIdProvider->getShopId();
 
         static::assertEquals([
-            'fallback_shop_id_provider' => [
-                'value' => $shopId,
-                'apps' => [
-                    $appId,
-                ],
-            ],
+            'app_url' => getenv('APP_URL'),
+            'value' => $shopId,
         ], $this->systemConfigService->get(ShopIdProvider::SHOP_ID_SYSTEM_CONFIG_KEY));
+
+        static::assertNull(
+            $this->systemConfigService->get(ShopIdProvider::SHOP_DOMAIN_CHANGE_CONFIG_KEY)
+        );
     }
 
-    public function testGetShopIdThrowsWithoutSupportedProvider(): void
+    public function testGetShopIdReturnsSameIdOnMultipleCalls(): void
     {
-        $notSupportedProvider = $this->createMock(ShopIdProviderStrategy::class);
-        $notSupportedProvider->expects(static::once())
-            ->method('isSupported')
-            ->willReturn(false);
+        $firstShopId = $this->shopIdProvider->getShopId();
+        $secondShopId = $this->shopIdProvider->getShopId();
 
-        $shopIdProvider = new ShopIdProvider([$notSupportedProvider], $this->systemConfigService);
-
-        static::expectException(NoSupportedShopIdProviderException::class);
-        $shopIdProvider->getShopId(Uuid::randomHex());
-    }
-
-    public function testReturnsPreviouslyGeneratedIdForSameStrategy(): void
-    {
-        $firstAppId = Uuid::randomHex();
-        $secondAppId = Uuid::randomHex();
-
-        $shopId = $this->shopIdProvider->getShopId($firstAppId);
-
-        static::assertEquals($shopId, $this->shopIdProvider->getShopId($secondAppId));
+        static::assertEquals($firstShopId, $secondShopId);
 
         static::assertEquals([
-            'fallback_shop_id_provider' => [
-                'value' => $shopId,
-                'apps' => [
-                    $firstAppId,
-                    $secondAppId,
-                ],
-            ],
+            'app_url' => getenv('APP_URL'),
+            'value' => $firstShopId,
         ], $this->systemConfigService->get(ShopIdProvider::SHOP_ID_SYSTEM_CONFIG_KEY));
+
+        static::assertNull(
+            $this->systemConfigService->get(ShopIdProvider::SHOP_DOMAIN_CHANGE_CONFIG_KEY)
+        );
     }
 
-    public function testItReturnsSameIdForApp(): void
+    public function testGetShopIdThrowsIfAppUrlIsChanged(): void
     {
-        $appId = Uuid::randomHex();
+        $this->shopIdProvider->getShopId();
 
-        $this->systemConfigService->set(ShopIdProvider::SHOP_ID_SYSTEM_CONFIG_KEY, [
-            'test_provider' => [
-                'value' => 'justATest',
-                'apps' => [$appId],
-            ],
+        $this->setEnvVars([
+            'APP_URL' => 'http://test.com',
         ]);
 
-        static::assertEquals('justATest', $this->shopIdProvider->getShopId($appId));
-    }
+        $wasThrown = false;
 
-    private function resetInternalSystemConfgCache(): void
-    {
-        // reset internal system config cache
-        $reflection = new \ReflectionClass($this->systemConfigService);
+        try {
+            $this->shopIdProvider->getShopId();
+        } catch (AppUrlChangeDetectedException $e) {
+            $wasThrown = true;
+        }
 
-        $property = $reflection->getProperty('configs');
-        $property->setAccessible(true);
-        $property->setValue($this->systemConfigService, []);
+        static::assertTrue($wasThrown);
+        static::assertTrue(
+            $this->systemConfigService->get(ShopIdProvider::SHOP_DOMAIN_CHANGE_CONFIG_KEY)
+        );
     }
 }

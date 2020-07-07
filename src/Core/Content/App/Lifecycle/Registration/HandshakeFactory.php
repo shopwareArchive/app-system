@@ -2,7 +2,9 @@
 
 namespace Swag\SaasConnect\Core\Content\App\Lifecycle\Registration;
 
+use Swag\SaasConnect\Core\Content\App\Exception\AppRegistrationException;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
+use Swag\SaasConnect\Core\Framework\ShopId\AppUrlChangeDetectedException;
 use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 
 class HandshakeFactory
@@ -23,19 +25,27 @@ class HandshakeFactory
         $this->shopIdProvider = $shopIdProvider;
     }
 
-    public function create(Manifest $manifest, string $appId): AppHandshakeInterface
+    public function create(Manifest $manifest): AppHandshakeInterface
     {
         $setup = $manifest->getSetup();
         $privateSecret = $setup->getSecret();
         if ($privateSecret) {
             $metadata = $manifest->getMetadata();
 
+            try {
+                $shopId = $this->shopIdProvider->getShopId();
+            } catch (AppUrlChangeDetectedException $e) {
+                throw new AppRegistrationException(
+                    'The app url changed. Please resolve how the apps should handle this change.'
+                );
+            }
+
             return new PrivateHandshake(
                 $this->shopUrl,
                 $privateSecret,
                 $setup->getRegistrationUrl(),
                 $metadata->getName(),
-                $this->shopIdProvider->getShopId($appId)
+                $shopId
             );
         }
 

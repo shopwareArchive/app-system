@@ -3,6 +3,7 @@
 namespace Swag\SaasConnect\Test\Core\Content\App\Lifecycle\Registration;
 
 use Doctrine\DBAL\Connection;
+use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
@@ -11,9 +12,12 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
 use Swag\SaasConnect\Core\Content\App\Exception\AppRegistrationException;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\AppRegistrationService;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\HandshakeFactory;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\PrivateHandshake;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 use Swag\SaasConnect\Test\GuzzleTestClientBehaviour;
@@ -60,7 +64,7 @@ class AppRegistrationServiceTest extends TestCase
         $manifest = Manifest::createFromXmlFile(__DIR__ . '/_fixtures/minimal/manifest.xml');
 
         $appSecret = 'dont_tell';
-        $appResponseBody = $this->buildAppResponse($manifest, $appSecret, $id);
+        $appResponseBody = $this->buildAppResponse($manifest, $appSecret);
 
         $this->appendNewResponse(new Response(200, [], $appResponseBody));
         $this->appendNewResponse(new Response(200, []));
@@ -87,7 +91,7 @@ class AppRegistrationServiceTest extends TestCase
         static::assertEquals($secretAccessKey, $postBody['secretKey']);
         static::assertEquals($app->getIntegration()->getAccessKey(), $postBody['apiKey']);
         static::assertEquals(getenv('APP_URL'), $postBody['shopUrl']);
-        static::assertEquals($this->shopIdProvider->getShopId($id), $postBody['shopId']);
+        static::assertEquals($this->shopIdProvider->getShopId(), $postBody['shopId']);
 
         static::assertEquals(
             hash_hmac('sha256', json_encode($postBody), $appSecret),
@@ -113,6 +117,50 @@ class AppRegistrationServiceTest extends TestCase
 
         static::expectException(AppRegistrationException::class);
         $this->registrator->registerApp($manifest, '', '', Context::createDefaultContext());
+    }
+
+    public function testRegistrationFailsIfAppUrlChangeWasDetected(): void
+    {
+        $id = Uuid::randomHex();
+        $secretAccessKey = AccessKeyHelper::generateSecretAccessKey();
+        $this->createApp($id);
+
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/_fixtures/minimal/manifest.xml');
+
+        $appSecret = 'dont_tell';
+        $shopId = Uuid::randomHex();
+        $appResponseBody = $this->buildAppResponse($manifest, $appSecret, $shopId);
+
+        $this->appendNewResponse(new Response(200, [], $appResponseBody));
+
+        /** @var SystemConfigService $systemConfigService */
+        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
+        $systemConfigService->set(ShopIdProvider::SHOP_ID_SYSTEM_CONFIG_KEY, [
+            'app_url' => 'https://test.com',
+            'value' => $shopId,
+        ]);
+
+        $handshakeFactoryMock = $this->createMock(HandshakeFactory::class);
+        $handshakeFactoryMock->expects(static::once())
+            ->method('create')
+            ->willReturn(new PrivateHandshake(
+                $this->shopUrl,
+                $manifest->getSetup()->getSecret(),
+                $manifest->getSetup()->getRegistrationUrl(),
+                $manifest->getMetadata()->getName(),
+                $shopId
+            ));
+
+        $registrator = new AppRegistrationService(
+            $handshakeFactoryMock,
+            $this->getContainer()->get(Client::class),
+            $this->getContainer()->get('saas_app.repository'),
+            $this->shopUrl,
+            $this->getContainer()->get(ShopIdProvider::class)
+        );
+
+        static::expectException(AppRegistrationException::class);
+        $registrator->registerApp($manifest, $id, $secretAccessKey, Context::createDefaultContext());
     }
 
     // currently not implemented
@@ -168,9 +216,11 @@ class AppRegistrationServiceTest extends TestCase
         ', ['roleId' => $roleId]);
     }
 
-    private function buildAppResponse(Manifest $manifest, string $appSecret, string $appId): string
+    private function buildAppResponse(Manifest $manifest, string $appSecret, string $shopId = null): string
     {
-        $shopId = $this->shopIdProvider->getShopId($appId);
+        if (!$shopId) {
+            $shopId = $this->shopIdProvider->getShopId();
+        }
 
         $proof = \hash_hmac('sha256', $shopId . $this->shopUrl . $manifest->getMetadata()->getName(), $manifest->getSetup()->getSecret());
 

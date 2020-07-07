@@ -6,11 +6,16 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\SaasConnect\Core\Content\App\Manifest\ModuleLoader;
+use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
+use Swag\SaasConnect\Test\SystemConfigTestBehaviour;
 
 class ModuleLoaderTest extends TestCase
 {
     use IntegrationTestBehaviour;
+    use SystemConfigTestBehaviour;
 
     /**
      * @var EntityRepositoryInterface
@@ -83,6 +88,22 @@ class ModuleLoaderTest extends TestCase
                 ],
             ],
         ], $loadedModules);
+    }
+
+    public function testLoadActionButtonsForViewRetunrsNothingIfAppUrlChangeWasDetected(): void
+    {
+        $this->registerModules();
+
+        /** @var SystemConfigService $systemConfigService */
+        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
+        $systemConfigService->set(ShopIdProvider::SHOP_ID_SYSTEM_CONFIG_KEY, [
+            'app_url' => 'https://test.com',
+            'value' => Uuid::randomHex(),
+        ]);
+
+        $loadedModules = $this->moduleLoader->loadModules($this->context);
+
+        static::assertEquals([], $loadedModules);
     }
 
     private function registerModules(): void

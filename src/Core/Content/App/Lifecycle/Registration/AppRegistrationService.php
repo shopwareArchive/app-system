@@ -10,6 +10,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
 use Swag\SaasConnect\Core\Content\App\Exception\AppRegistrationException;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
+use Swag\SaasConnect\Core\Framework\ShopId\AppUrlChangeDetectedException;
 use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 
 class AppRegistrationService
@@ -59,7 +60,7 @@ class AppRegistrationService
             return;
         }
 
-        $appResponse = $this->registerWithApp($manifest, $id);
+        $appResponse = $this->registerWithApp($manifest);
 
         $secret = $appResponse['secret'];
         $confirmationUrl = $appResponse['confirmation_url'];
@@ -72,9 +73,9 @@ class AppRegistrationService
     /**
      * @return array<string,string>
      */
-    private function registerWithApp(Manifest $manifest, string $appId): array
+    private function registerWithApp(Manifest $manifest): array
     {
-        $handshake = $this->handshakeFactory->create($manifest, $appId);
+        $handshake = $this->handshakeFactory->create($manifest);
 
         $request = $handshake->assembleRequest();
         $response = $this->httpClient->send($request);
@@ -132,12 +133,20 @@ class AppRegistrationService
     {
         $app = $this->getApp($id, $context);
 
+        try {
+            $shopId = $this->shopIdProvider->getShopId();
+        } catch (AppUrlChangeDetectedException $e) {
+            throw new AppRegistrationException(
+                'The app url changed. Please resolve how the apps should handle this change.'
+            );
+        }
+
         return [
             'apiKey' => $app->getIntegration()->getAccessKey(),
             'secretKey' => $secretAccessKey,
             'timestamp' => (string) (new \DateTime())->getTimestamp(),
             'shopUrl' => $this->shopUrl,
-            'shopId' => $this->shopIdProvider->getShopId($id),
+            'shopId' => $shopId,
         ];
     }
 

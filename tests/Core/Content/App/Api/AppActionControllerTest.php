@@ -108,7 +108,7 @@ class AppActionControllerTest extends TestCase
         $expectedSource = [
             'url' => getenv('APP_URL'),
             'appVersion' => $action->getApp()->getVersion(),
-            'shopId' => $shopIdProvider->getShopId($action->getAppId()),
+            'shopId' => $shopIdProvider->getShopId(),
         ];
         $expectedData = [
             'ids' => $ids,
