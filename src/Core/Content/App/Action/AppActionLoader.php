@@ -7,6 +7,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Swag\SaasConnect\Core\Content\App\Aggregate\ActionButton\ActionButtonEntity;
 use Swag\SaasConnect\Core\Content\App\Exception\ActionNotFoundException;
+use Swag\SaasConnect\Core\Framework\ShopId\AppUrlChangeDetectedException;
 use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 
 class AppActionLoader
@@ -39,13 +40,18 @@ class AppActionLoader
     public function loadAppAction(string $actionId, array $ids, Context $context): AppAction
     {
         $criteria = new Criteria([$actionId]);
-        $criteria->addAssociation('app');
         $criteria->addAssociation('app.integration');
 
         /** @var ActionButtonEntity | null $actionButton */
         $actionButton = $this->actionButtonRepo->search($criteria, $context)->first();
 
         if ($actionButton === null) {
+            throw new ActionNotFoundException();
+        }
+
+        try {
+            $shopId = $this->shopIdProvider->getShopId();
+        } catch (AppUrlChangeDetectedException $e) {
             throw new ActionNotFoundException();
         }
 
@@ -60,7 +66,7 @@ class AppActionLoader
             $actionButton->getAction(),
             $ids,
             $secret,
-            $this->shopIdProvider->getShopId($actionButton->getAppId())
+            $shopId
         );
     }
 }

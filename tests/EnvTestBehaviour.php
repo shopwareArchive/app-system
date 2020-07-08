@@ -1,0 +1,32 @@
+<?php declare(strict_types=1);
+
+namespace Swag\SaasConnect\Test;
+
+trait EnvTestBehaviour
+{
+    private $originalEnvVars = [];
+
+    public function setEnvVars(array $envVars): void
+    {
+        foreach ($envVars as $envVar => $value) {
+            if (!array_key_exists($envVar, $this->originalEnvVars)) {
+                $this->originalEnvVars[$envVar] = getenv($envVar);
+            }
+            putenv($envVar . '=' . $value);
+        }
+    }
+
+    /**
+     * @after
+     */
+    public function resetEnvVars(): void
+    {
+        if ($this->originalEnvVars) {
+            foreach ($this->originalEnvVars as $envVar => $value) {
+                putenv($envVar . '=' . $value);
+            }
+
+            $this->originalEnvVars = [];
+        }
+    }
+}

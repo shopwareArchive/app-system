@@ -25,6 +25,7 @@ use Shopware\Core\Framework\Event\NestedEventCollection;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppDeletedEvent;
 use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 use Swag\SaasConnect\Core\Framework\Webhook\BusinessEventEncoder;
@@ -342,7 +343,7 @@ class WebhookDispatcherTest extends TestCase
             'source' => [
                 'url' => $this->shopUrl,
                 'appVersion' => '0.0.1',
-                'shopId' => $this->shopIdProvider->getShopId($appId),
+                'shopId' => $this->shopIdProvider->getShopId(),
             ],
         ], json_decode($body, true));
 
@@ -476,7 +477,7 @@ class WebhookDispatcherTest extends TestCase
             'source' => [
                 'url' => $this->shopUrl,
                 'appVersion' => '0.0.1',
-                'shopId' => $this->shopIdProvider->getShopId($appId),
+                'shopId' => $this->shopIdProvider->getShopId(),
             ],
         ], $data);
 
@@ -484,6 +485,74 @@ class WebhookDispatcherTest extends TestCase
             hash_hmac('sha256', $body, 's3cr3t'),
             $request->getHeaderLine('shopware-shop-signature')
         );
+    }
+
+    public function testDoesNotDispatchBusinessEventIfAppUrlChangeWasDetected(): void
+    {
+        $appId = Uuid::randomHex();
+        $aclRoleId = Uuid::randomHex();
+        $appRepository = $this->getContainer()->get('saas_app.repository');
+        $appRepository->create([[
+            'id' => $appId,
+            'name' => 'SwagApp',
+            'path' => __DIR__ . '/Manifest/_fixtures/test',
+            'version' => '0.0.1',
+            'label' => 'test',
+            'accessToken' => 'test',
+            'appSecret' => 's3cr3t',
+            'integration' => [
+                'label' => 'test',
+                'writeAccess' => false,
+                'accessKey' => 'api access key',
+                'secretAccessKey' => 'test',
+            ],
+            'aclRole' => [
+                'id' => $aclRoleId,
+                'name' => 'SwagApp',
+            ],
+            'webhooks' => [
+                [
+                    'name' => 'hook1',
+                    'eventName' => CustomerLoginEvent::EVENT_NAME,
+                    'url' => 'https://test.com',
+                ],
+            ],
+        ]], Context::createDefaultContext());
+
+        /** @var Connection $connection */
+        $connection = $this->getContainer()->get(Connection::class);
+        $connection->executeUpdate('
+            INSERT INTO `acl_resource` (`resource`, `privilege`, `acl_role_id`, `created_at`)
+            VALUES ("customer", "list", :aclResourceId, NOW())
+        ', ['aclResourceId' => Uuid::fromHexToBytes($aclRoleId)]);
+
+        /** @var SystemConfigService $systemConfigService */
+        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
+        $systemConfigService->set(ShopIdProvider::SHOP_ID_SYSTEM_CONFIG_KEY, [
+            'app_url' => 'https://test.com',
+            'value' => Uuid::randomHex(),
+        ]);
+
+        $event = new CustomerLoginEvent(
+            $this->getContainer()->get(SalesChannelContextFactory::class)->create(Uuid::randomHex(), Defaults::SALES_CHANNEL),
+            (new CustomerEntity())->assign(['firstName' => 'first', 'lastName' => 'last']),
+            'testToken'
+        );
+
+        $clientMock = $this->createMock(Client::class);
+        $clientMock->expects(static::never())
+            ->method('sendAsync');
+
+        $webhookDispatcher = new WebhookDispatcher(
+            $this->getContainer()->get('event_dispatcher'),
+            $this->getContainer()->get(Connection::class),
+            $clientMock,
+            $this->getContainer()->get(BusinessEventEncoder::class),
+            $this->shopUrl,
+            $this->getContainer()
+        );
+
+        $webhookDispatcher->dispatch($event);
     }
 
     public function testDoesNotDispatchEntityWrittenEventIfAppHasNotPermission(): void
@@ -608,7 +677,7 @@ class WebhookDispatcherTest extends TestCase
             'source' => [
                 'url' => $this->shopUrl,
                 'appVersion' => '0.0.1',
-                'shopId' => $this->shopIdProvider->getShopId($appId),
+                'shopId' => $this->shopIdProvider->getShopId(),
             ],
         ], $data);
 
@@ -727,7 +796,7 @@ class WebhookDispatcherTest extends TestCase
             'source' => [
                 'url' => $this->shopUrl,
                 'appVersion' => '0.0.1',
-                'shopId' => $this->shopIdProvider->getShopId($appId),
+                'shopId' => $this->shopIdProvider->getShopId(),
             ],
         ], $data);
 

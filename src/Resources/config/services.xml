@@ -219,18 +219,7 @@
         </service>
 
         <service id="Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider" public="true">
-            <argument type="tagged" tag="shopware.saas.shop_id_provider"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-        </service>
-
-        <service id="Swag\SaasConnect\Core\Framework\ShopId\SbpAccountIssuedShopIdProvider">
-            <!--should be the first as it is the default-->
-            <tag name="shopware.saas.shop_id_provider" priority="100"/>
-        </service>
-
-        <service id="Swag\SaasConnect\Core\Framework\ShopId\FallbackShopIdProvider">
-            <!--should be the last as it is only a fallback-->
-            <tag name="shopware.saas.shop_id_provider" priority="-100"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\System\Snippet\File\AppSnippetFileLoader" decorates="Shopware\Core\System\Snippet\Files\SnippetFileLoader" decoration-on-invalid="ignore">
