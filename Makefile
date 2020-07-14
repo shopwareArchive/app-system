@@ -2,6 +2,7 @@
 USER_ID := $(shell id -u)
 GROUP_ID := $(shell id -g)
 TOOLS_BIN := dev-ops/tools/vendor/bin
+NODE_MODULES_ADMIN := src/Resources/app/administration/node_modules
 
 .DEFAULT_GOAL := help
 
@@ -67,17 +68,23 @@ init: ## activates the plugin and dumps test-db
 		&& ./psh.phar cache
 .PHONY: init
 
-administration-unit: ## run administration unit tests
+administration-unit: | administration-init ## run administration unit tests
 	npm --prefix src/Resources/app/administration run unit
 .PHONY: administration-unit
 
-administration-lint: ## run eslint for administration
+administration-lint: | administration-init ## run eslint for administration
 	npm --prefix src/Resources/app/administration run eslint
 .PHONY: administration-lint
 
-administration-fix: ## run eslint for administration
+administration-fix: | administration-init ## run eslint for administration
 	npm --prefix src/Resources/app/administration run eslint -- --fix
 .PHONY: administration-fix
+
+administration-init: | $(NODE_MODULES_ADMIN) ## install admin dependencies e.g. for tests
+.PHONY: administration-init
+
+$(NODE_MODULES_ADMIN):
+	npm --prefix src/Resources/app/administration install
 
 install-tools: | $(TOOLS_BIN) ## Installs connect dev tooling
 

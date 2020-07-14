@@ -19,13 +19,26 @@ export default {
 
     methods: {
         updateAppEntries() {
-            const myAppsEntryIndex = this.mainMenuEntries.findIndex((entry) => entry.id === 'sw-my-apps');
-            if (myAppsEntryIndex <= -1) {
+            const entryIndex = this.mainMenuEntries.findIndex((entry) => entry.id === 'sw-my-apps');
+
+            if (entryIndex < 0) {
                 return;
             }
 
-            this.mainMenuEntries[myAppsEntryIndex].children = this.appEntries;
-            this.mainMenuEntries[myAppsEntryIndex] = { ...this.mainMenuEntries[myAppsEntryIndex] };
+            const myAppsEntry = this.mainMenuEntries[entryIndex];
+            const newEntries = this.getNewEntries(myAppsEntry.children, this.appEntries);
+
+            myAppsEntry.children =  [...myAppsEntry.children, ...newEntries];
+
+            this.mainMenuEntries[entryIndex] = { ...myAppsEntry };
+        },
+
+        getNewEntries(actualNavigationEntries, appNavigationEntries) {
+            return appNavigationEntries.filter((appNavigationEntry) => {
+                return !actualNavigationEntries.some((actualEntry) => {
+                    return actualEntry.path === appNavigationEntry.path;
+                });
+            });
         },
     },
 };
