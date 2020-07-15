@@ -206,13 +206,6 @@ class AppActionControllerTest extends TestCase
                             'source' => 'https://test.com',
                             'name' => 'first-module',
                         ],
-                        [
-                            'label' => [
-                                'en-GB' => 'My second module',
-                            ],
-                            'source' => 'https://test.com/second',
-                            'name' => 'second-module',
-                        ],
                     ],
                 ],
             ],
@@ -226,13 +219,6 @@ class AppActionControllerTest extends TestCase
             '?' . $queryString,
             '',
             $result['modules'][0]['modules'][0]['source']
-        );
-
-        $queryString = parse_url($result['modules'][0]['modules'][1]['source'], PHP_URL_QUERY);
-        $result['modules'][0]['modules'][1]['source'] = \str_replace(
-            '?' . $queryString,
-            '',
-            $result['modules'][0]['modules'][1]['source']
         );
 
         return $result;

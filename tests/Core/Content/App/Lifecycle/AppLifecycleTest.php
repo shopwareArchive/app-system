@@ -397,7 +397,7 @@ class AppLifecycleTest extends TestCase
 
     private function assertDefaultModules(AppEntity $app): void
     {
-        static::assertCount(2, $app->getModules());
+        static::assertCount(1, $app->getModules());
 
         static::assertEquals([
             'label' => [
@@ -407,14 +407,6 @@ class AppLifecycleTest extends TestCase
             'source' => 'https://test.com',
             'name' => 'first-module',
         ], $app->getModules()[0]);
-
-        static::assertEquals([
-            'label' => [
-                'en-GB' => 'My second module',
-            ],
-            'source' => 'https://test.com/second',
-            'name' => 'second-module',
-        ], $app->getModules()[1]);
     }
 
     private function assertDefaultPrivileges(string $roleId): void
