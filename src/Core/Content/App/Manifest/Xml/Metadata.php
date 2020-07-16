@@ -30,7 +30,7 @@ class Metadata extends XmlElement
     protected $copyright;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $license;
 
@@ -43,6 +43,11 @@ class Metadata extends XmlElement
      * @var string|null
      */
     protected $icon;
+
+    /**
+     * @var string|null
+     */
+    protected $privacy;
 
     /**
      * @param array<string, string|array<string, string>> $data
@@ -90,7 +95,7 @@ class Metadata extends XmlElement
         return $this->copyright;
     }
 
-    public function getLicense(): string
+    public function getLicense(): ?string
     {
         return $this->license;
     }
@@ -103,6 +108,11 @@ class Metadata extends XmlElement
     public function getIcon(): ?string
     {
         return $this->icon;
+    }
+
+    public function getPrivacy(): ?string
+    {
+        return $this->privacy;
     }
 
     /**
