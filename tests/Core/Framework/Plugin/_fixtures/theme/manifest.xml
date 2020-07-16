@@ -37,9 +37,6 @@
             <label>My first own module</label>
             <label lang="de-DE">Mein erstes eigenes Modul</label>
         </module>
-        <module name="second-module" source="https://test.com/second">
-            <label>My second module</label>
-        </module>
     </admin>
     <permissions>
         <create>product</create>

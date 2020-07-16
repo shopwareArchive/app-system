@@ -104,10 +104,10 @@
         </xs:all>
     </xs:complexType>
     <xs:complexType name="admin">
-        <xs:choice maxOccurs="unbounded">
+        <xs:sequence>
             <xs:element name="action-button" maxOccurs="unbounded" minOccurs="0" type="action-button"/>
-            <xs:element name="module" maxOccurs="unbounded" minOccurs="0" type="module"/>
-        </xs:choice>
+            <xs:element name="module" minOccurs="0" type="module"/>
+        </xs:sequence>
     </xs:complexType>
     <xs:complexType name="permissions">
         <xs:choice maxOccurs="unbounded">

@@ -15,7 +15,7 @@ class AdminTest extends TestCase
 
         static::assertNotNull($manifest->getAdmin());
         static::assertCount(2, $manifest->getAdmin()->getActionButtons());
-        static::assertCount(2, $manifest->getAdmin()->getModules());
+        static::assertCount(1, $manifest->getAdmin()->getModules());
 
         /** @var ActionButton $firstActionButton */
         $firstActionButton = $manifest->getAdmin()->getActionButtons()[0];
@@ -48,13 +48,5 @@ class AdminTest extends TestCase
             'en-GB' => 'My first own module',
             'de-DE' => 'Mein erstes eigenes Modul',
         ], $firstModule->getLabel());
-
-        /** @var Module $secondModule */
-        $secondModule = $manifest->getAdmin()->getModules()[1];
-        static::assertEquals('https://test.com/second', $secondModule->getSource());
-        static::assertEquals('second-module', $secondModule->getName());
-        static::assertEquals([
-            'en-GB' => 'My second module',
-        ], $secondModule->getLabel());
     }
 }
