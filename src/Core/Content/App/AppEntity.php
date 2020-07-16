@@ -48,6 +48,11 @@ class AppEntity extends Entity
     protected $license;
 
     /**
+     * @var string|null
+     */
+    protected $privacy;
+
+    /**
      * @var string
      */
     protected $version;
@@ -203,6 +208,16 @@ class AppEntity extends Entity
     public function setLicense(?string $license): void
     {
         $this->license = $license;
+    }
+
+    public function getPrivacy(): ?string
+    {
+        return $this->privacy;
+    }
+
+    public function setPrivacy(?string $privacy): void
+    {
+        $this->privacy = $privacy;
     }
 
     public function getVersion(): string

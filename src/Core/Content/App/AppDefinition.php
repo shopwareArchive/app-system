@@ -59,6 +59,7 @@ class AppDefinition extends EntityDefinition
             new StringField('author', 'author'),
             new StringField('copyright', 'copyright'),
             new StringField('license', 'license'),
+            new StringField('privacy', 'privacy'),
             (new StringField('version', 'version'))->addFlags(new Required()),
             (new BlobField('icon', 'iconRaw'))->addFlags(
                 new ReadProtected(SalesChannelApiSource::class,

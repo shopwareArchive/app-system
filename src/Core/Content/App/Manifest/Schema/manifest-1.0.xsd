@@ -60,7 +60,7 @@
                 <xs:element name="webhooks" type="webhooks" minOccurs="0">
                     <xs:annotation>
                         <xs:documentation xml:lang="en">
-                            Register webhooks your app wants to receive..
+                            Register webhooks your app wants to receive.
                         </xs:documentation>
                     </xs:annotation>
                     <xs:unique name="uniqueWebhookName">
@@ -81,6 +81,13 @@
             <xs:element type="xs:string" name="version"/>
             <xs:element type="xs:string" name="icon" minOccurs="0"/>
             <xs:element type="xs:string" name="license" minOccurs="0"/>
+            <xs:element type="xs:anyURI" name="privacy" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Link to your privacy policy.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="setup">
