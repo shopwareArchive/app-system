@@ -3,6 +3,7 @@
 namespace Swag\SaasConnect\Test\Core\Framework\Routing;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Api\Acl\AclWriteValidator;
 use Shopware\Core\Framework\Api\Util\AccessKeyHelper;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -32,8 +33,9 @@ class ApiRequestContextResolverDecoratorTest extends TestCase
         $this->authorizeBrowserWithIntegrationByAppName($this->getBrowser(), 'SwagApp');
 
         $browser->request('GET', '/api/v' . PlatformRequest::API_VERSION . '/product');
+        $response = $browser->getResponse();
 
-        static::assertEquals(200, $browser->getResponse()->getStatusCode());
+        static::assertEquals(200, $response->getStatusCode(), $response->getContent());
     }
 
     public function testCantReadWithoutPermission(): void
@@ -78,8 +80,16 @@ class ApiRequestContextResolverDecoratorTest extends TestCase
             [],
             \json_encode($this->getProductData($productId, $context))
         );
+        $response = $browser->getResponse();
 
-        static::assertEquals(403, $browser->getResponse()->getStatusCode());
+        $shopwareVersion = $this->getContainer()->getParameter('kernel.shopware_version');
+        if (version_compare($shopwareVersion, '6.3.0.0', '<')) {
+            static::assertEquals(403, $response->getStatusCode(), $response->getContent());
+        } else {
+            static::assertEquals(400, $response->getStatusCode(), $response->getContent());
+            $data = json_decode($response->getContent(), true);
+            static::assertEquals(AclWriteValidator::VIOLATION_NO_PERMISSION, $data['errors'][0]['code']);
+        }
     }
 
     public function testCanWriteWithPermissionsSet(): void

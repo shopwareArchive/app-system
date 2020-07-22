@@ -32,29 +32,39 @@ class EventWrapperTest extends TestCase
         $listenerCalled = false;
         $insertListener = function (HookableEntityWrittenEvent $event) use (&$listenerCalled, $id): void {
             static::assertEquals('product.written', $event->getName());
+
+            $payload = $event->getWebhookPayload();
+            $actualUpdatedFields = $payload[0]['updatedFields'];
+            unset($payload[0]['updatedFields']);
+
             static::assertEquals([[
                 'entity' => 'product',
                 'operation' => 'insert',
                 'primaryKey' => $id,
-                'updatedFields' => [
-                    'versionId',
-                    'id',
-                    'parentVersionId',
-                    'manufacturerId',
-                    'productManufacturerVersionId',
-                    'taxId',
-                    'stock',
-                    'price',
-                    'productNumber',
-                    'isCloseout',
-                    'purchaseSteps',
-                    'minPurchase',
-                    'shippingFree',
-                    'restockTime',
-                    'createdAt',
-                    'name',
-                ],
-            ]], $event->getWebhookPayload());
+            ]], $payload);
+
+            $expectedUpdatedFields = [
+                'versionId',
+                'id',
+                'parentVersionId',
+                'manufacturerId',
+                'productManufacturerVersionId',
+                'taxId',
+                'stock',
+                'price',
+                'productNumber',
+                'isCloseout',
+                'purchaseSteps',
+                'minPurchase',
+                'shippingFree',
+                'restockTime',
+                'createdAt',
+                'name',
+            ];
+            sort($actualUpdatedFields);
+            sort($expectedUpdatedFields);
+
+            static::assertEquals($expectedUpdatedFields, $actualUpdatedFields);
 
             $listenerCalled = true;
         };
@@ -84,18 +94,28 @@ class EventWrapperTest extends TestCase
         $listenerCalled = false;
         $updateListener = function (HookableEntityWrittenEvent $event) use (&$listenerCalled, $id): void {
             static::assertEquals('product.written', $event->getName());
+
+            $payload = $event->getWebhookPayload();
+            $actualUpdatedFields = $payload[0]['updatedFields'];
+            unset($payload[0]['updatedFields']);
+
             static::assertEquals([[
                 'entity' => 'product',
                 'operation' => 'update',
                 'primaryKey' => $id,
-                'updatedFields' => [
-                    'stock',
-                    'price',
-                    'updatedAt',
-                    'id',
-                    'versionId',
-                ],
-            ]], $event->getWebhookPayload());
+            ]], $payload);
+
+            $expectedUpdatedFields = [
+                'stock',
+                'price',
+                'updatedAt',
+                'id',
+                'versionId',
+            ];
+            sort($actualUpdatedFields);
+            sort($expectedUpdatedFields);
+
+            static::assertEquals($expectedUpdatedFields, $actualUpdatedFields);
 
             $listenerCalled = true;
         };

@@ -5,9 +5,10 @@ namespace Swag\SaasConnect\Core\Content\App\Lifecycle\Persister;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
+use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Permissions;
+use Swag\SaasConnect\Core\Framework\Api\Acl\AclPrivilegeCollection;
 
-class PermissionPersister
+class PermissionGateway62 implements PermissionGatewayStrategy
 {
     /**
      * @var Connection
@@ -28,9 +29,8 @@ class PermissionPersister
         $this->privilegeDependence = $privilegeDependence;
     }
 
-    public function updatePrivileges(Manifest $manifest, string $roleId): void
+    public function updatePrivileges(?Permissions $permissions, string $roleId): void
     {
-        $permissions = $manifest->getPermissions();
         $toBeCreated = $this->generatePrivileges($permissions ? $permissions->getPermissions() : []);
 
         $toBeDeleted = $this->getExistingPrivileges($roleId);
@@ -48,6 +48,18 @@ class PermissionPersister
 
         $this->addPrivileges($toBeCreated, $roleId);
         $this->deleteExistingPrivileges($toBeDeleted);
+    }
+
+    public function fetchPrivileges(string $roleId): AclPrivilegeCollection
+    {
+        $privileges = $this->connection->executeQuery(
+            'SELECT CONCAT(`resource`, ":", `privilege`)
+            FROM `acl_resource`
+            WHERE `acl_role_id` = :roleId',
+            ['roleId' => $roleId]
+        )->fetchAll(FetchMode::COLUMN);
+
+        return new AclPrivilegeCollection($privileges);
     }
 
     /**

@@ -23,6 +23,14 @@ class Permissions extends XmlElement
     }
 
     /**
+     * @param array<string, array<string>> $permissions permissions as array indexed by resource
+     */
+    public static function fromArray(array $permissions): self
+    {
+        return new self($permissions);
+    }
+
+    /**
      * @return array<string, array<string>>
      */
     public function getPermissions(): array

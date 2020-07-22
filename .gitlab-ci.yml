@@ -2,8 +2,9 @@ variables:
     MYSQL_ROOT_PASSWORD: app
     WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/development/public
     REPOSITORY_HOST: "gitlab.shopware.com:5005"
-#    ToDo: change back to 6.2 branch, once snippet loading fix is merged back
-    PLATFORM_BRANCH: "6.2.3"
+#    Default platform branch used for static analysis e.g. overwritten by unit test steps
+    PLATFORM_BRANCH: "6.2"
+    DEVELOPMENT_BRANCH: "6.2"
     IMAGE_NAME: "${REPOSITORY_HOST}/shopware-cloud/connect/php-static-analysis"
 
 stages:
@@ -22,7 +23,7 @@ cache:
     image: shopware/development:latest
     before_script:
         - zip -rq plugin.zip .
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git --branch $PLATFORM_BRANCH
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git --branch $DEVELOPMENT_BRANCH
         - rm -rf development/platform
         - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch $PLATFORM_BRANCH
         - unzip -q plugin.zip -d development/custom/plugins/SaasConnect
@@ -38,6 +39,34 @@ cache:
         -   name: elastic/elasticsearch:7.1.1
             alias: elasticsearch
             command: [ "bin/elasticsearch", "-Expack.security.enabled=false", "-Ediscovery.type=single-node" ]
+
+.unit:
+    extends:
+        - .sw6_base
+        - .sw6_base_services
+    script:
+        - ./psh.phar init
+        - ./psh.phar storefront:install-dependencies
+        - ./psh.phar storefront:build
+        - composer install -d custom/plugins/SaasConnect
+        - composer dump-autoload -d custom/plugins/SaasConnect
+        - php bin/console plugin:install --activate SaasConnect
+        - ./psh.phar init-test-databases
+        - php -d pcov.enabled=1 -d pcov.directory=$CI_PROJECT_DIR
+            vendor/bin/phpunit
+            --configuration custom/plugins/SaasConnect/phpunit.xml.dist
+            --log-junit build/artifacts/phpunit.junit.xml
+            --colors=never
+            --coverage-clover build/artifacts/phpunit.clover.xml
+            --coverage-html build/artifacts/phpunit-coverage-html
+            --coverage-text
+
+    coverage: '/^\s*Lines:\s*(\d+(?:\.\d+)?%)/'
+    artifacts:
+        paths:
+            - development/build/artifacts/
+        reports:
+            junit: development/build/artifacts/phpunit.junit.xml
 
 Build-Analysis-Container:
     stage: Build
@@ -124,38 +153,29 @@ Eslint Administration:
         reports:
             junit: development/custom/plugins/SaasConnect/src/Resources/app/administration/eslint-administration.junit.xml
 
-Unit:
+Unit 6.2:
     stage: Unit
+    extends:
+        - .unit
     only:
         refs:
             - merge_requests
             - master
-    extends:
-        - .sw6_base
-        - .sw6_base_services
-    script:
-        - ./psh.phar init
-        - ./psh.phar storefront:install-dependencies
-        - ./psh.phar storefront:build
-        - composer install -d custom/plugins/SaasConnect
-        - composer dump-autoload -d custom/plugins/SaasConnect
-        - php bin/console plugin:install --activate SaasConnect
-        - ./psh.phar init-test-databases
-        - php -d pcov.enabled=1 -d pcov.directory=$CI_PROJECT_DIR
-            vendor/bin/phpunit
-            --configuration custom/plugins/SaasConnect/phpunit.xml.dist
-            --log-junit build/artifacts/phpunit.junit.xml
-            --colors=never
-            --coverage-clover build/artifacts/phpunit.clover.xml
-            --coverage-html build/artifacts/phpunit-coverage-html
-            --coverage-text
+    variables:
+        PLATFORM_BRANCH: "6.2"
+        DEVELOPMENT_BRANCH: "6.2"
 
-    coverage: '/^\s*Lines:\s*(\d+(?:\.\d+)?%)/'
-    artifacts:
-        paths:
-            - development/build/artifacts/
-        reports:
-            junit: development/build/artifacts/phpunit.junit.xml
+Unit 6.3:
+    stage: Unit
+    extends:
+        - .unit
+    only:
+        refs:
+            - merge_requests
+            - master
+    variables:
+        PLATFORM_BRANCH: "6.3.0.0"
+        DEVELOPMENT_BRANCH: "master"
 
 Jest (Administration):
     stage: Unit

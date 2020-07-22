@@ -27,6 +27,8 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppDeletedEvent;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionGatewayStrategy;
+use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Permissions;
 use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 use Swag\SaasConnect\Core\Framework\Webhook\BusinessEventEncoder;
 use Swag\SaasConnect\Core\Framework\Webhook\WebhookDispatcher;
@@ -157,37 +159,47 @@ class WebhookDispatcherTest extends TestCase
         static::assertEquals('POST', $request->getMethod());
         $body = $request->getBody()->getContents();
         static::assertJson($body);
+
+        $payload = json_decode($body, true);
+        $actualUpdatedFields = $payload['data']['payload'][0]['updatedFields'];
+        unset($payload['data']['payload'][0]['updatedFields']);
+
         static::assertEquals([
             'data' => [
                 'payload' => [[
                     'entity' => 'product',
                     'operation' => 'insert',
                     'primaryKey' => $id,
-                    'updatedFields' => [
-                        'versionId',
-                        'id',
-                        'parentVersionId',
-                        'manufacturerId',
-                        'productManufacturerVersionId',
-                        'taxId',
-                        'stock',
-                        'price',
-                        'productNumber',
-                        'isCloseout',
-                        'purchaseSteps',
-                        'minPurchase',
-                        'shippingFree',
-                        'restockTime',
-                        'createdAt',
-                        'name',
-                    ],
                 ]],
                 'event' => ProductEvents::PRODUCT_WRITTEN_EVENT,
             ],
             'source' => [
                 'url' => $this->shopUrl,
             ],
-        ], json_decode($body, true));
+        ], $payload);
+
+        $expectedUpdatedFields = [
+            'versionId',
+            'id',
+            'parentVersionId',
+            'manufacturerId',
+            'productManufacturerVersionId',
+            'taxId',
+            'stock',
+            'price',
+            'productNumber',
+            'isCloseout',
+            'purchaseSteps',
+            'minPurchase',
+            'shippingFree',
+            'restockTime',
+            'createdAt',
+            'name',
+        ];
+        sort($actualUpdatedFields);
+        sort($expectedUpdatedFields);
+
+        static::assertEquals($expectedUpdatedFields, $actualUpdatedFields);
 
         static::assertFalse($request->hasHeader('shopware-shop-signature'));
     }
@@ -209,7 +221,8 @@ class WebhookDispatcherTest extends TestCase
             $clientMock,
             $this->getContainer()->get(BusinessEventEncoder::class),
             $this->shopUrl,
-            $this->getContainer()
+            $this->getContainer(),
+            $this->getContainer()->get(PermissionGatewayStrategy::class)
         );
 
         $webhookDispatcher->dispatch($event);
@@ -243,7 +256,8 @@ class WebhookDispatcherTest extends TestCase
             $clientMock,
             $this->getContainer()->get(BusinessEventEncoder::class),
             $this->shopUrl,
-            $this->getContainer()
+            $this->getContainer(),
+            $this->getContainer()->get(PermissionGatewayStrategy::class)
         );
 
         $webhookDispatcher->dispatch($event);
@@ -261,7 +275,8 @@ class WebhookDispatcherTest extends TestCase
             $this->getContainer()->get(Client::class),
             $this->getContainer()->get(BusinessEventEncoder::class),
             $this->shopUrl,
-            $this->getContainer()
+            $this->getContainer(),
+            $this->getContainer()->get(PermissionGatewayStrategy::class)
         );
 
         $webhookDispatcher->addSubscriber(new MockSubscriber());
@@ -279,7 +294,8 @@ class WebhookDispatcherTest extends TestCase
             $this->getContainer()->get(Client::class),
             $this->getContainer()->get(BusinessEventEncoder::class),
             $this->shopUrl,
-            $this->getContainer()
+            $this->getContainer(),
+            $this->getContainer()->get(PermissionGatewayStrategy::class)
         );
 
         $webhookDispatcher->removeSubscriber(new MockSubscriber());
@@ -399,7 +415,8 @@ class WebhookDispatcherTest extends TestCase
             $clientMock,
             $this->getContainer()->get(BusinessEventEncoder::class),
             $this->shopUrl,
-            $this->getContainer()
+            $this->getContainer(),
+            $this->getContainer()->get(PermissionGatewayStrategy::class)
         );
 
         $webhookDispatcher->dispatch($event);
@@ -437,12 +454,13 @@ class WebhookDispatcherTest extends TestCase
             ],
         ]], Context::createDefaultContext());
 
-        /** @var Connection $connection */
-        $connection = $this->getContainer()->get(Connection::class);
-        $connection->executeUpdate('
-            INSERT INTO `acl_resource` (`resource`, `privilege`, `acl_role_id`, `created_at`)
-            VALUES ("customer", "list", :aclResourceId, NOW())
-        ', ['aclResourceId' => Uuid::fromHexToBytes($aclRoleId)]);
+        /** @var PermissionGatewayStrategy $permissionGateway */
+        $permissionGateway = $this->getContainer()->get(PermissionGatewayStrategy::class);
+        $permissions = Permissions::fromArray([
+            'customer' => ['read'],
+        ]);
+
+        $permissionGateway->updatePrivileges($permissions, $aclRoleId);
 
         $this->appServerMock->append(new Response(200));
 
@@ -519,12 +537,13 @@ class WebhookDispatcherTest extends TestCase
             ],
         ]], Context::createDefaultContext());
 
-        /** @var Connection $connection */
-        $connection = $this->getContainer()->get(Connection::class);
-        $connection->executeUpdate('
-            INSERT INTO `acl_resource` (`resource`, `privilege`, `acl_role_id`, `created_at`)
-            VALUES ("customer", "list", :aclResourceId, NOW())
-        ', ['aclResourceId' => Uuid::fromHexToBytes($aclRoleId)]);
+        /** @var PermissionGatewayStrategy $permissionGateway */
+        $permissionGateway = $this->getContainer()->get(PermissionGatewayStrategy::class);
+        $permissions = Permissions::fromArray([
+            'customer' => ['read'],
+        ]);
+
+        $permissionGateway->updatePrivileges($permissions, $aclRoleId);
 
         /** @var SystemConfigService $systemConfigService */
         $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
@@ -549,7 +568,8 @@ class WebhookDispatcherTest extends TestCase
             $clientMock,
             $this->getContainer()->get(BusinessEventEncoder::class),
             $this->shopUrl,
-            $this->getContainer()
+            $this->getContainer(),
+            $this->getContainer()->get(PermissionGatewayStrategy::class)
         );
 
         $webhookDispatcher->dispatch($event);
@@ -599,7 +619,8 @@ class WebhookDispatcherTest extends TestCase
             $clientMock,
             $this->getContainer()->get(BusinessEventEncoder::class),
             $this->shopUrl,
-            $this->getContainer()
+            $this->getContainer(),
+            $this->getContainer()->get(PermissionGatewayStrategy::class)
         );
 
         $webhookDispatcher->dispatch($event);
@@ -637,12 +658,13 @@ class WebhookDispatcherTest extends TestCase
             ],
         ]], Context::createDefaultContext());
 
-        /** @var Connection $connection */
-        $connection = $this->getContainer()->get(Connection::class);
-        $connection->executeUpdate('
-            INSERT INTO `acl_resource` (`resource`, `privilege`, `acl_role_id`, `created_at`)
-            VALUES ("product", "list", :aclResourceId, NOW())
-        ', ['aclResourceId' => Uuid::fromHexToBytes($aclRoleId)]);
+        /** @var PermissionGatewayStrategy $permissionGateway */
+        $permissionGateway = $this->getContainer()->get(PermissionGatewayStrategy::class);
+        $permissions = Permissions::fromArray([
+            'product' => ['read'],
+        ]);
+
+        $permissionGateway->updatePrivileges($permissions, $aclRoleId);
 
         $this->appServerMock->append(new Response(200));
 
@@ -732,7 +754,8 @@ class WebhookDispatcherTest extends TestCase
             $clientMock,
             $this->getContainer()->get(BusinessEventEncoder::class),
             $this->shopUrl,
-            $this->getContainer()
+            $this->getContainer(),
+            $this->getContainer()->get(PermissionGatewayStrategy::class)
         );
 
         $webhookDispatcher->dispatch($event);

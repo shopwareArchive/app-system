@@ -3,16 +3,14 @@
 namespace Swag\SaasConnect\Core\Framework\Webhook;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\FetchMode;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Request;
-use Shopware\Core\Framework\Api\Acl\Permission\AclPermission;
-use Shopware\Core\Framework\Api\Acl\Permission\AclPermissionCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Doctrine\FetchModeHelper;
 use Shopware\Core\Framework\Event\BusinessEvent;
 use Shopware\Core\Framework\Event\BusinessEventInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionGatewayStrategy;
 use Swag\SaasConnect\Core\Framework\ShopId\AppUrlChangeDetectedException;
 use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 use Swag\SaasConnect\Core\Framework\Webhook\EventWrapper\HookableBusinessEvent;
@@ -57,13 +55,19 @@ class WebhookDispatcher implements EventDispatcherInterface
      */
     private $container;
 
+    /**
+     * @var PermissionGatewayStrategy
+     */
+    private $permissionGateway;
+
     public function __construct(
         EventDispatcherInterface $dispatcher,
         Connection $connection,
         Client $guzzle,
         BusinessEventEncoder $eventEncoder,
         string $shopUrl,
-        ContainerInterface $container
+        ContainerInterface $container,
+        PermissionGatewayStrategy $permissionGateway
     ) {
         $this->dispatcher = $dispatcher;
         $this->connection = $connection;
@@ -73,6 +77,7 @@ class WebhookDispatcher implements EventDispatcherInterface
         // inject container, so we can later get the ShopIdProvider
         // ShopIdProvider can not be injected directly as it would lead to a circular reference
         $this->container = $container;
+        $this->permissionGateway = $permissionGateway;
     }
 
     /**
@@ -243,43 +248,15 @@ class WebhookDispatcher implements EventDispatcherInterface
         return $this->webhooks = FetchModeHelper::group($result);
     }
 
-    /**
-     * @return array<array<string, string>>
-     */
-    private function fetchPermissions(string $roleId): array
-    {
-        return $this->connection->executeQuery(
-            'SELECT `resource`, `privilege`
-            FROM `acl_resource`
-            WHERE `acl_role_id` = :roleId',
-            ['roleId' => $roleId]
-        )->fetchAll(FetchMode::ASSOCIATIVE);
-    }
-
     private function isEventDispatchingAllowed(array $webhookConfig, Hookable $event): bool
     {
-        $permissions = $this->getPermissions($webhookConfig['acl_role_id']);
+        $permissions = $this->permissionGateway->fetchPrivileges($webhookConfig['acl_role_id']);
 
         if (!$event->isAllowed(Uuid::fromBytesToHex($webhookConfig['app_id']), $permissions)) {
             return false;
         }
 
         return true;
-    }
-
-    /**
-     * @param string $aclRoleId in binary
-     */
-    private function getPermissions(string $aclRoleId): AclPermissionCollection
-    {
-        $permissions = new AclPermissionCollection();
-
-        foreach ($this->fetchPermissions($aclRoleId) as $permission) {
-            $permission = new AclPermission($permission['resource'], $permission['privilege']);
-            $permissions->add($permission);
-        }
-
-        return $permissions;
     }
 
     private function getShopIdProvider(): ShopIdProvider

@@ -2,7 +2,6 @@
 
 namespace Swag\SaasConnect\Test\Core\Content\App\Lifecycle\Registration;
 
-use Doctrine\DBAL\Connection;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
@@ -15,10 +14,12 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
 use Swag\SaasConnect\Core\Content\App\Exception\AppRegistrationException;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionGatewayStrategy;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\AppRegistrationService;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\HandshakeFactory;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\PrivateHandshake;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
+use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Permissions;
 use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 use Swag\SaasConnect\Test\GuzzleTestClientBehaviour;
 use Swag\SaasConnect\Test\TestAppServer;
@@ -208,12 +209,13 @@ class AppRegistrationServiceTest extends TestCase
             ],
         ]], Context::createDefaultContext());
 
-        /** @var Connection $connection */
-        $connection = $this->getContainer()->get(Connection::class);
-        $connection->executeUpdate('
-            INSERT INTO `acl_resource` (`resource`, `privilege`, `acl_role_id`, `created_at`)
-            VALUES ("test", "list", UNHEX(:roleId), NOW()), ("product", "detail", UNHEX(:roleId), NOW())
-        ', ['roleId' => $roleId]);
+        /** @var PermissionGatewayStrategy $permissionGateway */
+        $permissionGateway = $this->getContainer()->get(PermissionGatewayStrategy::class);
+        $permissions = Permissions::fromArray([
+            'product' => ['update'],
+        ]);
+
+        $permissionGateway->updatePrivileges($permissions, $roleId);
     }
 
     private function buildAppResponse(Manifest $manifest, string $appSecret, string $shopId = null): string

@@ -5,13 +5,11 @@ namespace Swag\SaasConnect\Test\Core\Framework\Webhook\EventWrapper;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Customer\CustomerDefinition;
 use Shopware\Core\Content\Product\ProductDefinition;
-use Shopware\Core\Framework\Api\Acl\Permission\AclPermission;
-use Shopware\Core\Framework\Api\Acl\Permission\AclPermissionCollection;
-use Shopware\Core\Framework\Api\Acl\Resource\AclResourceDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityWriteResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\SaasConnect\Core\Framework\Api\Acl\AclPrivilegeCollection;
 use Swag\SaasConnect\Core\Framework\Webhook\EventWrapper\HookableEntityWrittenEvent;
 
 class HookableEntityWrittenEventTest extends TestCase
@@ -37,19 +35,19 @@ class HookableEntityWrittenEventTest extends TestCase
         $entityId = Uuid::randomHex();
         $event = new HookableEntityWrittenEvent($this->getEntityWrittenEvent($entityId));
 
-        $allowedPermissions = new AclPermissionCollection();
-        $allowedPermissions->add(
-            new AclPermission(ProductDefinition::ENTITY_NAME, AclResourceDefinition::PRIVILEGE_LIST)
-        );
+        $allowedPermissions = new AclPrivilegeCollection([
+            ProductDefinition::ENTITY_NAME . ':' . AclPrivilegeCollection::PRIVILEGE_LIST,
+            ProductDefinition::ENTITY_NAME . ':' . AclPrivilegeCollection::PRIVILEGE_READ,
+        ]);
         static::assertTrue($event->isAllowed(
             Uuid::randomHex(),
             $allowedPermissions
         ));
 
-        $notAllowedPermissions = new AclPermissionCollection();
-        $notAllowedPermissions->add(
-            new AclPermission(CustomerDefinition::ENTITY_NAME, AclResourceDefinition::PRIVILEGE_LIST)
-        );
+        $notAllowedPermissions = new AclPrivilegeCollection([
+            CustomerDefinition::ENTITY_NAME . ':' . AclPrivilegeCollection::PRIVILEGE_LIST,
+            CustomerDefinition::ENTITY_NAME . ':' . AclPrivilegeCollection::PRIVILEGE_READ,
+        ]);
         static::assertFalse($event->isAllowed(
             Uuid::randomHex(),
             $notAllowedPermissions

@@ -3,12 +3,13 @@
 namespace Swag\SaasConnect\Core\Framework\Routing;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\FetchMode;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\RequestContextResolverInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\PlatformRequest;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionGatewayStrategy;
+use Swag\SaasConnect\Core\Framework\Api\Acl\AclPrivilegeCollection;
 use Symfony\Component\HttpFoundation\Request;
 
 class ApiRequestContextResolverDecorator implements RequestContextResolverInterface
@@ -23,10 +24,26 @@ class ApiRequestContextResolverDecorator implements RequestContextResolverInterf
      */
     private $connection;
 
-    public function __construct(RequestContextResolverInterface $inner, Connection $connection)
-    {
+    /**
+     * @var PermissionGatewayStrategy
+     */
+    private $permissionGateway;
+
+    /**
+     * @var string
+     */
+    private $shopwareVersion;
+
+    public function __construct(
+        RequestContextResolverInterface $inner,
+        Connection $connection,
+        PermissionGatewayStrategy $permissionGateway,
+        string $shopwareVersion
+    ) {
         $this->inner = $inner;
         $this->connection = $connection;
+        $this->permissionGateway = $permissionGateway;
+        $this->shopwareVersion = $shopwareVersion;
     }
 
     public function resolve(Request $request): void
@@ -53,7 +70,9 @@ class ApiRequestContextResolverDecorator implements RequestContextResolverInterf
         }
 
         $source->setIsAdmin(false);
-        $source->addPermissions($this->fetchPermissions($roleId));
+        $permissions = $this->permissionGateway->fetchPrivileges($roleId);
+
+        $this->addPermissionsToSource($source, $permissions);
     }
 
     private function getRoleIdOfAppByIntegrationId(string $integrationId): ?string
@@ -64,19 +83,20 @@ class ApiRequestContextResolverDecorator implements RequestContextResolverInterf
             ['integrationId' => Uuid::fromHexToBytes($integrationId)]
         );
 
-        return $roleId ? Uuid::fromBytesToHex($roleId) : null;
+        return $roleId ? $roleId : null;
     }
 
     /**
-     * @return array<string, string>
+     * @psalm-suppress UndefinedMethod needed for compatibility issues
      */
-    private function fetchPermissions(string $roleId): array
+    private function addPermissionsToSource(AdminApiSource $source, AclPrivilegeCollection $permissions): void
     {
-        return $this->connection->executeQuery(
-            'SELECT `resource`, `privilege`
-            FROM `acl_resource`
-            WHERE `acl_role_id` = :roleId',
-            ['roleId' => Uuid::fromHexToBytes($roleId)]
-        )->fetchAll(FetchMode::ASSOCIATIVE);
+        if (version_compare($this->shopwareVersion, '6.3.0.0', '<')) {
+            /* @phpstan-ignore-next-line */
+            $source->addPermissions($permissions->as62Compatible());
+        } else {
+            /* @phpstan-ignore-next-line */
+            $source->setPermissions($permissions->as63Compatible());
+        }
     }
 }

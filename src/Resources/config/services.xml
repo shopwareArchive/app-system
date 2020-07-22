@@ -67,6 +67,7 @@
             <argument type="service" id="Swag\SaasConnect\Core\Framework\Webhook\BusinessEventEncoder"/>
             <argument type="string">%env(APP_URL)%</argument>
             <argument type="service" id="service_container"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionGatewayStrategy"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Framework\Webhook\WebhookCacheClearer">
@@ -104,7 +105,7 @@
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle">
             <argument type="service" id="saas_app.repository"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\ActionButtonPersister"/>
-            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionPersister"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionGatewayStrategy"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\CustomFieldPersister"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\WebhookPersister"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader"/>
@@ -140,9 +141,15 @@
             <argument type="service" id="saas_webhook.repository"/>
         </service>
 
-        <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionPersister">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
-            <argument>%acl_resource_privileges%</argument>
+        <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionGatewayStrategy">
+            <factory service="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionGatewayFactory"
+                     method="createPermissionGateway"
+            />
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionGatewayFactory">
+            <argument>%kernel.shopware_version%</argument>
+            <argument type="service" id="service_container"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader">
@@ -153,6 +160,8 @@
                  decorates="Shopware\Core\Framework\Routing\ApiRequestContextResolver">
             <argument type="service" id="Swag\SaasConnect\Core\Framework\Routing\ApiRequestContextResolverDecorator.inner"/>
             <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionGatewayStrategy"/>
+            <argument>%kernel.shopware_version%</argument>
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\Api\AppActionController" public="true">

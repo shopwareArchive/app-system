@@ -13,7 +13,7 @@ use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppInstalledEvent;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppUpdatedEvent;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\ActionButtonPersister;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\CustomFieldPersister;
-use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionPersister;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionGatewayStrategy;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\TemplatePersister;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\WebhookPersister;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\AppRegistrationService;
@@ -35,7 +35,7 @@ class AppLifecycle implements AppLifecycleInterface
     private $actionButtonPersister;
 
     /**
-     * @var PermissionPersister
+     * @var PermissionGatewayStrategy
      */
     private $permissionPersister;
 
@@ -82,7 +82,7 @@ class AppLifecycle implements AppLifecycleInterface
     public function __construct(
         EntityRepositoryInterface $appRepository,
         ActionButtonPersister $actionButtonPersister,
-        PermissionPersister $permissionPersister,
+        PermissionGatewayStrategy $permissionPersister,
         CustomFieldPersister $customFieldPersister,
         WebhookPersister $webhookPersister,
         AppLoaderInterface $appLoader,
@@ -168,7 +168,7 @@ class AppLifecycle implements AppLifecycleInterface
         $metadata['iconRaw'] = $this->appLoader->getIcon($manifest);
 
         $this->updateMetadata($metadata, $context);
-        $this->permissionPersister->updatePrivileges($manifest, $roleId);
+        $this->permissionPersister->updatePrivileges($manifest->getPermissions(), $roleId);
 
         if ($install && $manifest->getSetup()) {
             $this->registrationService->registerApp($manifest, $id, $secretAccessKey, $context);
