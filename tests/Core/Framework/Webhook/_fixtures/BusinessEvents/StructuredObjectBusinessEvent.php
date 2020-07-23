@@ -33,7 +33,7 @@ class StructuredObjectBusinessEvent implements BusinessEventInterface, BusinessE
             );
     }
 
-    public function getEncodeValues(): array
+    public function getEncodeValues(string $shopwareVersion): array
     {
         return [
             'inner' => [

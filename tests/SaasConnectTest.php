@@ -60,9 +60,9 @@ class SaasConnectTest extends TestCase
     public function testUninstallWithoutKeepUserData(): void
     {
         try {
-            $this->lifecycleService->uninstallPlugin($this->plugin, Context::createDefaultContext());
+            $this->lifecycleService->uninstallPlugin($this->plugin, Context::createDefaultContext(), false);
 
-            $tables = $this->connection->fetchAll('SHOW TABLES LIKE "swag%"');
+            $tables = $this->connection->fetchAll('SHOW TABLES LIKE "saas_%"');
 
             static::assertCount(0, $tables);
         } finally {

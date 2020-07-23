@@ -4,9 +4,6 @@ namespace Swag\SaasConnect\Test\Core\Framework\Webhook\EventWrapper;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Product\ProductDefinition;
-use Shopware\Core\Framework\Api\Acl\Permission\AclPermission;
-use Shopware\Core\Framework\Api\Acl\Permission\AclPermissionCollection;
-use Shopware\Core\Framework\Api\Acl\Resource\AclResourceDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -16,6 +13,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Tax\TaxCollection;
 use Shopware\Core\System\Tax\TaxDefinition;
 use Shopware\Core\System\Tax\TaxEntity;
+use Swag\SaasConnect\Core\Framework\Api\Acl\AclPrivilegeCollection;
 use Swag\SaasConnect\Core\Framework\Webhook\BusinessEventEncoder;
 use Swag\SaasConnect\Core\Framework\Webhook\EventWrapper\HookableBusinessEvent;
 use Swag\SaasConnect\Test\Core\Framework\Webhook\_fixtures\BusinessEvents\ArrayBusinessEvent;
@@ -40,7 +38,8 @@ class HookableBusinessEventTest extends TestCase
         );
 
         static::assertEquals($scalarEvent->getName(), $event->getName());
-        static::assertEquals($scalarEvent->getEncodeValues(), $event->getWebhookPayload());
+        $shopwareVersion = $this->getContainer()->getParameter('kernel.shopware_version');
+        static::assertEquals($scalarEvent->getEncodeValues($shopwareVersion), $event->getWebhookPayload());
     }
 
     /**
@@ -53,7 +52,7 @@ class HookableBusinessEventTest extends TestCase
             $this->getContainer()->get(BusinessEventEncoder::class)
         );
 
-        static::assertTrue($event->isAllowed(Uuid::randomHex(), new AclPermissionCollection()));
+        static::assertTrue($event->isAllowed(Uuid::randomHex(), new AclPrivilegeCollection()));
     }
 
     /**
@@ -66,16 +65,16 @@ class HookableBusinessEventTest extends TestCase
             $this->getContainer()->get(BusinessEventEncoder::class)
         );
 
-        $allowedPermissions = new AclPermissionCollection();
-        $allowedPermissions->add(
-            new AclPermission(TaxDefinition::ENTITY_NAME, AclResourceDefinition::PRIVILEGE_LIST)
-        );
+        $allowedPermissions = new AclPrivilegeCollection([
+            TaxDefinition::ENTITY_NAME . ':' . AclPrivilegeCollection::PRIVILEGE_LIST,
+            TaxDefinition::ENTITY_NAME . ':' . AclPrivilegeCollection::PRIVILEGE_READ,
+        ]);
         static::assertTrue($event->isAllowed(Uuid::randomHex(), $allowedPermissions));
 
-        $notAllowedPermissions = new AclPermissionCollection();
-        $notAllowedPermissions->add(
-            new AclPermission(ProductDefinition::ENTITY_NAME, AclResourceDefinition::PRIVILEGE_LIST)
-        );
+        $notAllowedPermissions = new AclPrivilegeCollection([
+            ProductDefinition::ENTITY_NAME . ':' . AclPrivilegeCollection::PRIVILEGE_LIST,
+            ProductDefinition::ENTITY_NAME . ':' . AclPrivilegeCollection::PRIVILEGE_READ,
+        ]);
         static::assertFalse($event->isAllowed(Uuid::randomHex(), $notAllowedPermissions));
     }
 

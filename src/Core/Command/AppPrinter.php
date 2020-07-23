@@ -2,20 +2,20 @@
 
 namespace Swag\SaasConnect\Core\Command;
 
-use Shopware\Core\Framework\Api\Acl\Resource\AclResourceDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Swag\SaasConnect\Core\Content\App\AppCollection;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
+use Swag\SaasConnect\Core\Framework\Api\Acl\AclPrivilegeCollection;
 
 class AppPrinter
 {
     private const PRIVILEGE_TO_HUMAN_READABLE = [
-        'read' => 'read',
-        AclResourceDefinition::PRIVILEGE_CREATE => 'write',
-        AclResourceDefinition::PRIVILEGE_UPDATE => 'write',
-        AclResourceDefinition::PRIVILEGE_DELETE => 'delete',
+        AclPrivilegeCollection::PRIVILEGE_READ => 'read',
+        AclPrivilegeCollection::PRIVILEGE_CREATE => 'write',
+        AclPrivilegeCollection::PRIVILEGE_UPDATE => 'write',
+        AclPrivilegeCollection::PRIVILEGE_DELETE => 'delete',
     ];
 
     /**

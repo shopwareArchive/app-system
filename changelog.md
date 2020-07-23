@@ -24,6 +24,7 @@ All notable changes to this project will be documented in this file.
 - Fixed bug that Actions for BusinessEvents weren't triggered
 - Added `license` field to meta information in the manifest file
 - Limited number of modules an app can ship to one
+- Added compatibility for Shopware 6.3
 
 ## 0.1.0
 

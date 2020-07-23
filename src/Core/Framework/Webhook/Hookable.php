@@ -2,7 +2,7 @@
 
 namespace Swag\SaasConnect\Core\Framework\Webhook;
 
-use Shopware\Core\Framework\Api\Acl\Permission\AclPermissionCollection;
+use Swag\SaasConnect\Core\Framework\Api\Acl\AclPrivilegeCollection;
 
 interface Hookable
 {
@@ -16,5 +16,5 @@ interface Hookable
     /**
      * returns if it is allowed to dispatch the event to given app with given permissions
      */
-    public function isAllowed(string $appId, AclPermissionCollection $permissions): bool;
+    public function isAllowed(string $appId, AclPrivilegeCollection $permissions): bool;
 }

@@ -2,10 +2,10 @@
 
 namespace Swag\SaasConnect\Core\Content\App\Lifecycle\Event;
 
-use Shopware\Core\Framework\Api\Acl\Permission\AclPermissionCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Event\ShopwareEvent;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
+use Swag\SaasConnect\Core\Framework\Api\Acl\AclPrivilegeCollection;
 use Swag\SaasConnect\Core\Framework\Webhook\Hookable;
 use Symfony\Contracts\EventDispatcher\Event;
 
@@ -68,7 +68,7 @@ class AppInstalledEvent extends Event implements ShopwareEvent, Hookable
     /**
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter
      */
-    public function isAllowed(string $appId, AclPermissionCollection $permissions): bool
+    public function isAllowed(string $appId, AclPrivilegeCollection $permissions): bool
     {
         return $appId === $this->getAppId();
     }

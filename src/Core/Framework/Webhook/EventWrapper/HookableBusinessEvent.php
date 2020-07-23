@@ -2,10 +2,9 @@
 
 namespace Swag\SaasConnect\Core\Framework\Webhook\EventWrapper;
 
-use Shopware\Core\Framework\Api\Acl\Permission\AclPermissionCollection;
-use Shopware\Core\Framework\Api\Acl\Resource\AclResourceDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\Event\BusinessEventInterface;
+use Swag\SaasConnect\Core\Framework\Api\Acl\AclPrivilegeCollection;
 use Swag\SaasConnect\Core\Framework\Webhook\BusinessEventEncoder;
 use Swag\SaasConnect\Core\Framework\Webhook\Hookable;
 
@@ -50,7 +49,7 @@ class HookableBusinessEvent implements Hookable
     /**
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter
      */
-    public function isAllowed(string $appId, AclPermissionCollection $permissions): bool
+    public function isAllowed(string $appId, AclPrivilegeCollection $permissions): bool
     {
         foreach ($this->businessEvent::getAvailableData()->toArray() as $dataType) {
             if (!$this->checkPermissionsForDataType($dataType, $permissions)) {
@@ -64,7 +63,7 @@ class HookableBusinessEvent implements Hookable
     /**
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint
      */
-    private function checkPermissionsForDataType(array $dataType, AclPermissionCollection $permissions): bool
+    private function checkPermissionsForDataType(array $dataType, AclPrivilegeCollection $permissions): bool
     {
         if ($dataType['type'] === 'object' && is_array($dataType['data']) && !empty($dataType['data'])) {
             foreach ($dataType['data'] as $nested) {
@@ -83,7 +82,8 @@ class HookableBusinessEvent implements Hookable
         if ($dataType['type'] === 'entity' || $dataType['type'] === 'collection') {
             /** @var EntityDefinition $definition */
             $definition = new $dataType['entityClass']();
-            if (!$permissions->isAllowed($definition->getEntityName(), AclResourceDefinition::PRIVILEGE_LIST)) {
+            if (!$permissions->isAllowed($definition->getEntityName(), AclPrivilegeCollection::PRIVILEGE_LIST)
+                && !$permissions->isAllowed($definition->getEntityName(), AclPrivilegeCollection::PRIVILEGE_READ)) {
                 return false;
             }
         }

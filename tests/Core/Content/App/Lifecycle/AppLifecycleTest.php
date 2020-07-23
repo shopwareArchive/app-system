@@ -2,10 +2,7 @@
 
 namespace Swag\SaasConnect\Test\Core\Content\App\Lifecycle;
 
-use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Framework\Api\Acl\Resource\AclResourceCollection;
-use Shopware\Core\Framework\Api\Acl\Resource\AclResourceEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -21,7 +18,9 @@ use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppDeletedEvent;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppInstalledEvent;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppUpdatedEvent;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Persister\PermissionGatewayStrategy;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
+use Swag\SaasConnect\Core\Content\App\Manifest\Xml\Permissions;
 use Swag\SaasConnect\Core\Framework\Template\TemplateEntity;
 use Swag\SaasConnect\Core\Framework\Webhook\WebhookEntity;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -211,12 +210,13 @@ class AppLifecycleTest extends TestCase
             ],
         ]], $this->context);
 
-        /** @var Connection $connection */
-        $connection = $this->getContainer()->get(Connection::class);
-        $connection->executeUpdate('
-            INSERT INTO `acl_resource` (`resource`, `privilege`, `acl_role_id`, `created_at`)
-            VALUES ("test", "list", UNHEX(:roleId), NOW()), ("product", "detail", UNHEX(:roleId), NOW())
-        ', ['roleId' => $roleId]);
+        /** @var PermissionGatewayStrategy $permissionGateway */
+        $permissionGateway = $this->getContainer()->get(PermissionGatewayStrategy::class);
+        $permissions = Permissions::fromArray([
+            'product' => ['update'],
+        ]);
+
+        $permissionGateway->updatePrivileges($permissions, $roleId);
 
         $app = [
             'id' => $id,
@@ -299,12 +299,13 @@ class AppLifecycleTest extends TestCase
             ],
         ]], $this->context);
 
-        /** @var Connection $connection */
-        $connection = $this->getContainer()->get(Connection::class);
-        $connection->executeUpdate('
-            INSERT INTO `acl_resource` (`resource`, `privilege`, `acl_role_id`, `created_at`)
-            VALUES ("test", "list", UNHEX(:roleId), NOW()), ("product", "detail", UNHEX(:roleId), NOW())
-        ', ['roleId' => $roleId]);
+        /** @var PermissionGatewayStrategy $permissionGateway */
+        $permissionGateway = $this->getContainer()->get(PermissionGatewayStrategy::class);
+        $permissions = Permissions::fromArray([
+            'product' => ['update'],
+        ]);
+
+        $permissionGateway->updatePrivileges($permissions, $roleId);
 
         $app = [
             'id' => $id,
@@ -411,46 +412,58 @@ class AppLifecycleTest extends TestCase
 
     private function assertDefaultPrivileges(string $roleId): void
     {
-        /** @var EntityRepositoryInterface $aclResourceRepository */
-        $aclResourceRepository = $this->getContainer()->get('acl_resource.repository');
+        /** @var PermissionGatewayStrategy $permissionGateway */
+        $permissionGateway = $this->getContainer()->get(PermissionGatewayStrategy::class);
+        $shopwareVersion = $this->getContainer()->getParameter('kernel.shopware_version');
 
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('aclRoleId', $roleId));
-        /** @var AclResourceCollection $privileges */
-        $privileges = $aclResourceRepository->search($criteria, $this->context)->getEntities();
+        $privileges = $permissionGateway->fetchPrivileges(Uuid::fromHexToBytes($roleId));
 
-        static::assertCount(16, $privileges);
-        $this->assertPrivilegesContains('list', 'product', $privileges);
-        $this->assertPrivilegesContains('detail', 'product', $privileges);
-        $this->assertPrivilegesContains('create', 'product', $privileges);
-        $this->assertPrivilegesContains('update', 'product', $privileges);
-        $this->assertPrivilegesContains('delete', 'product', $privileges);
+        if (version_compare($shopwareVersion, '6.3.0.0', '<')) {
+            static::assertEquals(16, $privileges->count());
+        } else {
+            static::assertEquals(12, $privileges->count());
+        }
 
-        $this->assertPrivilegesContains('list', 'category', $privileges);
-        $this->assertPrivilegesContains('delete', 'category', $privileges);
+        if (version_compare($shopwareVersion, '6.3.0.0', '<')) {
+            static::assertTrue($privileges->isAllowed('product', 'list'));
+            static::assertTrue($privileges->isAllowed('product', 'detail'));
+        } else {
+            static::assertTrue($privileges->isAllowed('product', 'read'));
+        }
+        static::assertTrue($privileges->isAllowed('product', 'create'));
+        static::assertTrue($privileges->isAllowed('product', 'update'));
+        static::assertTrue($privileges->isAllowed('product', 'delete'));
 
-        $this->assertPrivilegesContains('list', 'product_manufacturer', $privileges);
-        $this->assertPrivilegesContains('delete', 'product_manufacturer', $privileges);
-        $this->assertPrivilegesContains('create', 'product_manufacturer', $privileges);
-        $this->assertPrivilegesContains('detail', 'product_manufacturer', $privileges);
+        if (version_compare($shopwareVersion, '6.3.0.0', '<')) {
+            static::assertTrue($privileges->isAllowed('category', 'list'));
+        } else {
+            static::assertTrue($privileges->isAllowed('category', 'read'));
+        }
+        static::assertTrue($privileges->isAllowed('category', 'delete'));
 
-        $this->assertPrivilegesContains('list', 'tax', $privileges);
-        $this->assertPrivilegesContains('create', 'tax', $privileges);
-        $this->assertPrivilegesContains('detail', 'tax', $privileges);
+        if (version_compare($shopwareVersion, '6.3.0.0', '<')) {
+            static::assertTrue($privileges->isAllowed('product_manufacturer', 'list'));
+            static::assertTrue($privileges->isAllowed('product_manufacturer', 'detail'));
+        } else {
+            static::assertTrue($privileges->isAllowed('product_manufacturer', 'read'));
+        }
+        static::assertTrue($privileges->isAllowed('product_manufacturer', 'create'));
+        static::assertTrue($privileges->isAllowed('product_manufacturer', 'delete'));
 
-        $this->assertPrivilegesContains('list', 'language', $privileges);
-        $this->assertPrivilegesContains('detail', 'language', $privileges);
-    }
+        if (version_compare($shopwareVersion, '6.3.0.0', '<')) {
+            static::assertTrue($privileges->isAllowed('tax', 'list'));
+            static::assertTrue($privileges->isAllowed('tax', 'detail'));
+        } else {
+            static::assertTrue($privileges->isAllowed('tax', 'read'));
+        }
+        static::assertTrue($privileges->isAllowed('tax', 'create'));
 
-    private function assertPrivilegesContains(string $privilege, string $resource, AclResourceCollection $privileges): void
-    {
-        static::assertCount(
-            1,
-            $privileges->filter(function (AclResourceEntity $aclResource) use ($privilege, $resource): bool {
-                return $aclResource->getPrivilege() === $privilege && $aclResource->getResource() === $resource;
-            }),
-            sprintf('AclResourceCollection does not contain Privilege for "%s" for entity "%s"', $privilege, $resource)
-        );
+        if (version_compare($shopwareVersion, '6.3.0.0', '<')) {
+            static::assertTrue($privileges->isAllowed('language', 'list'));
+            static::assertTrue($privileges->isAllowed('language', 'detail'));
+        } else {
+            static::assertTrue($privileges->isAllowed('language', 'read'));
+        }
     }
 
     private function assertDefaultCustomFields(string $appId): void

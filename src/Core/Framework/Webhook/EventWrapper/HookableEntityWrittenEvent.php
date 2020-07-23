@@ -2,10 +2,9 @@
 
 namespace Swag\SaasConnect\Core\Framework\Webhook\EventWrapper;
 
-use Shopware\Core\Framework\Api\Acl\Permission\AclPermissionCollection;
-use Shopware\Core\Framework\Api\Acl\Resource\AclResourceDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityDeletedEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
+use Swag\SaasConnect\Core\Framework\Api\Acl\AclPrivilegeCollection;
 use Swag\SaasConnect\Core\Framework\Webhook\Hookable;
 
 class HookableEntityWrittenEvent implements Hookable
@@ -36,9 +35,10 @@ class HookableEntityWrittenEvent implements Hookable
     /**
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter
      */
-    public function isAllowed(string $appId, AclPermissionCollection $permissions): bool
+    public function isAllowed(string $appId, AclPrivilegeCollection $permissions): bool
     {
-        return $permissions->isAllowed($this->event->getEntityName(), AclResourceDefinition::PRIVILEGE_LIST);
+        return $permissions->isAllowed($this->event->getEntityName(), AclPrivilegeCollection::PRIVILEGE_LIST)
+            || $permissions->isAllowed($this->event->getEntityName(), AclPrivilegeCollection::PRIVILEGE_READ);
     }
 
     /**

@@ -4,6 +4,7 @@ parameters:
     bootstrapFiles:
         - %currentWorkingDirectory%/../../../vendor/autoload.php
     checkGenericClassInNonGenericObjectType: false
+    reportUnmatchedIgnoredErrors: false
     ignoreErrors:
         # Happens a lot for nullable props in DAL entities for associations
         - '#Cannot call method .*\|null\.$#'

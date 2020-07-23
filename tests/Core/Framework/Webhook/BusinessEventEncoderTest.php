@@ -41,7 +41,8 @@ class BusinessEventEncoderTest extends TestCase
      */
     public function testScalarEvents(BusinessEventInterface $event): void
     {
-        static::assertEquals($event->getEncodeValues(), $this->businessEventEncoder->encode($event));
+        $shopwareVersion = $this->getContainer()->getParameter('kernel.shopware_version');
+        static::assertEquals($event->getEncodeValues($shopwareVersion), $this->businessEventEncoder->encode($event));
     }
 
     public function getEvents(): array

@@ -38,7 +38,7 @@ class ScalarBusinessEvent implements BusinessEventInterface, BusinessEventEncode
             ->add('float', new ScalarValueType(ScalarValueType::TYPE_FLOAT));
     }
 
-    public function getEncodeValues(): array
+    public function getEncodeValues(string $shopwareVersion): array
     {
         return [
             'string' => 'string',

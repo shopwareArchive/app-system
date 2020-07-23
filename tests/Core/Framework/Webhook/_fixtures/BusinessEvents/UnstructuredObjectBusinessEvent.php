@@ -23,7 +23,7 @@ class UnstructuredObjectBusinessEvent implements BusinessEventInterface, Busines
             ->add('nested', new ObjectType());
     }
 
-    public function getEncodeValues(): array
+    public function getEncodeValues(string $shopwareVersion): array
     {
         return [
             'nested' => [

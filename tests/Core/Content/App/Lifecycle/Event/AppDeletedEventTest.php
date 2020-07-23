@@ -3,10 +3,10 @@
 namespace Swag\SaasConnect\Test\Core\Content\App\Lifecycle\Event;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Framework\Api\Acl\Permission\AclPermissionCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppDeletedEvent;
+use Swag\SaasConnect\Core\Framework\Api\Acl\AclPrivilegeCollection;
 
 class AppDeletedEventTest extends TestCase
 {
@@ -34,7 +34,7 @@ class AppDeletedEventTest extends TestCase
             $context
         );
 
-        static::assertTrue($event->isAllowed($appId, new AclPermissionCollection()));
-        static::assertFalse($event->isAllowed(Uuid::randomHex(), new AclPermissionCollection()));
+        static::assertTrue($event->isAllowed($appId, new AclPrivilegeCollection()));
+        static::assertFalse($event->isAllowed(Uuid::randomHex(), new AclPrivilegeCollection()));
     }
 }

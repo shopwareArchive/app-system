@@ -29,8 +29,21 @@ class NestedEntityBusinessEvent implements BusinessEventInterface, BusinessEvent
                 ->add('tax', new EntityType(TaxDefinition::class)));
     }
 
-    public function getEncodeValues(): array
+    public function getEncodeValues(string $shopwareVersion): array
     {
+        if (version_compare($shopwareVersion, '6.3.0.0', '<')) {
+            $createdAt = $this->tax->getCreatedAt()->format(DATE_ATOM);
+            $foreignKeys = [
+                'extensions' => [],
+            ];
+        } else {
+            $createdAt = $this->tax->getCreatedAt()->format(DATE_RFC3339_EXTENDED);
+            $foreignKeys = [
+                'extensions' => [],
+                'apiAlias' => null,
+            ];
+        }
+
         return [
             'object' => [
                 'tax' => [
@@ -42,12 +55,10 @@ class NestedEntityBusinessEvent implements BusinessEventInterface, BusinessEvent
                     'products' => null,
                     'customFields' => null,
                     'translated' => [],
-                    'createdAt' => $this->tax->getCreatedAt()->format(DATE_ATOM),
+                    'createdAt' => $createdAt,
                     'updatedAt' => null,
                     'extensions' => [
-                        'foreignKeys' => [
-                            'extensions' => [],
-                        ],
+                        'foreignKeys' => $foreignKeys,
                     ],
                     'apiAlias' => 'tax',
                 ],

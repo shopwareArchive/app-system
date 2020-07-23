@@ -29,11 +29,24 @@ class ArrayBusinessEvent implements BusinessEventInterface, BusinessEventEncoder
             ->add('taxes', new ArrayType(new EntityType(TaxDefinition::class)));
     }
 
-    public function getEncodeValues(): array
+    public function getEncodeValues(string $shopwareVersion): array
     {
         $taxes = [];
 
         foreach ($this->taxes as $tax) {
+            if (version_compare($shopwareVersion, '6.3.0.0', '<')) {
+                $createdAt = $tax->getCreatedAt()->format(DATE_ATOM);
+                $foreignKeys = [
+                    'extensions' => [],
+                ];
+            } else {
+                $createdAt = $tax->getCreatedAt()->format(DATE_RFC3339_EXTENDED);
+                $foreignKeys = [
+                    'extensions' => [],
+                    'apiAlias' => null,
+                ];
+            }
+
             $taxes[] = [
                 'id' => $tax->getId(),
                 '_uniqueIdentifier' => $tax->getId(),
@@ -43,12 +56,10 @@ class ArrayBusinessEvent implements BusinessEventInterface, BusinessEventEncoder
                 'products' => null,
                 'customFields' => null,
                 'translated' => [],
-                'createdAt' => $tax->getCreatedAt()->format(DATE_ATOM),
+                'createdAt' => $createdAt,
                 'updatedAt' => null,
                 'extensions' => [
-                    'foreignKeys' => [
-                        'extensions' => [],
-                    ],
+                    'foreignKeys' => $foreignKeys,
                 ],
                 'apiAlias' => 'tax',
             ];
