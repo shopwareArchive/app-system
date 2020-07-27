@@ -1,0 +1,39 @@
+title App registration workflow
+
+participant "Shopware Server" as Shop
+participant "App Manufacturer / App Server" as App
+participant Store
+
+group Sign registration request
+  group Store Upload
+      App -> Store: Upload app
+      App <-- Store: App Secret
+      Shop -> Store: Sign Payload
+      box over Store: Generate signature with App Secret
+      Shop <--Store: Signature
+  end
+
+  group Local development
+      box over App: App secret provided\nin manifest file
+      box over Shop: Generate signature with App Secret
+  end
+end
+   
+group Register
+  Shop -> App: Register
+  abox over Shop, App: query: shop-id=123&shop-url=https%3A%2F%2Ftest.shopware.store&timestamp=1595856134\nGET {registration-url}?{query}\nHeader: "shopware-app-signature": {hmac}
+  box over App: Verify app signature:\n{hmac} === hash_hmac('sha256', {query}, {app-secret})
+  box over App: Save shop-id & shop-url
+  box over App: Generate communication secret
+  box over App: Generate proof:\nhash_hmac('sha256', {shop-id} + {shop-url} + {app-name}, {app-secet})
+  Shop <-- App: 200
+  abox over Shop, App: {\n    "proof": {proof},\n    "secret": {communication-secret},\n    "confirmation_url": {confirmation-url}\n}
+end 
+
+group Confirm
+  Shop -> App: Confirm
+  abox over Shop, App: POST {confirmation-url}\nHeader: "shopware-shop-signature": hash_hmac('sha256', {body}, {communication-secet})\n{\n    "apiKey": {apiKey},\n    "secretKey": {secretKey},\n    "timestamp": 1595856134,\n    "shopUrl": "https://test.shopware.store",\n    "shopId": "123"\n}
+  box over App: Verify shop signature:\n{shopware-shop-signature} === hash_hmac('sha256', {body}, {communication-secret})
+  box over App: Save {apiKey} & {secretKey} for api access
+  Shop <--App: 200
+end
