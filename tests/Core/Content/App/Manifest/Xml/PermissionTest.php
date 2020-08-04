@@ -12,13 +12,14 @@ class PermissionTest extends TestCase
         $manifest = Manifest::createFromXmlFile(__DIR__ . '/../_fixtures/test/manifest.xml');
 
         static::assertNotNull($manifest->getPermissions());
-        static::assertCount(5, $manifest->getPermissions()->getPermissions());
+        static::assertCount(6, $manifest->getPermissions()->getPermissions());
         static::assertEquals([
             'product' => ['create', 'update', 'delete'],
             'category' => ['delete'],
             'product_manufacturer' => ['create', 'delete'],
             'tax' => ['create'],
             'language' => ['read'],
+            'custom_field_set' => ['update'],
         ], $manifest->getPermissions()->getPermissions());
     }
 }

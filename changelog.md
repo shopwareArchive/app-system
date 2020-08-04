@@ -30,6 +30,7 @@ All notable changes to this project will be documented in this file.
 - Added the app:verify command to check if a manifest is valid
 - Added param `swagShopId` to storefront templates, so app templates can communicate with their app backend using the right shopId
 - Disallowed declaration of an empty permission element in the manifest
+- CustomFieldSets can only be written by the app they belong to
 
 ## 0.1.0
 
