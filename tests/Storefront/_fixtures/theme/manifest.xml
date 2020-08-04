@@ -11,6 +11,7 @@
         <copyright>(c) by shopware AG</copyright>
         <version>1.0.0</version>
         <icon>icon.png</icon>
+        <license>MIT</license>
     </meta>
     <setup>
         <registrationUrl>https://my.app.com/SwagTheme/registration</registrationUrl>

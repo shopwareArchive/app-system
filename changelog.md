@@ -25,6 +25,8 @@ All notable changes to this project will be documented in this file.
 - Added `license` field to meta information in the manifest file
 - Limited number of modules an app can ship to one
 - Added compatibility for Shopware 6.3
+- Added active state to apps and commands to activate/deactivate apps
+- Made the <license> element mandatory in Manifest.xml
 
 ## 0.1.0
 
