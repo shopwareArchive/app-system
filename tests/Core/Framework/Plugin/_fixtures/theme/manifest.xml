@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:noNamespaceSchemaLocation="../../../../../../../src/Core/Content/App/Manifest/Schema/manifest-1.0.xsd">
+          xsi:noNamespaceSchemaLocation="../../../../../../src/Core/Content/App/Manifest/Schema/manifest-1.0.xsd">
     <meta>
         <name>SwagApp</name>
         <label>Swag App Test</label>
@@ -11,6 +11,7 @@
         <copyright>(c) by shopware AG</copyright>
         <version>1.0.0</version>
         <icon>icon.png</icon>
+        <license>MIT</license>
     </meta>
     <setup>
         <registrationUrl>https://my.app.com/SwagApp/registration</registrationUrl>
