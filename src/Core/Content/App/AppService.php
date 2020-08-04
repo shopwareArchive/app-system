@@ -31,16 +31,16 @@ class AppService
     /**
      * @return array<Manifest>
      */
-    public function refreshApps(Context $context): array
+    public function refreshApps(bool $activateInstalled, Context $context): array
     {
-        return $this->appLifecycleIterator->iterate($this->appLifecycle, $context);
+        return $this->appLifecycleIterator->iterate($this->appLifecycle, $activateInstalled, $context);
     }
 
     public function getRefreshableAppInfo(Context $context): RefreshableAppDryRun
     {
         $appInfo = new RefreshableAppDryRun();
 
-        $this->appLifecycleIterator->iterate($appInfo, $context);
+        $this->appLifecycleIterator->iterate($appInfo, false, $context);
 
         return $appInfo;
     }

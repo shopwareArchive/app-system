@@ -25,7 +25,7 @@ class RefreshableAppDryRun implements AppLifecycleInterface
     /**
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter
      */
-    public function install(Manifest $manifest, Context $context): void
+    public function install(Manifest $manifest, bool $activated, Context $context): void
     {
         $this->toBeInstalled[] = $manifest;
     }

@@ -97,6 +97,12 @@
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycle"/>
         </service>
 
+        <service id="Swag\SaasConnect\Core\Content\App\AppStateService">
+            <argument type="service" id="saas_app.repository"/>
+            <argument type="service" id="Swag\SaasConnect\Storefront\Theme\Lifecycle\ThemeLifecycleHandler"/>
+            <argument type="service" id="event_dispatcher"/>
+        </service>
+
         <service id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLifecycleIterator">
             <argument type="service" id="saas_app.repository"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader"/>
@@ -113,6 +119,7 @@
             <argument type="service" id="Swag\SaasConnect\Storefront\Theme\Lifecycle\ThemeLifecycleHandler"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\AppRegistrationService"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\AppStateService"/>
             <argument type="string">%kernel.project_dir%</argument>
         </service>
 
@@ -196,6 +203,20 @@
             <tag name="console.command"/>
         </service>
 
+        <service id="Swag\SaasConnect\Core\Command\ActivateAppCommand">
+            <argument type="service" id="saas_app.repository"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\AppStateService" />
+
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Command\DeactivateAppCommand">
+            <argument type="service" id="saas_app.repository"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\AppStateService" />
+
+            <tag name="console.command"/>
+        </service>
+
         <service id="Swag\SaasConnect\Core\Command\AppPrinter">
             <argument type="service" id="saas_app.repository"/>
         </service>
@@ -235,6 +256,11 @@
             <argument type="service" id="Swag\SaasConnect\Core\System\Snippet\File\AppSnippetFileLoader.inner"/>
             <argument type="service" id="Doctrine\DBAL\Connection"/>
             <argument type="string">%kernel.project_dir%</argument>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Framework\Api\OAuth\ClientRepository" decorates="Shopware\Core\Framework\Api\OAuth\ClientRepository">
+            <argument type="service" id="Swag\SaasConnect\Core\Framework\Api\OAuth\ClientRepository.inner" />
+            <argument type="service" id="saas_app.repository" />
         </service>
 
         <service id="Swag\SaasConnect\Core\Content\App\AppDefinition">

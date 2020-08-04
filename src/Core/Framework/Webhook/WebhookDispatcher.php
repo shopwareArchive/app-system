@@ -243,6 +243,7 @@ class WebhookDispatcher implements EventDispatcherInterface
                    `app`.`acl_role_id`
             FROM `saas_webhook` AS `webhook`
             LEFT JOIN `saas_app` AS `app` ON `webhook`.`app_id` = `app`.`id`
+            WHERE `webhook`.`app_id` IS NULL OR `app`.`active` = 1
         ');
 
         return $this->webhooks = FetchModeHelper::group($result);

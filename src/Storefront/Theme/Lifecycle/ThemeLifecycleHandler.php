@@ -65,6 +65,24 @@ class ThemeLifecycleHandler
         );
     }
 
+    public function handleAppActivation(AppEntity $app, Context $context): void
+    {
+        $configurationCollection = $this->themeRegistry->getConfigurations();
+        $config = $configurationCollection->getByTechnicalName($app->getName());
+
+        if (!$config) {
+            $config = $this->themeConfigFactory->createFromApp($app);
+            $configurationCollection = clone $configurationCollection;
+            $configurationCollection->add($config);
+        }
+
+        $this->themeLifecycleHandler->handleThemeInstallOrUpdate(
+            $config,
+            $configurationCollection,
+            $context
+        );
+    }
+
     public function handleUninstall(string $appName, Context $context): void
     {
         $config = $this->themeRegistry->getConfigurations()->getByTechnicalName($appName);

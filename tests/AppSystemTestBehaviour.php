@@ -13,7 +13,7 @@ trait AppSystemTestBehaviour
 {
     abstract protected function getContainer(): ContainerInterface;
 
-    protected function loadAppsFromDir(string $appDir): void
+    protected function loadAppsFromDir(string $appDir, bool $activateApps = true): void
     {
         $appService = new AppService(
             new AppLifecycleIterator(
@@ -23,6 +23,6 @@ trait AppSystemTestBehaviour
             $this->getContainer()->get(AppLifecycle::class)
         );
 
-        $appService->refreshApps(Context::createDefaultContext());
+        $appService->refreshApps($activateApps, Context::createDefaultContext());
     }
 }

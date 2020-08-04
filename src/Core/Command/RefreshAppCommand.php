@@ -41,6 +41,11 @@ class RefreshAppCommand extends Command
                 'f',
                 InputOption::VALUE_NONE,
                 'Force the refreshing of apps, apps will automatically be granted all requested permissions.'
+            )->addOption(
+                'activate',
+                'a',
+                InputOption::VALUE_NONE,
+                'Activate the app after installing it'
             );
     }
 
@@ -67,7 +72,7 @@ class RefreshAppCommand extends Command
             }
         }
 
-        $fails = $this->appService->refreshApps($context);
+        $fails = $this->appService->refreshApps((bool) $input->getOption('activate'), $context);
 
         $this->appPrinter->printInstalledApps($io, $context);
         $this->appPrinter->printIncompleteInstallations($io, $fails);

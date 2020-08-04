@@ -48,6 +48,11 @@ class ActionButtonLoaderTest extends TestCase
      */
     private $app2OrderDetailButtonId;
 
+    /**
+     * @var string
+     */
+    private $app3OrderDetailButtonId;
+
     public function setUp(): void
     {
         $this->appRepository = $this->getContainer()->get('saas_app.repository');
@@ -58,6 +63,7 @@ class ActionButtonLoaderTest extends TestCase
         $this->app1ProductDetailButtonId = Uuid::randomHex();
         $this->app1OrderListButtonId = Uuid::randomHex();
         $this->app2OrderDetailButtonId = Uuid::randomHex();
+        $this->app3OrderDetailButtonId = Uuid::randomHex();
     }
 
     public function testLoadActionButtonsForView(): void
@@ -99,6 +105,7 @@ class ActionButtonLoaderTest extends TestCase
     {
         $this->appRepository->create([[
             'name' => 'App1',
+            'active' => true,
             'path' => __DIR__ . '/../Manifest/_fixtures/test',
             'iconRaw' => file_get_contents(__DIR__ . '/../Manifest/_fixtures/test/icon.png'),
             'version' => '0.0.1',
@@ -141,6 +148,7 @@ class ActionButtonLoaderTest extends TestCase
             ],
         ], [
             'name' => 'App2',
+            'active' => true,
             'path' => __DIR__ . '/../Manifest/_fixtures/test',
             'version' => '0.0.1',
             'label' => 'test',
@@ -163,6 +171,32 @@ class ActionButtonLoaderTest extends TestCase
             ],
             'aclRole' => [
                 'name' => 'App2',
+            ],
+        ], [
+            'name' => 'App3',
+            'active' => false,
+            'path' => __DIR__ . '/../Manifest/_fixtures/test',
+            'version' => '0.0.1',
+            'label' => 'test',
+            'accessToken' => 'test',
+            'actionButtons' => [
+                [
+                    'id' => $this->app3OrderDetailButtonId,
+                    'entity' => 'order',
+                    'view' => 'detail',
+                    'action' => 'orderDetailApp3',
+                    'label' => 'Order Detail App3',
+                    'url' => 'app2.com/order/detail',
+                ],
+            ],
+            'integration' => [
+                'label' => 'App3',
+                'writeAccess' => false,
+                'accessKey' => 'test',
+                'secretAccessKey' => 'test',
+            ],
+            'aclRole' => [
+                'name' => 'App3',
             ],
         ]], $this->context);
     }

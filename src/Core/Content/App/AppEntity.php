@@ -103,6 +103,11 @@ class AppEntity extends Entity
     protected $integrationId;
 
     /**
+     * @var bool
+     */
+    protected $active;
+
+    /**
      * @var IntegrationEntity|null
      */
     protected $integration;
@@ -403,5 +408,15 @@ class AppEntity extends Entity
     public function setAppSecret(?string $appSecret): void
     {
         $this->appSecret = $appSecret;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
     }
 }

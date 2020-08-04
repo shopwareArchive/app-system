@@ -309,6 +309,7 @@ class WebhookDispatcherTest extends TestCase
         $appRepository->create([[
             'id' => $appId,
             'name' => 'SwagApp',
+            'active' => true,
             'path' => __DIR__ . '/Manifest/_fixtures/test',
             'version' => '0.0.1',
             'label' => 'test',
@@ -369,11 +370,77 @@ class WebhookDispatcherTest extends TestCase
         );
     }
 
+    public function testDoesNotDispatchBusinessEventIfAppIsInactive(): void
+    {
+        $appId = Uuid::randomHex();
+        $aclRoleId = Uuid::randomHex();
+        $appRepository = $this->getContainer()->get('saas_app.repository');
+        $appRepository->create([[
+            'id' => $appId,
+            'name' => 'SwagApp',
+            'active' => false,
+            'path' => __DIR__ . '/Manifest/_fixtures/test',
+            'version' => '0.0.1',
+            'label' => 'test',
+            'accessToken' => 'test',
+            'appSecret' => 's3cr3t',
+            'integration' => [
+                'label' => 'test',
+                'writeAccess' => false,
+                'accessKey' => 'api access key',
+                'secretAccessKey' => 'test',
+            ],
+            'aclRole' => [
+                'id' => $aclRoleId,
+                'name' => 'SwagApp',
+            ],
+            'webhooks' => [
+                [
+                    'name' => 'hook1',
+                    'eventName' => CustomerLoginEvent::EVENT_NAME,
+                    'url' => 'https://test.com',
+                ],
+            ],
+        ]], Context::createDefaultContext());
+
+        $permissionGateway = $this->getContainer()->get(PermissionGatewayStrategy::class);
+        $permissions = Permissions::fromArray([
+            'customer' => ['read'],
+        ]);
+
+        $permissionGateway->updatePrivileges($permissions, $aclRoleId);
+
+        $this->appServerMock->append(new Response(200));
+
+        $event = new CustomerLoginEvent(
+            $this->getContainer()->get(SalesChannelContextFactory::class)->create(Uuid::randomHex(), Defaults::SALES_CHANNEL),
+            (new CustomerEntity())->assign(['firstName' => 'first', 'lastName' => 'last']),
+            'testToken'
+        );
+
+        $clientMock = $this->createMock(Client::class);
+        $clientMock->expects(static::never())
+            ->method('sendAsync');
+
+        $webhookDispatcher = new WebhookDispatcher(
+            $this->getContainer()->get('event_dispatcher'),
+            $this->getContainer()->get(Connection::class),
+            $clientMock,
+            $this->getContainer()->get(BusinessEventEncoder::class),
+            $this->shopUrl,
+            $this->getContainer(),
+            $permissionGateway
+        );
+
+        $webhookDispatcher->dispatch($event);
+    }
+
     public function testDoesNotDispatchBusinessEventIfAppHasNoPermission(): void
     {
         $appRepository = $this->getContainer()->get('saas_app.repository');
         $appRepository->create([[
             'name' => 'SwagApp',
+            'active' => true,
             'path' => __DIR__ . '/Manifest/_fixtures/test',
             'version' => '0.0.1',
             'label' => 'test',
@@ -430,6 +497,7 @@ class WebhookDispatcherTest extends TestCase
         $appRepository->create([[
             'id' => $appId,
             'name' => 'SwagApp',
+            'active' => true,
             'path' => __DIR__ . '/Manifest/_fixtures/test',
             'version' => '0.0.1',
             'label' => 'test',
@@ -581,6 +649,7 @@ class WebhookDispatcherTest extends TestCase
         $appRepository = $this->getContainer()->get('saas_app.repository');
         $appRepository->create([[
             'name' => 'SwagApp',
+            'active' => true,
             'path' => __DIR__ . '/Manifest/_fixtures/test',
             'version' => '0.0.1',
             'label' => 'test',
@@ -634,6 +703,7 @@ class WebhookDispatcherTest extends TestCase
         $appRepository->create([[
             'id' => $appId,
             'name' => 'SwagApp',
+            'active' => true,
             'path' => __DIR__ . '/Manifest/_fixtures/test',
             'version' => '0.0.1',
             'label' => 'test',
@@ -715,6 +785,7 @@ class WebhookDispatcherTest extends TestCase
         $appRepository = $this->getContainer()->get('saas_app.repository');
         $appRepository->create([[
             'name' => 'SwagApp',
+            'active' => true,
             'path' => __DIR__ . '/Manifest/_fixtures/test',
             'version' => '0.0.1',
             'label' => 'test',
@@ -770,6 +841,7 @@ class WebhookDispatcherTest extends TestCase
         $appRepository->create([[
             'id' => $appId,
             'name' => 'SwagApp',
+            'active' => true,
             'path' => __DIR__ . '/Manifest/_fixtures/test',
             'version' => '0.0.1',
             'label' => 'test',

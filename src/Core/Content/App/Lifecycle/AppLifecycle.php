@@ -8,6 +8,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
+use Swag\SaasConnect\Core\Content\App\AppStateService;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppDeletedEvent;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppInstalledEvent;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppUpdatedEvent;
@@ -79,6 +80,11 @@ class AppLifecycle implements AppLifecycleInterface
      */
     private $projectDir;
 
+    /**
+     * @var AppStateService
+     */
+    private $appStateService;
+
     public function __construct(
         EntityRepositoryInterface $appRepository,
         ActionButtonPersister $actionButtonPersister,
@@ -90,6 +96,7 @@ class AppLifecycle implements AppLifecycleInterface
         ThemeLifecycleHandler $themeLifecycleHandler,
         EventDispatcherInterface $eventDispatcher,
         AppRegistrationService $registrationService,
+        AppStateService $appStateService,
         string $projectDir
     ) {
         $this->appRepository = $appRepository;
@@ -103,9 +110,10 @@ class AppLifecycle implements AppLifecycleInterface
         $this->eventDispatcher = $eventDispatcher;
         $this->registrationService = $registrationService;
         $this->projectDir = $projectDir;
+        $this->appStateService = $appStateService;
     }
 
-    public function install(Manifest $manifest, Context $context): void
+    public function install(Manifest $manifest, bool $activate, Context $context): void
     {
         $metadata = $manifest->getMetadata()->toArray();
         $appId = Uuid::randomHex();
@@ -113,6 +121,10 @@ class AppLifecycle implements AppLifecycleInterface
         $metadata = $this->enrichInstallMetadata($manifest, $metadata, $roleId);
 
         $this->updateApp($manifest, $metadata, $appId, $roleId, $context, true);
+
+        if ($activate) {
+            $this->appStateService->activateApp($appId, $context);
+        }
 
         $this->eventDispatcher->dispatch(
             new AppInstalledEvent($appId, $manifest, $context)
@@ -148,7 +160,7 @@ class AppLifecycle implements AppLifecycleInterface
     }
 
     /**
-     * @param array<string, string|array<string, string|bool>> $metadata
+     * @param array<string, string|bool|array<string, string|bool>> $metadata
      */
     private function updateApp(
         Manifest $manifest,
@@ -185,12 +197,13 @@ class AppLifecycle implements AppLifecycleInterface
 
         $this->customFieldPersister->updateCustomFields($manifest, $id, $context);
         $this->templatePersister->updateTemplates($manifest, $id, $context);
-
-        $this->themeLifecycleHandler->handleAppUpdate($manifest, $context);
+        if ($app->isActive()) {
+            $this->themeLifecycleHandler->handleAppUpdate($manifest, $context);
+        }
     }
 
     /**
-     * @param array<string, string|array<string, string|bool>|null> $metadata
+     * @param array<string, string|bool|array<string, string|bool>|null> $metadata
      */
     private function updateMetadata(array $metadata, Context $context): void
     {
@@ -201,7 +214,7 @@ class AppLifecycle implements AppLifecycleInterface
 
     /**
      * @param  array<string, string|array<string, string>> $metadata
-     * @return array<string, string|array<string, string|bool>>
+     * @return array<string, string|bool|array<string, string|bool>>
      */
     private function enrichInstallMetadata(Manifest $manifest, array $metadata, string $roleId): array
     {
@@ -218,6 +231,8 @@ class AppLifecycle implements AppLifecycleInterface
             'name' => $manifest->getMetadata()->getName(),
         ];
         $metadata['accessToken'] = $secret;
+        // Always install as inactive, activation will be handled by `AppStateService` in `install()` method.
+        $metadata['active'] = false;
 
         return $metadata;
     }

@@ -110,6 +110,7 @@ class ModuleLoaderTest extends TestCase
     {
         $this->appRepository->create([[
             'name' => 'App1',
+            'active' => true,
             'path' => __DIR__ . '/Manifest/_fixtures/test',
             'version' => '0.0.1',
             'label' => 'test App1',
@@ -143,6 +144,7 @@ class ModuleLoaderTest extends TestCase
             ],
         ], [
             'name' => 'App2',
+            'active' => true,
             'path' => __DIR__ . '/Manifest/_fixtures/test',
             'version' => '0.0.1',
             'label' => 'test App2',
@@ -165,6 +167,32 @@ class ModuleLoaderTest extends TestCase
             ],
             'aclRole' => [
                 'name' => 'App2',
+            ],
+        ], [
+            'name' => 'App3',
+            'active' => false,
+            'path' => __DIR__ . '/Manifest/_fixtures/test',
+            'version' => '0.0.1',
+            'label' => 'test App3',
+            'accessToken' => 'test',
+            'appSecret' => 's3cr3t2',
+            'modules' => [
+                [
+                    'label' => [
+                        'en-GB' => 'third App',
+                    ],
+                    'source' => 'https://third.app.com',
+                    'name' => 'third-app',
+                ],
+            ],
+            'integration' => [
+                'label' => 'App3',
+                'writeAccess' => false,
+                'accessKey' => 'test',
+                'secretAccessKey' => 'test',
+            ],
+            'aclRole' => [
+                'name' => 'App3',
             ],
         ]], $this->context);
     }

@@ -2,9 +2,9 @@
 
 namespace Swag\SaasConnect\Core\Content\App\Lifecycle\Event;
 
-class AppUpdatedEvent extends ManifestChangedEvent
+class AppActivatedEvent extends AppChangedEvent
 {
-    public const NAME = 'app_updated';
+    public const NAME = 'app_activated';
 
     public function getName(): string
     {

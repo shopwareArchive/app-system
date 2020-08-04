@@ -47,10 +47,12 @@ class ModuleLoader
     public function loadModules(Context $context): array
     {
         $criteria = new Criteria();
-        $criteria->addFilter(new NotFilter(
+        $containsModulesFilter = new NotFilter(
             MultiFilter::CONNECTION_AND,
             [new EqualsFilter('modules', '[]')]
-        ))
+        );
+        $appActiveFilter = new EqualsFilter('active', true);
+        $criteria->addFilter($containsModulesFilter, $appActiveFilter)
             ->addAssociation('translations.language.locale');
 
         /** @var AppCollection $apps */

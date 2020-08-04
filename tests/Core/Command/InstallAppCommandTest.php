@@ -87,6 +87,18 @@ class InstallAppCommandTest extends TestCase
         static::assertStringContainsString('Aborting due to user input.', $commandTester->getDisplay());
     }
 
+    public function testInstallWithActivation(): void
+    {
+        $commandTester = new CommandTester($this->createCommand(__DIR__ . '/_fixtures'));
+        $commandTester->setInputs(['yes']);
+
+        $commandTester->execute(['name' => 'withoutPermissions', '-a' => true]);
+
+        static::assertEquals(0, $commandTester->getStatusCode());
+
+        static::assertStringContainsString('[OK] App installed successfully.', $commandTester->getDisplay());
+    }
+
     public function testInstallWithNotFoundApp(): void
     {
         $commandTester = new CommandTester($this->createCommand(__DIR__ . '/_fixtures'));

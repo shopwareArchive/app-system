@@ -7,7 +7,7 @@ use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
 
 interface AppLifecycleInterface
 {
-    public function install(Manifest $manifest, Context $context): void;
+    public function install(Manifest $manifest, bool $activate, Context $context): void;
 
     /**
      * @param array<string, string> $app

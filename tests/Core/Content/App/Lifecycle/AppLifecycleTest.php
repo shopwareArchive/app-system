@@ -69,19 +69,19 @@ class AppLifecycleTest extends TestCase
     {
         $manifest = Manifest::createFromXmlFile(__DIR__ . '/../Manifest/_fixtures/test/manifest.xml');
 
-        $eventWasThrown = false;
+        $eventWasReceived = false;
         $appId = null;
-        $onAppInstalled = function (AppInstalledEvent $event) use (&$eventWasThrown, &$appId, $manifest): void {
-            $eventWasThrown = true;
+        $onAppInstalled = function (AppInstalledEvent $event) use (&$eventWasReceived, &$appId, $manifest): void {
+            $eventWasReceived = true;
             $appId = $event->getAppId();
             static::assertEquals($this->context, $event->getContext());
             static::assertEquals($manifest, $event->getApp());
         };
         $this->eventDispatcher->addListener(AppInstalledEvent::class, $onAppInstalled);
 
-        $this->appLifecycle->install($manifest, $this->context);
+        $this->appLifecycle->install($manifest, true, $this->context);
 
-        static::assertTrue($eventWasThrown);
+        static::assertTrue($eventWasReceived);
         $this->eventDispatcher->removeListener(AppInstalledEvent::class, $onAppInstalled);
         /** @var AppCollection $apps */
         $apps = $this->appRepository->search(new Criteria(), $this->context)->getEntities();
@@ -105,7 +105,7 @@ class AppLifecycleTest extends TestCase
     public function testInstallMinimalManifest(): void
     {
         $manifest = Manifest::createFromXmlFile(__DIR__ . '/../Manifest/_fixtures/minimal/manifest.xml');
-        $this->appLifecycle->install($manifest, $this->context);
+        $this->appLifecycle->install($manifest, true, $this->context);
 
         /** @var AppCollection $apps */
         $apps = $this->appRepository->search(new Criteria(), $this->context)->getEntities();
@@ -117,7 +117,7 @@ class AppLifecycleTest extends TestCase
     public function testInstallDoesNotInstallElementsThatNeedSecretIfNoSetupIsProvided(): void
     {
         $manifest = Manifest::createFromXmlFile(__DIR__ . '/Registration/_fixtures/no-setup/manifest.xml');
-        $this->appLifecycle->install($manifest, $this->context);
+        $this->appLifecycle->install($manifest, true, $this->context);
 
         $criteria = new Criteria();
         $criteria->addAssociation('actionButtons');
@@ -132,7 +132,7 @@ class AppLifecycleTest extends TestCase
         static::assertCount(0, $apps->first()->getWebhooks());
     }
 
-    public function testUpdate(): void
+    public function testUpdateInactiveApp(): void
     {
         $id = Uuid::randomHex();
         $roleId = Uuid::randomHex();
@@ -225,9 +225,9 @@ class AppLifecycleTest extends TestCase
 
         $manifest = Manifest::createFromXmlFile(__DIR__ . '/../Manifest/_fixtures/test/manifest.xml');
 
-        $eventWasThrown = false;
-        $onAppUpdated = function (AppUpdatedEvent $event) use (&$eventWasThrown, $id, $manifest): void {
-            $eventWasThrown = true;
+        $eventWasReceived = false;
+        $onAppUpdated = function (AppUpdatedEvent $event) use (&$eventWasReceived, $id, $manifest): void {
+            $eventWasReceived = true;
             static::assertEquals($id, $event->getAppId());
             static::assertEquals($this->context, $event->getContext());
             static::assertEquals($manifest, $event->getApp());
@@ -236,7 +236,134 @@ class AppLifecycleTest extends TestCase
 
         $this->appLifecycle->update($manifest, $app, $this->context);
 
-        static::assertTrue($eventWasThrown);
+        static::assertTrue($eventWasReceived);
+        $this->eventDispatcher->removeListener(AppUpdatedEvent::class, $onAppUpdated);
+        /** @var AppCollection $apps */
+        $apps = $this->appRepository->search(new Criteria(), $this->context)->getEntities();
+
+        static::assertCount(1, $apps);
+        static::assertEquals('SwagApp', $apps->first()->getName());
+        static::assertEquals(
+            base64_encode(file_get_contents(__DIR__ . '/../Manifest/_fixtures/test/icon.png')),
+            $apps->first()->getIcon()
+        );
+        static::assertEquals('1.0.0', $apps->first()->getVersion());
+        static::assertNotEquals('test', $apps->first()->getTranslation('label'));
+
+        $this->assertDefaultActionButtons();
+        $this->assertDefaultModules($apps->first());
+        $this->assertDefaultPrivileges($apps->first()->getAclRoleId());
+        $this->assertDefaultCustomFields($id);
+        $this->assertDefaultWebhooks($apps->first()->getId());
+        $this->assertDefaultTemplate($apps->first()->getId());
+    }
+
+    public function testUpdateActiveApp(): void
+    {
+        $id = Uuid::randomHex();
+        $roleId = Uuid::randomHex();
+
+        $this->appRepository->create([[
+            'id' => $id,
+            'name' => 'SwagApp',
+            'path' => __DIR__ . '/../Manifest/_fixtures/test',
+            'version' => '0.0.1',
+            'label' => 'test',
+            'accessToken' => 'test',
+            'appSecret' => 's3cr3t',
+            'active' => true,
+            'modules' => [
+                [
+                    'label' => [
+                        'en-GB' => 'will be overwritten',
+                    ],
+                    'source' => 'https://example.com',
+                ],
+            ],
+            'actionButtons' => [
+                [
+                    'action' => 'test',
+                    'entity' => 'order',
+                    'view' => 'detail',
+                    'label' => 'test',
+                    'url' => 'test.com',
+                ],
+                [
+                    'action' => 'viewOrder',
+                    'entity' => 'should',
+                    'view' => 'get',
+                    'label' => 'updated',
+                    'url' => 'test.com',
+                ],
+            ],
+            'integration' => [
+                'label' => 'test',
+                'writeAccess' => false,
+                'accessKey' => 'test',
+                'secretAccessKey' => 'test',
+            ],
+            'customFieldSets' => [
+                [
+                    'name' => 'test',
+                ],
+            ],
+            'aclRole' => [
+                'id' => $roleId,
+                'name' => 'SwagApp',
+            ],
+            'webhooks' => [
+                [
+                    'name' => 'hook1',
+                    'url' => 'oldUrl.com',
+                    'eventName' => 'testEvent',
+                ],
+                [
+                    'name' => 'shouldGetDeleted',
+                    'url' => 'test.com',
+                    'eventName' => 'anotherTest',
+                ],
+            ],
+            'templates' => [
+                [
+                    'path' => 'storefront/layout/header/logo.html.twig',
+                    'template' => 'will be overwritten',
+                    'active' => true,
+                ],
+                [
+                    'path' => 'storefront/got/removed',
+                    'template' => 'will be removed',
+                    'active' => true,
+                ],
+            ],
+        ]], $this->context);
+
+        /** @var PermissionGatewayStrategy $permissionGateway */
+        $permissionGateway = $this->getContainer()->get(PermissionGatewayStrategy::class);
+        $permissions = Permissions::fromArray([
+            'product' => ['update'],
+        ]);
+
+        $permissionGateway->updatePrivileges($permissions, $roleId);
+
+        $app = [
+            'id' => $id,
+            'roleId' => $roleId,
+        ];
+
+        $manifest = Manifest::createFromXmlFile(__DIR__ . '/../Manifest/_fixtures/test/manifest.xml');
+
+        $eventWasReceived = false;
+        $onAppUpdated = function (AppUpdatedEvent $event) use (&$eventWasReceived, $id, $manifest): void {
+            $eventWasReceived = true;
+            static::assertEquals($id, $event->getAppId());
+            static::assertEquals($this->context, $event->getContext());
+            static::assertEquals($manifest, $event->getApp());
+        };
+        $this->eventDispatcher->addListener(AppUpdatedEvent::class, $onAppUpdated);
+
+        $this->appLifecycle->update($manifest, $app, $this->context);
+
+        static::assertTrue($eventWasReceived);
         $this->eventDispatcher->removeListener(AppUpdatedEvent::class, $onAppUpdated);
         /** @var AppCollection $apps */
         $apps = $this->appRepository->search(new Criteria(), $this->context)->getEntities();
@@ -363,9 +490,9 @@ class AppLifecycleTest extends TestCase
             'id' => $appId,
         ];
 
-        $eventWasThrown = false;
-        $onAppDeleted = function (AppDeletedEvent $event) use (&$eventWasThrown, $appId): void {
-            $eventWasThrown = true;
+        $eventWasReceived = false;
+        $onAppDeleted = function (AppDeletedEvent $event) use (&$eventWasReceived, $appId): void {
+            $eventWasReceived = true;
             static::assertEquals($appId, $event->getAppId());
             static::assertEquals($this->context, $event->getContext());
         };
@@ -373,7 +500,7 @@ class AppLifecycleTest extends TestCase
 
         $this->appLifecycle->delete('Test', $app, $this->context);
 
-        static::assertTrue($eventWasThrown);
+        static::assertTrue($eventWasReceived);
         $this->eventDispatcher->removeListener(AppDeletedEvent::class, $onAppDeleted);
         $apps = $this->appRepository->searchIds(new Criteria([$appId]), $this->context)->getIds();
         static::assertCount(0, $apps);
