@@ -40,7 +40,13 @@ class ClientRepository implements ClientRepositoryInterface
         $mustValidateSecret = true
     ) {
         $client = $this->inner->getClientEntity($clientIdentifier, $grantType, $clientSecret, $mustValidateSecret);
-        if (!$this->isIntegration($client)) {
+        /**
+         * The client can be null because the core does not follow the interfaces contract and may return null
+         *
+         * @psalm-suppress DocblockTypeContradiction
+         * @psalm-suppress RedundantConditionGivenDocblockType
+         */
+        if ($client === null || !$this->isIntegration($client)) { /* @phpstan-ignore-line */
             return $client;
         }
 

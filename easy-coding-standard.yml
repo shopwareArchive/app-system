@@ -48,3 +48,4 @@ parameters:
         PhpCsFixer\Fixer\StringNotation\ExplicitStringVariableFixer: ~
         PHP_CodeSniffer\Standards\Generic\Sniffs\CodeAnalysis\AssignmentInConditionSniff: ~
         PhpCsFixer\Fixer\Operator\NotOperatorWithSuccessorSpaceFixer: ~
+        PhpCsFixer\Fixer\Phpdoc\PhpdocToCommentFixer: ~
