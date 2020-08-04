@@ -27,6 +27,7 @@ All notable changes to this project will be documented in this file.
 - Added compatibility for Shopware 6.3
 - Added active state to apps and commands to activate/deactivate apps
 - Made the <license> element mandatory in Manifest.xml
+- Added the app:verify command to check if a manifest is valid
 
 ## 0.1.0
 

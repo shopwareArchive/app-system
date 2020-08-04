@@ -3,6 +3,7 @@ USER_ID := $(shell id -u)
 GROUP_ID := $(shell id -g)
 TOOLS_BIN := dev-ops/tools/vendor/bin
 NODE_MODULES_ADMIN := src/Resources/app/administration/node_modules
+PLATFORM_CONSOLE := ../../../bin/console
 
 .DEFAULT_GOAL := help
 
@@ -119,3 +120,7 @@ build-admin:
 build-storefront:
 	cd ../../../ && ./psh.phar storefront:build
 .PHONY: build-storefront
+
+verify-manifests: ## checks if all test manifest files are correct
+	find tests -regex .*[Mm]anifest.xml -exec $(PLATFORM_CONSOLE)  app:verify {} \+
+.PHONY: verify-manifests
