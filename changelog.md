@@ -28,6 +28,7 @@ All notable changes to this project will be documented in this file.
 - Added active state to apps and commands to activate/deactivate apps
 - Made the <license> element mandatory in Manifest.xml
 - Added the app:verify command to check if a manifest is valid
+- Added param `swagShopId` to storefront templates, so app templates can communicate with their app backend using the right shopId
 
 ## 0.1.0
 

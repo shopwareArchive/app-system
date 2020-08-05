@@ -37,7 +37,7 @@ class ShopIdProviderTest extends TestCase
         $shopId = $this->shopIdProvider->getShopId();
 
         static::assertEquals([
-            'app_url' => getenv('APP_URL'),
+            'app_url' => $_SERVER['APP_URL'],
             'value' => $shopId,
         ], $this->systemConfigService->get(ShopIdProvider::SHOP_ID_SYSTEM_CONFIG_KEY));
 
@@ -54,7 +54,7 @@ class ShopIdProviderTest extends TestCase
         static::assertEquals($firstShopId, $secondShopId);
 
         static::assertEquals([
-            'app_url' => getenv('APP_URL'),
+            'app_url' => $_SERVER['APP_URL'],
             'value' => $firstShopId,
         ], $this->systemConfigService->get(ShopIdProvider::SHOP_ID_SYSTEM_CONFIG_KEY));
 

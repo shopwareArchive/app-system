@@ -52,7 +52,7 @@ class AppRegistrationServiceTest extends TestCase
     {
         $this->appRepository = $this->getContainer()->get('saas_app.repository');
         $this->registrator = $this->getContainer()->get(AppRegistrationService::class);
-        $this->shopUrl = (string) getenv('APP_URL');
+        $this->shopUrl = (string) $_SERVER['APP_URL'];
         $this->shopIdProvider = $this->getContainer()->get(ShopIdProvider::class);
     }
 
@@ -91,7 +91,7 @@ class AppRegistrationServiceTest extends TestCase
         $postBody = \json_decode($confirmationReq->getBody()->getContents(), true);
         static::assertEquals($secretAccessKey, $postBody['secretKey']);
         static::assertEquals($app->getIntegration()->getAccessKey(), $postBody['apiKey']);
-        static::assertEquals(getenv('APP_URL'), $postBody['shopUrl']);
+        static::assertEquals($_SERVER['APP_URL'], $postBody['shopUrl']);
         static::assertEquals($this->shopIdProvider->getShopId(), $postBody['shopId']);
 
         static::assertEquals(

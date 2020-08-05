@@ -10,8 +10,10 @@ trait EnvTestBehaviour
     {
         foreach ($envVars as $envVar => $value) {
             if (!array_key_exists($envVar, $this->originalEnvVars)) {
-                $this->originalEnvVars[$envVar] = getenv($envVar);
+                $this->originalEnvVars[$envVar] = $_SERVER[$envVar];
             }
+            $_SERVER[$envVar] = $value;
+            $_ENV[$envVar] = $value;
             putenv($envVar . '=' . $value);
         }
     }
@@ -23,6 +25,8 @@ trait EnvTestBehaviour
     {
         if ($this->originalEnvVars) {
             foreach ($this->originalEnvVars as $envVar => $value) {
+                $_SERVER[$envVar] = $value;
+                $_ENV[$envVar] = $value;
                 putenv($envVar . '=' . $value);
             }
 

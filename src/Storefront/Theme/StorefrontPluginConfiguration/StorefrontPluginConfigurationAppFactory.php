@@ -2,6 +2,7 @@
 
 namespace Swag\SaasConnect\Storefront\Theme\StorefrontPluginConfiguration;
 
+use Shopware\Core\System\Annotation\Concept\ExtensionPattern\Decoratable;
 use Shopware\Storefront\Theme\StorefrontPluginConfiguration\StorefrontPluginConfiguration;
 use Shopware\Storefront\Theme\StorefrontPluginConfiguration\StorefrontPluginConfigurationFactory;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
