@@ -217,6 +217,10 @@
             <tag name="console.command"/>
         </service>
 
+        <service id="Swag\SaasConnect\Core\Command\VerifyManifestCommand">
+            <tag name="console.command"/>
+        </service>
+
         <service id="Swag\SaasConnect\Core\Command\AppPrinter">
             <argument type="service" id="saas_app.repository"/>
         </service>
