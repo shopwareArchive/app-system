@@ -27,17 +27,17 @@ class ShopIdProvider
         if (!$shopId) {
             $newShopId = $this->generateShopId();
             $this->systemConfigService->set(self::SHOP_ID_SYSTEM_CONFIG_KEY, [
-                'app_url' => getenv('APP_URL'),
+                'app_url' => $_SERVER['APP_URL'],
                 'value' => $newShopId,
             ]);
 
             return $newShopId;
         }
 
-        if (getenv('APP_URL') !== ($shopId['app_url'] ?? '')) {
+        if ($_SERVER['APP_URL'] !== ($shopId['app_url'] ?? '')) {
             $this->systemConfigService->set(self::SHOP_DOMAIN_CHANGE_CONFIG_KEY, true);
             /** @var string $appUrl */
-            $appUrl = getenv('APP_URL');
+            $appUrl = $_SERVER['APP_URL'];
 
             throw new AppUrlChangeDetectedException($shopId['app_url'], $appUrl);
         }
@@ -47,6 +47,6 @@ class ShopIdProvider
 
     private function generateShopId(): string
     {
-        return Random::getAlphanumericString(12);
+        return Random::getAlphanumericString(16);
     }
 }

@@ -76,6 +76,7 @@ return [
         \PhpCsFixer\Fixer\ReturnNotation\ReturnAssignmentFixer::class,
         // reports on @var annotations on props if running in php7.4, can be removed once we use typed properties
         \SlevomatCodingStandard\Sniffs\TypeHints\PropertyTypeHintSniff::class,
+        \NunoMaduro\PhpInsights\Domain\Insights\ForbiddenGlobals::class,
     ],
 
     'config' => [

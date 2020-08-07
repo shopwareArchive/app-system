@@ -51,6 +51,8 @@
             <argument type="service" id="Swag\SaasConnect\Storefront\Theme\StorefrontAppRegistry.inner" />
             <argument type="service" id="saas_app.repository" />
             <argument type="service" id="Swag\SaasConnect\Storefront\Theme\StorefrontPluginConfiguration\StorefrontPluginConfigurationAppFactory" />
+
+            <tag name="kernel.event_subscriber"/>
         </service>
 
         <service id="Swag\SaasConnect\Storefront\Theme\Lifecycle\ThemeLifecycleHandler">
@@ -58,6 +60,13 @@
             <argument type="service" id="Swag\SaasConnect\Storefront\Theme\StorefrontPluginConfiguration\StorefrontPluginConfigurationAppFactory"/>
             <argument type="service" id="Shopware\Storefront\Theme\ThemeLifecycleHandler"/>
             <argument type="string">%kernel.project_dir%</argument>
+        </service>
+
+        <service id="Swag\SaasConnect\Storefront\Subscriber\StorefrontRenderSubscriber">
+            <argument type="service" id="Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider" />
+            <argument type="service" id="saas_app.repository" />
+
+            <tag name="kernel.event_subscriber"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Framework\Webhook\WebhookDispatcher" decorates="event_dispatcher" decoration-priority="100">

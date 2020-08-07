@@ -5,16 +5,20 @@ namespace Swag\SaasConnect\Storefront\Theme;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\Annotation\Concept\ExtensionPattern\Decoratable;
 use Shopware\Storefront\Theme\StorefrontPluginConfiguration\StorefrontPluginConfigurationCollection;
 use Shopware\Storefront\Theme\StorefrontPluginRegistryInterface;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppActivatedEvent;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppDeactivatedEvent;
 use Swag\SaasConnect\Storefront\Theme\StorefrontPluginConfiguration\StorefrontPluginConfigurationAppFactoryInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * @Decoratable
  */
-class StorefrontAppRegistry implements StorefrontPluginRegistryInterface
+class StorefrontAppRegistry implements StorefrontPluginRegistryInterface, EventSubscriberInterface
 {
     /**
      * @var StorefrontPluginRegistryInterface
@@ -46,6 +50,17 @@ class StorefrontAppRegistry implements StorefrontPluginRegistryInterface
         $this->configurationFactory = $configurationFactory;
     }
 
+    /**
+     * @return array<string, string>
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            AppActivatedEvent::class => 'clearConfigCache',
+            AppDeactivatedEvent::class => 'clearConfigCache',
+        ];
+    }
+
     public function getConfigurations(): StorefrontPluginConfigurationCollection
     {
         if ($this->pluginConfigurations) {
@@ -58,9 +73,17 @@ class StorefrontAppRegistry implements StorefrontPluginRegistryInterface
         return $this->pluginConfigurations = $configs;
     }
 
+    public function clearConfigCache(): void
+    {
+        $this->pluginConfigurations = null;
+    }
+
     private function addAppConfigs(StorefrontPluginConfigurationCollection $configs): void
     {
-        $apps = $this->appRepository->search(new Criteria(), Context::createDefaultContext())->getEntities();
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('active', true));
+
+        $apps = $this->appRepository->search($criteria, Context::createDefaultContext())->getEntities();
         /** @var AppEntity $app */
         foreach ($apps as $app) {
             $config = $this->configurationFactory->createFromApp($app);

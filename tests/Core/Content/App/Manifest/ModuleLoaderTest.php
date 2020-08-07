@@ -219,7 +219,7 @@ class ModuleLoaderTest extends TestCase
         static::assertEquals($expectedUrl, $url);
 
         \parse_str($queryString, $query);
-        static::assertEquals(getenv('APP_URL'), $query['shop-url']);
+        static::assertEquals($_SERVER['APP_URL'], $query['shop-url']);
         static::assertArrayHasKey('shop-id', $query);
 
         $hmac = $query['shopware-shop-signature'];

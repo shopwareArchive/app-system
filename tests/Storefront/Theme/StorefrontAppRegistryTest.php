@@ -40,6 +40,18 @@ class StorefrontAppRegistryTest extends TestCase
         );
     }
 
+    public function testConfigIsNotAddedIfAppIsNotActive(): void
+    {
+        $this->loadAppsFromDir(__DIR__ . '/../_fixtures/theme', false);
+
+        $registry = $this->getContainer()
+            ->get(StorefrontPluginRegistry::class);
+
+        static::assertNull(
+            $registry->getConfigurations()->getByTechnicalName('SwagTheme')
+        );
+    }
+
     public function testConfigIsAddedIfHasResourcesToCompile(): void
     {
         $this->loadAppsFromDir(__DIR__ . '/../_fixtures/noThemeCustomCss');
