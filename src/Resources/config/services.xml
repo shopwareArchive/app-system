@@ -303,5 +303,19 @@
         <service id="Swag\SaasConnect\Core\Framework\Template\TemplateDefinition">
             <tag name="shopware.entity.definition" entity="saas_template"/>
         </service>
+
+        <service id="Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\AppUrlChangeResolverStrategy">
+            <argument type="tagged" tag="shopware.saas.app_url_changed_resolver"/>
+        </service>
+
+        <!-- ToDo SAAS-1112: make service private once it is used outside of tests -->
+        <service id="Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\MoveShopPermanentlyResolver" public="true">
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader"/>
+            <argument type="service" id="saas_app.repository"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\AppRegistrationService"/>
+
+            <tag name="shopware.saas.app_url_changed_resolver"/>
+        </service>
     </services>
 </container>
