@@ -296,6 +296,12 @@
             <tag name="shopware.entity.extension"/>
         </service>
 
+        <service id="Swag\SaasConnect\Core\Content\App\Subscriber\CustomFieldProtectionSubscriber">
+            <argument type="service" id="custom_field_set.repository"/>
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <service id="Swag\SaasConnect\Core\Framework\Webhook\WebhookDefinition">
             <tag name="shopware.entity.definition" entity="saas_webhook"/>
         </service>

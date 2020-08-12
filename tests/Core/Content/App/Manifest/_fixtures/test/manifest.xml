@@ -49,6 +49,7 @@
         <delete>product_manufacturer</delete>
         <create>tax</create>
         <read>language</read>
+        <update>custom_field_set</update>
     </permissions>
     <custom-fields>
         <custom-field-set>

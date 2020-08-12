@@ -546,9 +546,9 @@ class AppLifecycleTest extends TestCase
         $privileges = $permissionGateway->fetchPrivileges(Uuid::fromHexToBytes($roleId));
 
         if (version_compare($shopwareVersion, '6.3.0.0', '<')) {
-            static::assertEquals(16, $privileges->count());
+            static::assertEquals(19, $privileges->count());
         } else {
-            static::assertEquals(12, $privileges->count());
+            static::assertEquals(14, $privileges->count());
         }
 
         if (version_compare($shopwareVersion, '6.3.0.0', '<')) {
