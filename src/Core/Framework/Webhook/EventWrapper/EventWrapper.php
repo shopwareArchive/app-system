@@ -2,6 +2,8 @@
 
 namespace Swag\SaasConnect\Core\Framework\Webhook\EventWrapper;
 
+use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressDefinition;
+use Shopware\Core\Checkout\Customer\CustomerDefinition;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Product\Aggregate\ProductPrice\ProductPriceDefinition;
 use Shopware\Core\Content\Product\ProductDefinition;
@@ -17,6 +19,8 @@ class EventWrapper implements EventSubscriberInterface
         ProductPriceDefinition::ENTITY_NAME,
         CategoryDefinition::ENTITY_NAME,
         SalesChannelDefinition::ENTITY_NAME,
+        CustomerDefinition::ENTITY_NAME,
+        CustomerAddressDefinition::ENTITY_NAME,
     ];
 
     /**
