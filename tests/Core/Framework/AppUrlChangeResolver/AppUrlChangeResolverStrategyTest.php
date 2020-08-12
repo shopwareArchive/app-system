@@ -64,4 +64,20 @@ class AppUrlChangeResolverStrategyTest extends TestCase
         static::expectException(AppUrlChangeResolverNotFoundException::class);
         $this->appUrlChangedResolverStrategy->resolve('ThirdStrategy', Context::createDefaultContext());
     }
+
+    public function testGetAvailableStrategies(): void
+    {
+        $this->firstStrategy->expects(static::once())
+            ->method('getDescription')
+            ->willReturn('first description');
+
+        $this->secondStrategy->expects(static::once())
+            ->method('getDescription')
+            ->willReturn('second description');
+
+        static::assertEquals([
+            'FirstStrategy' => 'first description',
+            'SecondStrategy' => 'second description',
+        ], $this->appUrlChangedResolverStrategy->getAvailableStrategies());
+    }
 }

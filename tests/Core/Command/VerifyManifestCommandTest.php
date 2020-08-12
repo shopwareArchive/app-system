@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Swag\SaasConnect\Core\Command;
+namespace Swag\SaasConnect\Test\Core\Command;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Swag\SaasConnect\Core\Command\VerifyManifestCommand;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class VerifyManifestCommandTest extends TestCase
@@ -28,7 +29,7 @@ class VerifyManifestCommandTest extends TestCase
         static::assertStringContainsString('[ERROR]', $commandTester->getDisplay());
     }
 
-    public function testVerifyServeralManifestsShowsOnlyErrors(): void
+    public function testVerifySeveralManifestsShowsOnlyErrors(): void
     {
         $commandTester = new CommandTester($this->getContainer()->get(VerifyManifestCommand::class));
         $files = [
@@ -42,7 +43,7 @@ class VerifyManifestCommandTest extends TestCase
         static::assertStringContainsString('[ERROR]', $commandTester->getDisplay());
     }
 
-    public function testVerifyServeralManifestsShowsIsSuccessfulWhenAllFilesAreValid(): void
+    public function testVerifySeveralManifestsShowsIsSuccessfulWhenAllFilesAreValid(): void
     {
         $commandTester = new CommandTester($this->getContainer()->get(VerifyManifestCommand::class));
         $files = [

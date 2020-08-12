@@ -1,11 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Swag\SaasConnect\Core\Command;
+namespace Swag\SaasConnect\Test\Core\Command;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Swag\SaasConnect\Core\Command\UninstallAppCommand;
 use Swag\SaasConnect\Test\StorefrontAppRegistryTestBehaviour;
 use Symfony\Component\Console\Tester\CommandTester;
 

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swag\SaasConnect\Core\Command;
+namespace Swag\SaasConnect\Test\Core\Command;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
@@ -8,6 +8,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Swag\SaasConnect\Core\Command\DeactivateAppCommand;
 use Swag\SaasConnect\Test\AppSystemTestBehaviour;
 use Symfony\Component\Console\Tester\CommandTester;
 

@@ -32,4 +32,19 @@ class AppUrlChangeResolverStrategy
 
         throw new AppUrlChangeResolverNotFoundException($strategyName);
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getAvailableStrategies(): array
+    {
+        $strategies = [];
+
+        /** @var AppUrlChangeResolverInterface $strategy */
+        foreach ($this->strategies as $strategy) {
+            $strategies[$strategy->getName()] = $strategy->getDescription();
+        }
+
+        return $strategies;
+    }
 }

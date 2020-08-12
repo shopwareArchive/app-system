@@ -308,14 +308,45 @@
             <argument type="tagged" tag="shopware.saas.app_url_changed_resolver"/>
         </service>
 
-        <!-- ToDo SAAS-1112: make service private once it is used outside of tests -->
-        <service id="Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\MoveShopPermanentlyResolver" public="true">
+        <service id="Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\MoveShopPermanentlyResolver">
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader"/>
             <argument type="service" id="saas_app.repository"/>
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\AppRegistrationService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
 
             <tag name="shopware.saas.app_url_changed_resolver"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\ReinstallAppsResolver">
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader"/>
+            <argument type="service" id="saas_app.repository"/>
+            <argument type="service" id="Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\AppRegistrationService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="event_dispatcher"/>
+
+            <tag name="shopware.saas.app_url_changed_resolver"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\UninstallAppsResolver">
+            <argument type="service" id="saas_app.repository"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Swag\SaasConnect\Storefront\Theme\Lifecycle\ThemeLifecycleHandler"/>
+
+            <tag name="shopware.saas.app_url_changed_resolver"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Command\ResolveAppUrlChangeCommand">
+            <argument type="service" id="Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\AppUrlChangeResolverStrategy"/>
+
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Swag\SaasConnect\Core\Framework\Api\AppUrlChangeController" public="true">
+            <argument type="service" id="Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\AppUrlChangeResolverStrategy"/>
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
     </services>
 </container>

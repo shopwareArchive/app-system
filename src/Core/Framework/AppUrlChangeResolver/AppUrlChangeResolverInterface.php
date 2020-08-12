@@ -8,5 +8,7 @@ interface AppUrlChangeResolverInterface
 {
     public function getName(): string;
 
+    public function getDescription(): string;
+
     public function resolve(Context $context): void;
 }
