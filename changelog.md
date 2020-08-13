@@ -31,6 +31,7 @@ All notable changes to this project will be documented in this file.
 - Added param `swagShopId` to storefront templates, so app templates can communicate with their app backend using the right shopId
 - Disallowed declaration of an empty permission element in the manifest
 - CustomFieldSets can only be written by the app they belong to
+- Made `customer` and `customer_address` events hookable
 
 ## 0.1.0
 
