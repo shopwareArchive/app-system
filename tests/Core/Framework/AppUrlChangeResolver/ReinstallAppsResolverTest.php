@@ -10,16 +10,18 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader;
+use Swag\SaasConnect\Core\Content\App\Lifecycle\Event\AppInstalledEvent;
 use Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\AppRegistrationService;
 use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
-use Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\MoveShopPermanentlyResolver;
+use Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\ReinstallAppsResolver;
 use Swag\SaasConnect\Core\Framework\ShopId\AppUrlChangeDetectedException;
 use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 use Swag\SaasConnect\Test\AppSystemTestBehaviour;
 use Swag\SaasConnect\Test\EnvTestBehaviour;
 use Swag\SaasConnect\Test\SystemConfigTestBehaviour;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-class MoveShopPermanentlyResolverTest extends TestCase
+class ReinstallAppsResolverTest extends TestCase
 {
     use IntegrationTestBehaviour;
     use EnvTestBehaviour;
@@ -50,13 +52,13 @@ class MoveShopPermanentlyResolverTest extends TestCase
 
     public function testGetName(): void
     {
-        $moveShopPermanentlyResolver = $this->getContainer()->get(MoveShopPermanentlyResolver::class);
+        $reinstallAppsResolver = $this->getContainer()->get(ReinstallAppsResolver::class);
 
         static::assertEquals(
-            MoveShopPermanentlyResolver::STRATEGY_NAME,
-            $moveShopPermanentlyResolver->getName()
+            ReinstallAppsResolver::STRATEGY_NAME,
+            $reinstallAppsResolver->getName()
         );
-        static::assertIsString($moveShopPermanentlyResolver->getDescription());
+        static::assertIsString($reinstallAppsResolver->getDescription());
     }
 
     public function testItReRegistersInstalledApps(): void
@@ -80,16 +82,22 @@ class MoveShopPermanentlyResolverTest extends TestCase
                 static::isInstanceOf(Context::class)
             );
 
-        $moveShopPermanentlyResolver = new MoveShopPermanentlyResolver(
+        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $eventDispatcher->expects(static::once())
+            ->method('dispatch')
+            ->with(static::isInstanceOf(AppInstalledEvent::class));
+
+        $reinstallAppsResolver = new ReinstallAppsResolver(
             new AppLoader($appDir),
             $this->getContainer()->get('saas_app.repository'),
             $registrationsService,
-            $this->systemConfigService
+            $this->systemConfigService,
+            $eventDispatcher
         );
 
-        $moveShopPermanentlyResolver->resolve($this->context);
+        $reinstallAppsResolver->resolve($this->context);
 
-        static::assertEquals($shopId, $this->shopIdProvider->getShopId());
+        static::assertNotEquals($shopId, $this->shopIdProvider->getShopId());
         static::assertNull($this->systemConfigService->get(ShopIdProvider::SHOP_DOMAIN_CHANGE_CONFIG_KEY));
 
         // assert secret access key changed
@@ -111,16 +119,21 @@ class MoveShopPermanentlyResolverTest extends TestCase
         $registrationsService->expects(static::never())
             ->method('registerApp');
 
-        $moveShopPermanentlyResolver = new MoveShopPermanentlyResolver(
+        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $eventDispatcher->expects(static::never())
+            ->method('dispatch');
+
+        $reinstallAppsResolver = new ReinstallAppsResolver(
             new AppLoader($appDir),
             $this->getContainer()->get('saas_app.repository'),
             $registrationsService,
-            $this->systemConfigService
+            $this->systemConfigService,
+            $eventDispatcher
         );
 
-        $moveShopPermanentlyResolver->resolve($this->context);
+        $reinstallAppsResolver->resolve($this->context);
 
-        static::assertEquals($shopId, $this->shopIdProvider->getShopId());
+        static::assertNotEquals($shopId, $this->shopIdProvider->getShopId());
         static::assertNull($this->systemConfigService->get(ShopIdProvider::SHOP_DOMAIN_CHANGE_CONFIG_KEY));
     }
 
@@ -130,14 +143,13 @@ class MoveShopPermanentlyResolverTest extends TestCase
 
         // create AppUrlChange
         $this->setEnvVars(['APP_URL' => 'https://test.new']);
-        $wasThrown = false;
 
         try {
             $this->shopIdProvider->getShopId();
+            static::fail('Expected exception AppUrlChangeDetectedException was not thrown');
         } catch (AppUrlChangeDetectedException $e) {
-            $wasThrown = true;
+            // exception is expected
         }
-        static::assertTrue($wasThrown);
 
         return $shopId;
     }

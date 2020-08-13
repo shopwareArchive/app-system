@@ -9,17 +9,15 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\SaasConnect\Core\Content\App\AppEntity;
-use Swag\SaasConnect\Core\Content\App\Lifecycle\AppLoader;
-use Swag\SaasConnect\Core\Content\App\Lifecycle\Registration\AppRegistrationService;
-use Swag\SaasConnect\Core\Content\App\Manifest\Manifest;
-use Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\MoveShopPermanentlyResolver;
+use Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\UninstallAppsResolver;
 use Swag\SaasConnect\Core\Framework\ShopId\AppUrlChangeDetectedException;
 use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
+use Swag\SaasConnect\Storefront\Theme\Lifecycle\ThemeLifecycleHandler;
 use Swag\SaasConnect\Test\AppSystemTestBehaviour;
 use Swag\SaasConnect\Test\EnvTestBehaviour;
 use Swag\SaasConnect\Test\SystemConfigTestBehaviour;
 
-class MoveShopPermanentlyResolverTest extends TestCase
+class UninstallAppsResolverTest extends TestCase
 {
     use IntegrationTestBehaviour;
     use EnvTestBehaviour;
@@ -50,13 +48,13 @@ class MoveShopPermanentlyResolverTest extends TestCase
 
     public function testGetName(): void
     {
-        $moveShopPermanentlyResolver = $this->getContainer()->get(MoveShopPermanentlyResolver::class);
+        $uninstallAppsResolver = $this->getContainer()->get(UninstallAppsResolver::class);
 
         static::assertEquals(
-            MoveShopPermanentlyResolver::STRATEGY_NAME,
-            $moveShopPermanentlyResolver->getName()
+            UninstallAppsResolver::STRATEGY_NAME,
+            $uninstallAppsResolver->getName()
         );
-        static::assertIsString($moveShopPermanentlyResolver->getDescription());
+        static::assertIsString($uninstallAppsResolver->getDescription());
     }
 
     public function testItReRegistersInstalledApps(): void
@@ -68,60 +66,26 @@ class MoveShopPermanentlyResolverTest extends TestCase
 
         $shopId = $this->changeAppUrl();
 
-        $registrationsService = $this->createMock(AppRegistrationService::class);
-        $registrationsService->expects(static::once())
-            ->method('registerApp')
+        $themeLifecycleHandler = $this->createMock(ThemeLifecycleHandler::class);
+        $themeLifecycleHandler->expects(static::once())
+            ->method('handleUninstall')
             ->with(
-                static::callback(static function (Manifest $manifest) use ($appDir): bool {
-                    return $manifest->getPath() === $appDir;
-                }),
-                $app->getId(),
-                static::isType('string'),
+                $app->getName(),
                 static::isInstanceOf(Context::class)
             );
 
-        $moveShopPermanentlyResolver = new MoveShopPermanentlyResolver(
-            new AppLoader($appDir),
+        $uninstallAppsResolver = new UninstallAppsResolver(
             $this->getContainer()->get('saas_app.repository'),
-            $registrationsService,
-            $this->systemConfigService
+            $this->systemConfigService,
+            $themeLifecycleHandler
         );
 
-        $moveShopPermanentlyResolver->resolve($this->context);
+        $uninstallAppsResolver->resolve($this->context);
 
-        static::assertEquals($shopId, $this->shopIdProvider->getShopId());
+        static::assertNotEquals($shopId, $this->shopIdProvider->getShopId());
         static::assertNull($this->systemConfigService->get(ShopIdProvider::SHOP_DOMAIN_CHANGE_CONFIG_KEY));
 
-        // assert secret access key changed
-        $updatedApp = $this->getInstalledApp($this->context);
-        static::assertNotEquals(
-            $app->getIntegration()->getSecretAccessKey(),
-            $updatedApp->getIntegration()->getSecretAccessKey()
-        );
-    }
-
-    public function testItIgnoresAppsWithoutSetup(): void
-    {
-        $shopId = $this->changeAppUrl();
-
-        $appDir = __DIR__ . '/../../Content/App/Lifecycle/Registration/_fixtures/no-setup';
-        $this->loadAppsFromDir($appDir);
-
-        $registrationsService = $this->createMock(AppRegistrationService::class);
-        $registrationsService->expects(static::never())
-            ->method('registerApp');
-
-        $moveShopPermanentlyResolver = new MoveShopPermanentlyResolver(
-            new AppLoader($appDir),
-            $this->getContainer()->get('saas_app.repository'),
-            $registrationsService,
-            $this->systemConfigService
-        );
-
-        $moveShopPermanentlyResolver->resolve($this->context);
-
-        static::assertEquals($shopId, $this->shopIdProvider->getShopId());
-        static::assertNull($this->systemConfigService->get(ShopIdProvider::SHOP_DOMAIN_CHANGE_CONFIG_KEY));
+        static::assertNull($this->getInstalledApp($this->context));
     }
 
     private function changeAppUrl(): string
@@ -142,7 +106,7 @@ class MoveShopPermanentlyResolverTest extends TestCase
         return $shopId;
     }
 
-    private function getInstalledApp(Context $context): AppEntity
+    private function getInstalledApp(Context $context): ?AppEntity
     {
         /** @var EntityRepositoryInterface $appRepo */
         $appRepo = $this->getContainer()->get('saas_app.repository');
@@ -150,7 +114,6 @@ class MoveShopPermanentlyResolverTest extends TestCase
         $criteria = new Criteria();
         $criteria->addAssociation('integration');
         $apps = $appRepo->search($criteria, $context);
-        static::assertEquals(1, $apps->getTotal());
 
         return $apps->first();
     }

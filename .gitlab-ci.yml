@@ -52,6 +52,7 @@ cache:
         - composer dump-autoload -d custom/plugins/SaasConnect
         - php bin/console plugin:install --activate SaasConnect
         - ./psh.phar init-test-databases
+        - mkdir custom/apps
         - php -d pcov.enabled=1 -d pcov.directory=$CI_PROJECT_DIR
             vendor/bin/phpunit
             --configuration custom/plugins/SaasConnect/phpunit.xml.dist
