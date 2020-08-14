@@ -90,7 +90,7 @@ class AppDefinition extends EntityDefinition
             (new FkField('acl_role_id', 'aclRoleId', AclRoleDefinition::class))->addFlags(new Required()),
             new OneToOneAssociationField('aclRole', 'acl_role_id', 'id', AclRoleDefinition::class),
 
-            (new OneToManyAssociationField('customFieldSets', CustomFieldSetDefinition::class, 'app_id'))->addFlags(new CascadeDelete()),
+            (new OneToManyAssociationField('customFieldSets', CustomFieldSetDefinition::class, 'saas_app_id'))->addFlags(new CascadeDelete()),
 
             (new OneToManyAssociationField('webhooks', WebhookDefinition::class, 'app_id'))->addFlags(new CascadeDelete()),
 
