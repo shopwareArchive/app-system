@@ -312,6 +312,7 @@
 
         <service id="Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\AppUrlChangeResolverStrategy">
             <argument type="tagged" tag="shopware.saas.app_url_changed_resolver"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
 
         <service id="Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\MoveShopPermanentlyResolver">
