@@ -6,8 +6,10 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Test\TestCaseBase\AdminApiTestBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\PlatformRequest;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\AppUrlChangeResolverStrategy;
 use Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\MoveShopPermanentlyResolver;
+use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 
 class AppUrlChangeControllerTest extends TestCase
 {
@@ -28,6 +30,9 @@ class AppUrlChangeControllerTest extends TestCase
 
     public function testResolveWithExistingStrategy(): void
     {
+        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
+        $systemConfigService->set(ShopIdProvider::SHOP_DOMAIN_CHANGE_CONFIG_KEY, true);
+
         $url = '/api/v' . PlatformRequest::API_VERSION . '/app-system/app-url-change/resolve';
         $this->getBrowser()->request(
             'POST',
@@ -44,6 +49,9 @@ class AppUrlChangeControllerTest extends TestCase
 
     public function testResolveWithNotFoundStrategy(): void
     {
+        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
+        $systemConfigService->set(ShopIdProvider::SHOP_DOMAIN_CHANGE_CONFIG_KEY, true);
+
         $url = '/api/v' . PlatformRequest::API_VERSION . '/app-system/app-url-change/resolve';
         $this->getBrowser()->request(
             'POST',
@@ -63,6 +71,9 @@ class AppUrlChangeControllerTest extends TestCase
 
     public function testResolveWithoutStrategy(): void
     {
+        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
+        $systemConfigService->set(ShopIdProvider::SHOP_DOMAIN_CHANGE_CONFIG_KEY, true);
+
         $url = '/api/v' . PlatformRequest::API_VERSION . '/app-system/app-url-change/resolve';
         $this->getBrowser()->request(
             'POST',
