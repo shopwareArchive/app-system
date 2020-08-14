@@ -5,6 +5,7 @@ namespace Swag\SaasConnect\Test\Core\Framework\Api;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Test\TestCaseBase\AdminApiTestBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\AppUrlChangeResolverStrategy;
@@ -85,5 +86,40 @@ class AppUrlChangeControllerTest extends TestCase
 
         static::assertCount(1, $response['errors']);
         static::assertEquals('Parameter "strategy" is missing.', $response['errors'][0]['detail']);
+    }
+
+    public function testGetUrlDiff(): void
+    {
+        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
+        $systemConfigService->set(ShopIdProvider::SHOP_DOMAIN_CHANGE_CONFIG_KEY, true);
+
+        $oldUrl = 'http://old.com';
+        $systemConfigService->set(ShopIdProvider::SHOP_ID_SYSTEM_CONFIG_KEY, [
+            'app_url' => $oldUrl,
+            'value' => Uuid::randomHex(),
+        ]);
+
+        $url = '/api/v' . PlatformRequest::API_VERSION . '/app-system/app-url-change/url-difference';
+        $this->getBrowser()->request('GET', $url);
+        $response = json_decode($this->getBrowser()->getResponse()->getContent(), true);
+
+        static::assertEquals(200, $this->getBrowser()->getResponse()->getStatusCode());
+        static::assertEquals(['oldUrl' => $oldUrl, 'newUrl' => $_SERVER['APP_URL']], $response);
+    }
+
+    public function testGetUrlDiffWithoutUrlChange(): void
+    {
+        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
+
+        $oldUrl = 'http://old.com';
+        $systemConfigService->set(ShopIdProvider::SHOP_ID_SYSTEM_CONFIG_KEY, [
+            'app_url' => $oldUrl,
+            'value' => Uuid::randomHex(),
+        ]);
+
+        $url = '/api/v' . PlatformRequest::API_VERSION . '/app-system/app-url-change/url-difference';
+        $this->getBrowser()->request('GET', $url);
+
+        static::assertEquals(204, $this->getBrowser()->getResponse()->getStatusCode());
     }
 }

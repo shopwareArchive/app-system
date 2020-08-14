@@ -350,6 +350,7 @@
 
         <service id="Swag\SaasConnect\Core\Framework\Api\AppUrlChangeController" public="true">
             <argument type="service" id="Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\AppUrlChangeResolverStrategy"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
