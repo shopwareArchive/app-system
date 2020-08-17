@@ -21,8 +21,8 @@ class SaasConnect extends Plugin
         $connection = $this->container->get(Connection::class);
         $connection->executeUpdate('
             ALTER TABLE `custom_field_set`
-            DROP FOREIGN KEY `fk.custom_field_set.app_id`,
-            DROP COLUMN `app_id`;
+            DROP FOREIGN KEY `fk.custom_field_set.saas_app_id`,
+            DROP COLUMN `saas_app_id`;
         ');
         $connection->executeUpdate('
             DROP TABLE IF EXISTS

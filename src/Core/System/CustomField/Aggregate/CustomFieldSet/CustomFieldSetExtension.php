@@ -14,11 +14,11 @@ class CustomFieldSetExtension extends EntityExtension
     public function extendFields(FieldCollection $collection): void
     {
         $collection->add(
-            new FkField('app_id', 'appId', AppDefinition::class)
+            new FkField('saas_app_id', 'appId', AppDefinition::class)
         );
 
         $collection->add(
-            new ManyToOneAssociationField('app', 'app_id', AppDefinition::class)
+            new ManyToOneAssociationField('saas_app', 'saas_app_id', AppDefinition::class)
         );
     }
 
