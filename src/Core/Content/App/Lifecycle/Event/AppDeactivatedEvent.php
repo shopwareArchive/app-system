@@ -4,7 +4,7 @@ namespace Swag\SaasConnect\Core\Content\App\Lifecycle\Event;
 
 class AppDeactivatedEvent extends AppChangedEvent
 {
-    public const NAME = 'app_deactivated';
+    public const NAME = 'app.deactivated';
 
     public function getName(): string
     {
