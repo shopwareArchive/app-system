@@ -10,7 +10,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class AppDeletedEvent extends Event implements ShopwareEvent, Hookable
 {
-    public const NAME = 'app_deleted';
+    public const NAME = 'app.deleted';
 
     /**
      * @var string

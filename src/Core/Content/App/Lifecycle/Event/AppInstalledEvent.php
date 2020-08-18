@@ -4,7 +4,7 @@ namespace Swag\SaasConnect\Core\Content\App\Lifecycle\Event;
 
 class AppInstalledEvent extends ManifestChangedEvent
 {
-    public const NAME = 'app_installed';
+    public const NAME = 'app.installed';
 
     public function getName(): string
     {

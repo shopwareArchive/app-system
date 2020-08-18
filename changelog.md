@@ -32,6 +32,7 @@ All notable changes to this project will be documented in this file.
 - Disallowed declaration of an empty permission element in the manifest
 - CustomFieldSets can only be written by the app they belong to
 - Made `customer` and `customer_address` events hookable
+- Renamed `app_*` events to `app.*` events to fit with the general event naming schema
 
 ## 0.1.0
 
