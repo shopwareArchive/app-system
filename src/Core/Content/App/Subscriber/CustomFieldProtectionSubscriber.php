@@ -92,7 +92,7 @@ class CustomFieldProtectionSubscriber implements EventSubscriberInterface
         $id = Uuid::fromBytesToHex($command->getPrimaryKey()['id']);
         $fieldSet = $this->fetchCustomFieldSet($id, $context);
         /** @var AppEntity | null $app */
-        $app = $fieldSet->getExtension('saas_app');
+        $app = $fieldSet->getExtension('saasApp');
 
         return $app;
     }
@@ -100,7 +100,7 @@ class CustomFieldProtectionSubscriber implements EventSubscriberInterface
     private function fetchCustomFieldSet(string $id, Context $context): CustomFieldSetEntity
     {
         $criteria = new Criteria([$id]);
-        $criteria->addAssociation('saas_app');
+        $criteria->addAssociation('saasApp');
         /** @var CustomFieldSetEntity $fieldSet */
         $fieldSet = $this->customFieldSetRepo->search($criteria, $context)->first();
 
