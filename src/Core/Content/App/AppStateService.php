@@ -49,8 +49,8 @@ class AppStateService
             return;
         }
 
-        $this->themeLifecycleHandler->handleAppActivation($app, $context);
         $this->appRepo->update([['id' => $appId, 'active' => true]], $context);
+        $this->themeLifecycleHandler->handleAppActivation($app, $context);
 
         $this->eventDispatcher->dispatch(new AppActivatedEvent($appId, $context));
     }

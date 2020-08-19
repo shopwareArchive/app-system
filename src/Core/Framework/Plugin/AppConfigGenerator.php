@@ -5,6 +5,7 @@ namespace Swag\SaasConnect\Core\Framework\Plugin;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\BundleConfigGeneratorInterface;
 use Shopware\Storefront\Theme\StorefrontPluginRegistryInterface;
 use Swag\SaasConnect\Core\Content\App\AppCollection;
@@ -59,8 +60,11 @@ class AppConfigGenerator implements BundleConfigGeneratorInterface
      */
     private function getConfigForApps(array $config): array
     {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('active', true));
+
         /** @var AppCollection $apps */
-        $apps = $this->appRepository->search(new Criteria(), Context::createDefaultContext());
+        $apps = $this->appRepository->search($criteria, Context::createDefaultContext());
 
         /** @var AppEntity $app */
         foreach ($apps as $app) {
