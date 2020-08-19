@@ -34,4 +34,9 @@ class SaasConnect extends Plugin
                 `saas_app`;
         ');
     }
+
+    public function rebuildContainer(): bool
+    {
+        return false;
+    }
 }
