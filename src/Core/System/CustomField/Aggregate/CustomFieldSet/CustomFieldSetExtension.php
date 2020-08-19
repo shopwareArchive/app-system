@@ -18,7 +18,7 @@ class CustomFieldSetExtension extends EntityExtension
         );
 
         $collection->add(
-            new ManyToOneAssociationField('saas_app', 'saas_app_id', AppDefinition::class)
+            new ManyToOneAssociationField('saasApp', 'saas_app_id', AppDefinition::class)
         );
     }
 
