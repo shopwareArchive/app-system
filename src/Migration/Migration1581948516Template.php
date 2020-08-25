@@ -25,7 +25,7 @@ class Migration1581948516Template extends MigrationStep
               `updated_at` DATETIME(3) NULL,
               PRIMARY KEY (`id`),
               INDEX `idx.saas_template.path` (`path`(256)),
-              CONSTRAINT `fk.template.app_id` FOREIGN KEY (`app_id`) REFERENCES `saas_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+              CONSTRAINT `fk.saas_template.app_id` FOREIGN KEY (`app_id`) REFERENCES `saas_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
     }

@@ -26,9 +26,9 @@ class Migration1578889830ActionButton extends MigrationStep
                 `created_at` DATETIME(3) NOT NULL,
                 `updated_at` DATETIME(3) NULL,
                 PRIMARY KEY (`id`),
-                KEY `fk.app_action_button.app_id` (`app_id`),
-                CONSTRAINT `fk.app_action_button.app_id` FOREIGN KEY (`app_id`) REFERENCES `saas_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-                CONSTRAINT `uniq.app_action_button.action` UNIQUE (`action`, `app_id`)
+                KEY `fk.saas_app_action_button.app_id` (`app_id`),
+                CONSTRAINT `fk.saas_app_action_button.app_id` FOREIGN KEY (`app_id`) REFERENCES `saas_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+                CONSTRAINT `uniq.saas_app_action_button.action` UNIQUE (`action`, `app_id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
 
@@ -40,10 +40,10 @@ class Migration1578889830ActionButton extends MigrationStep
                 `saas_app_action_button_id` BINARY(16) NOT NULL,
                 `language_id` BINARY(16) NOT NULL,
                 PRIMARY KEY (`saas_app_action_button_id`,`language_id`),
-                KEY `fk.app_action_button_translation.saas_app_action_button_id` (`saas_app_action_button_id`),
-                KEY `fk.app_action_button_translation.language_id` (`language_id`),
-                CONSTRAINT `fk.app_action_button_translation.saas_app_action_button_id` FOREIGN KEY (`saas_app_action_button_id`) REFERENCES `saas_app_action_button` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-                CONSTRAINT `fk.app_action_button_translation.language_id` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+                KEY `fk.saas_app_action_button_translation.saas_app_action_button_id` (`saas_app_action_button_id`),
+                KEY `fk.saas_app_action_button_translation.language_id` (`language_id`),
+                CONSTRAINT `fk.saas_app_action_button_translation.saas_app_action_button_id` FOREIGN KEY (`saas_app_action_button_id`) REFERENCES `saas_app_action_button` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+                CONSTRAINT `fk.saas_app_action_button_translation.language_id` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
     }

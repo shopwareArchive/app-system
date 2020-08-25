@@ -38,11 +38,11 @@ export default class AppActionButtonService {
                     headers: this.basicHeaders,
                 },
             ).then(({ data }) => {
-                return this.getActionbuttonsFromRequest(data);
+                return this.getActionButtonsFromRequest(data);
             });
     }
 
-    getActionbuttonsFromRequest(data) {
+    getActionButtonsFromRequest(data) {
         if (!!data && !!data.actions) {
             return data.actions;
         }
