@@ -24,8 +24,8 @@ class Migration1581087930Webhook extends MigrationStep
                 `created_at` DATETIME(3) NOT NULL,
                 `updated_at` DATETIME(3) NULL,
                 PRIMARY KEY (`id`),
-                CONSTRAINT `fk.webhook.app_id` FOREIGN KEY (`app_id`) REFERENCES `saas_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-                CONSTRAINT `uniq.webhook.name` UNIQUE (`name`, `app_id`)
+                CONSTRAINT `fk.saas_webhook.app_id` FOREIGN KEY (`app_id`) REFERENCES `saas_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+                CONSTRAINT `uniq.saas_webhook.name` UNIQUE (`name`, `app_id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
     }
