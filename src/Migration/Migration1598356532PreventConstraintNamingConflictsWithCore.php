@@ -17,60 +17,72 @@ class Migration1598356532PreventConstraintNamingConflictsWithCore extends Migrat
             'json.app.modules' => [
                 'newName' => 'json.saas_app.modules',
                 'constraint' => '`json.saas_app.modules` CHECK (JSON_VALID(`modules`))',
+                'constraintType' => 'CHECK',
             ],
             'fk.app.integration_id' => [
                 'newName' => 'fk.saas_app.integration_id',
                 'constraint' => '`fk.saas_app.integration_id` FOREIGN KEY (`integration_id`) REFERENCES `integration` (`id`) ON DELETE CASCADE ON UPDATE CASCADE',
+                'constraintType' => 'FOREIGN KEY',
             ],
             'fk.app.acl_role_id' => [
                 'newName' => 'fk.saas_app.acl_role_id',
                 'constraint' => '`fk.saas_app.acl_role_id` FOREIGN KEY (`acl_role_id`) REFERENCES `acl_role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE',
+                'constraintType' => 'FOREIGN KEY',
             ],
         ],
         'saas_app_translation' => [
             'fk.app_translation.saas_app_id' => [
                 'newName' => 'fk.saas_app_translation.saas_app_id',
                 'constraint' => '`fk.saas_app_translation.saas_app_id` FOREIGN KEY (`saas_app_id`) REFERENCES `saas_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE',
+                'constraintType' => 'FOREIGN KEY',
             ],
             'fk.app_translation.language_id' => [
                 'newName' => 'fk.saas_app_translation.language_id',
                 'constraint' => '`fk.saas_app_translation.language_id` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE',
+                'constraintType' => 'FOREIGN KEY',
             ],
         ],
         'saas_app_action_button' => [
             'fk.app_action_button.app_id' => [
                 'newName' => 'fk.saas_app_action_button.app_id',
                 'constraint' => '`fk.saas_app_action_button.app_id` FOREIGN KEY (`app_id`) REFERENCES `saas_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE',
+                'constraintType' => 'FOREIGN KEY',
             ],
             'uniq.app_action_button.action' => [
                 'newName' => 'uniq.saas_app_action_button.action',
                 'constraint' => '`uniq.saas_app_action_button.action` UNIQUE (`action`, `app_id`)',
+                'constraintType' => 'INDEX',
             ],
         ],
         'saas_app_action_button_translation' => [
             'fk.app_action_button_translation.saas_app_action_button_id' => [
                 'newName' => 'fk.saas_app_action_button_translation.saas_app_action_button_id',
                 'constraint' => '`fk.saas_app_action_button_translation.saas_app_action_button_id` FOREIGN KEY (`saas_app_action_button_id`) REFERENCES `saas_app_action_button` (`id`) ON DELETE CASCADE ON UPDATE CASCADE',
+                'constraintType' => 'FOREIGN KEY',
             ],
             'fk.app_action_button_translation.language_id' => [
                 'newName' => 'fk.saas_app_action_button_translation.language_id',
                 'constraint' => '`fk.saas_app_action_button_translation.language_id` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE',
+                'constraintType' => 'FOREIGN KEY',
             ],
         ],
         'saas_webhook' => [
             'fk.webhook.app_id' => [
                 'newName' => 'fk.saas_webhook.app_id',
                 'constraint' => '`fk.saas_webhook.app_id` FOREIGN KEY (`app_id`) REFERENCES `saas_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE',
+                'constraintType' => 'FOREIGN KEY',
             ],
             'uniq.webhook.name' => [
                 'newName' => 'uniq.saas_webhook.name',
                 'constraint' => '`uniq.saas_webhook.name` UNIQUE (`name`, `app_id`)',
+                'constraintType' => 'INDEX',
             ],
         ],
         'saas_template' => [
             'fk.template.app_id' => [
                 'newName' => 'fk.saas_template.app_id',
                 'constraint' => '`fk.saas_template.app_id` FOREIGN KEY (`app_id`) REFERENCES `saas_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE',
+                'constraintType' => 'FOREIGN KEY',
             ],
         ],
     ];
@@ -102,9 +114,9 @@ class Migration1598356532PreventConstraintNamingConflictsWithCore extends Migrat
 
                 $connection->executeQuery(sprintf('
                         ALTER TABLE `%s`
-                        DROP CONSTRAINT `%s`,
+                        DROP %s `%s`,
                         ADD CONSTRAINT %s;
-                    ', $table, $old, $new['constraint']));
+                    ', $table, $new['constraintType'], $old, $new['constraint']));
             }
         }
     }
