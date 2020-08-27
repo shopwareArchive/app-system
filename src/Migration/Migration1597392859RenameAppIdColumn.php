@@ -27,7 +27,7 @@ class Migration1597392859RenameAppIdColumn extends MigrationStep
 
         $connection->executeUpdate('
             ALTER TABLE `custom_field_set`
-            DROP FOREIGN KEY `fk.custom_field_set.app_id`
+            DROP FOREIGN KEY `fk.custom_field_set.app_id`,
             CHANGE COLUMN `app_id` `saas_app_id` BINARY(16) NULL,
             ADD CONSTRAINT `fk.custom_field_set.saas_app_id` FOREIGN KEY (`saas_app_id`) REFERENCES `saas_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
         ');
