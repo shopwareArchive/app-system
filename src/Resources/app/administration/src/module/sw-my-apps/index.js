@@ -3,8 +3,8 @@ import swMyAppsPage from './page/sw-my-apps-page';
 export default {
     type: 'plugin',
     name: 'sw-my-apps',
-    title: 'sw-saas-connect.module.sw-my-apps.general.mainMenuItemGeneral',
-    description: 'sw-saas-connect.module.sw-my-apps.general.moduleDescription',
+    title: 'sw-connect.module.sw-my-apps.general.mainMenuItemGeneral',
+    description: 'sw-connect.module.sw-my-apps.general.moduleDescription',
     icon: 'default-view-grid',
     color: '#9AA8B5',
     routePrefixPath: 'my-apps',
@@ -31,7 +31,7 @@ export default {
 
     navigation: [{
         id: 'sw-my-apps',
-        label:'sw-saas-connect.module.sw-my-apps.general.mainMenuItemGeneral',
+        label:'sw-connect.module.sw-my-apps.general.mainMenuItemGeneral',
         icon: 'default-view-grid',
         color: '#9AA8B5',
         position: 100,

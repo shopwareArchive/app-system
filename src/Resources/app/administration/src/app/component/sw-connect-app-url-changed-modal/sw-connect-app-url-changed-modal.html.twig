@@ -1,0 +1,47 @@
+<sw-modal class="sw-connect-app-url-changed-modal"
+          variant="large"
+          :title="$tc('sw-connect.component.sw-connect-app-url-changed-modal.title')"
+          :isLoading="isLoading"
+          @modal-close="closeModal">
+    <template #default>
+        <div class="sw-connect-app-url-changed-modal__content">
+            <div class="sw-connect-app-url-changed-modal__content-description">
+                <h3>{{ $tc('sw-connect.component.sw-connect-app-url-changed-modal.explanationHeader') }}</h3>
+                <div class="sw-connect-app-url-changed-modal__content-description-change">
+                    <span v-html="$t('sw-connect.component.sw-connect-app-url-changed-modal.oldLabel', urlDiff)"></span><br>
+                    <span v-html="$t('sw-connect.component.sw-connect-app-url-changed-modal.newLabel', urlDiff)"></span>
+                </div>
+                {{ $tc('sw-connect.component.sw-connect-app-url-changed-modal.explanation') }}
+            </div>
+            <div v-for="strategy in strategies" class="sw-connect-app-url-changed-modal__content-choices">
+                <sw-button @click="selectedStrategy = strategy" size="large" block class="sw-connect-app-url-changed-modal__content-migration-strategy" :class="getActiveStyle(strategy)">
+                    <template #default>
+                        <template v-if="isSelected(strategy)">
+                            <sw-icon small color="#189eff" name="default-basic-shape-circle-filled"></sw-icon>
+                            <sw-icon class="sw-connect-app-url-changed-modal__migration-button-center"
+                                     small
+                                     color="#ffffff"
+                                     name="default-basic-shape-circle-filled">
+                            </sw-icon>
+                        </template>
+                        <sw-icon v-else small name="default-basic-shape-circle"></sw-icon>
+                        <span class="sw-connect-app-url-changed-modal__content-choices-label">{{ getStrategyLabel(strategy) }}</span>
+                        <span class="sw-connect-app-url-changed-modal__content-choices-description">{{ getStrategyDescription(strategy) }}</span>
+                    </template>
+                </sw-button>
+            </div>
+        </div>
+    </template>
+
+    <template #modal-footer>
+        <sw-button @click="closeModal">
+            {{ $tc('sw-connect.component.sw-connect-app-url-changed-modal.cancellation') }}
+        </sw-button>
+
+        <sw-button
+            variant="primary"
+            @click="confirm">
+            {{ $tc('sw-connect.component.sw-connect-app-url-changed-modal.confirmation') }}
+        </sw-button>
+    </template>
+</sw-modal>

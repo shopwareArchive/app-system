@@ -1,7 +1,29 @@
 {
-    "sw-saas-connect": {
+    "sw-connect": {
         "component": {
-
+            "sw-connect-app-url-changed-modal": {
+                "MoveShopPermanently": {
+                    "name": "Migriere Deine Apps zur neuen Domain",
+                    "description": "Verbindet Deine Apps mit der neuen Domain. Dadurch werden alle Apps für die alte Domain deaktiviert."
+                },
+                "ReinstallApps": {
+                    "name": "Installiere Deine Apps neu",
+                    "description": "Verbindet Deine Apps mit der neuen und der alten Domain. Für kostenpflichtige Apps können zusätzliche Gebühren anfallen."
+                },
+                "UninstallApps": {
+                    "name": "Deinstalliere Deine Apps",
+                    "description": "Löscht alle App-Daten der neuen Domain. Die mit der alten Domain verbundenen Apps funktionieren weiterhin."
+                },
+                "title": "Domain-Änderung wurde festgestellt",
+                "oldLabel": "<b>Alte Domain:</b> {oldUrl}",
+                "newLabel": "<b>Neue Domain:</b> {newUrl}",
+                "explanationHeader": "Deine Shop-Domain hat sich geändert.",
+                "explanation": "Die installierten Apps sind immer noch mit der alten Domain verbunden und funktionieren mit der neuen Domain noch nicht. Du hast drei Optionen um fortzufahren:",
+                "confirmation": "Bestätigen",
+                "cancellation": "Abbrechen",
+                "success": "Domain Änderung erfolgreich durchgeführt.",
+                "error": "Keine Änderung durchgeführt."
+            }
         },
         "module": {
             "sw-my-apps": {

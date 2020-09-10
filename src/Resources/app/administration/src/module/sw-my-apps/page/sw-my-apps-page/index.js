@@ -38,14 +38,14 @@ export default {
         appDefinition() {
             return Shopware.State.get('connect-apps').apps.find((app) => {
                 return app.name === this.appName;
-            }); 
+            });
         },
 
         moduleDefinition() {
             if (!this.appDefinition) {
                 return null;
             }
-            
+
             return this.appDefinition.modules.find((module) => {
                 return module.name === this.moduleName;
             });
@@ -57,12 +57,12 @@ export default {
 
         heading() {
             if (this.suspend) {
-                return this.$tc('sw-saas-connect.module.sw-my-apps.general.mainMenuItemGeneral');
+                return this.$tc('sw-connect.module.sw-my-apps.general.mainMenuItemGeneral');
             }
 
             const appLabel = this.translate(this.appDefinition.label);
             const moduleLabel = this.translate(this.moduleDefinition.label);
-            
+
             const spacer = !appLabel || !moduleLabel ? '' : ' - ';
 
             return `${appLabel}${spacer}${moduleLabel}`;

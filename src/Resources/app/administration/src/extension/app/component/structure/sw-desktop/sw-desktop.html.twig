@@ -1,0 +1,4 @@
+{% block sw_desktop_content %}
+    {% parent %}
+    <sw-connect-app-url-changed-modal v-if="urlDiff !== null" :urlDiff="urlDiff" @modal-close="closeModal"></sw-connect-app-url-changed-modal>
+{% endblock %}

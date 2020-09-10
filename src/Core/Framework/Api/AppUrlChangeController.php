@@ -5,8 +5,10 @@ namespace Swag\SaasConnect\Core\Framework\Api;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\AppUrlChangeResolverNotFoundException;
 use Swag\SaasConnect\Core\Framework\AppUrlChangeResolver\AppUrlChangeResolverStrategy;
+use Swag\SaasConnect\Core\Framework\ShopId\ShopIdProvider;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,9 +25,17 @@ class AppUrlChangeController extends AbstractController
      */
     private $appUrlChangeResolverStrategy;
 
-    public function __construct(AppUrlChangeResolverStrategy $appUrlChangeResolverStrategy)
-    {
+    /**
+     * @var SystemConfigService
+     */
+    private $systemConfigService;
+
+    public function __construct(
+        AppUrlChangeResolverStrategy $appUrlChangeResolverStrategy,
+        SystemConfigService $systemConfigService
+    ) {
         $this->appUrlChangeResolverStrategy = $appUrlChangeResolverStrategy;
+        $this->systemConfigService = $systemConfigService;
     }
 
     /**
@@ -56,5 +66,23 @@ class AppUrlChangeController extends AbstractController
         }
 
         return new Response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Route("api/v{version}/app-system/app-url-change/url-difference", name="api.app_system.app-url-difference", methods={"GET"})
+     */
+    public function getUrlDifference(): Response
+    {
+        if (!$this->systemConfigService->get(ShopIdProvider::SHOP_DOMAIN_CHANGE_CONFIG_KEY)) {
+            return new Response(null, Response::HTTP_NO_CONTENT);
+        }
+        $oldUrl = $this->systemConfigService->get(ShopIdProvider::SHOP_ID_SYSTEM_CONFIG_KEY)['app_url'];
+
+        return new JsonResponse(
+            [
+                'oldUrl' => $oldUrl,
+                'newUrl' => $_SERVER['APP_URL'],
+            ]
+        );
     }
 }
