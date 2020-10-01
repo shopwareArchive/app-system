@@ -76,7 +76,9 @@ class AppUrlChangeController extends AbstractController
         if (!$this->systemConfigService->get(ShopIdProvider::SHOP_DOMAIN_CHANGE_CONFIG_KEY)) {
             return new Response(null, Response::HTTP_NO_CONTENT);
         }
-        $oldUrl = $this->systemConfigService->get(ShopIdProvider::SHOP_ID_SYSTEM_CONFIG_KEY)['app_url'];
+        /** @var array<string, string>  $shopIdConfig */
+        $shopIdConfig = $this->systemConfigService->get(ShopIdProvider::SHOP_ID_SYSTEM_CONFIG_KEY);
+        $oldUrl = $shopIdConfig['app_url'];
 
         return new JsonResponse(
             [

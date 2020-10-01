@@ -33,6 +33,8 @@ All notable changes to this project will be documented in this file.
 - CustomFieldSets can only be written by the app they belong to
 - Made `customer` and `customer_address` events hookable
 - Renamed `app_*` events to `app.*` events to fit with the general event naming schema
+- Renamed `appId` property to `saasAppId` in CustomFieldSetExtension
+- Changed handshake to use decoded shop-url in generate `shopware-app-signature`
 
 ## 0.1.0
 

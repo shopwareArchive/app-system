@@ -62,7 +62,7 @@ class CustomFieldSet extends XmlElement
                 'translated' => true,
             ],
             'relations' => $relations,
-            'appId' => $appId,
+            'saasAppId' => $appId,
             'customFields' => $customFields,
         ];
     }

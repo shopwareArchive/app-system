@@ -52,7 +52,9 @@ class MoveShopPermanentlyResolver extends AppUrlChangeResolver
 
     public function resolve(Context $context): void
     {
-        $shopId = $this->systemConfigService->get(ShopIdProvider::SHOP_ID_SYSTEM_CONFIG_KEY)['value'];
+        /** @var array<string, string>  $shopIdConfig */
+        $shopIdConfig = $this->systemConfigService->get(ShopIdProvider::SHOP_ID_SYSTEM_CONFIG_KEY);
+        $shopId = $shopIdConfig['value'];
 
         $this->systemConfigService->set(ShopIdProvider::SHOP_ID_SYSTEM_CONFIG_KEY, [
             'app_url' => $_SERVER['APP_URL'],

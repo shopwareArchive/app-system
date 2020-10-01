@@ -80,7 +80,8 @@ class AppConfigGeneratorTest extends TestCase
         $configurationGenerator = new AppConfigGenerator(
             new BundleConfigGenerator(
                 $this->getContainer()->get('kernel'),
-                $this->getContainer()->get('plugin.repository')
+                $this->getContainer()->get('plugin.repository'),
+                null
             ),
             $this->getContainer()->get('saas_app.repository'),
             null,

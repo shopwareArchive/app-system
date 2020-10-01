@@ -22,6 +22,7 @@ class ShopIdProvider
 
     public function getShopId(): string
     {
+        /** @var array<string, string> $shopId */
         $shopId = $this->systemConfigService->get(self::SHOP_ID_SYSTEM_CONFIG_KEY);
 
         if (!$shopId) {
