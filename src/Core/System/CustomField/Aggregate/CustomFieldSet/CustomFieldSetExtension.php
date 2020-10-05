@@ -14,7 +14,7 @@ class CustomFieldSetExtension extends EntityExtension
     public function extendFields(FieldCollection $collection): void
     {
         $collection->add(
-            new FkField('saas_app_id', 'appId', AppDefinition::class)
+            new FkField('saas_app_id', 'saasAppId', AppDefinition::class)
         );
 
         $collection->add(

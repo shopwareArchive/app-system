@@ -31,7 +31,7 @@ class CustomFieldPersister
     private function deleteCustomFieldsForApp(string $appId, Context $context): void
     {
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('appId', $appId));
+        $criteria->addFilter(new EqualsFilter('saasAppId', $appId));
 
         /** @var array<string> $ids */
         $ids = $this->customFieldSetRepository->searchIds($criteria, $context)->getIds();

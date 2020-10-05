@@ -599,7 +599,7 @@ class AppLifecycleTest extends TestCase
         $customFieldSetRepository = $this->getContainer()->get('custom_field_set.repository');
 
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('appId', $appId));
+        $criteria->addFilter(new EqualsFilter('saasAppId', $appId));
         $criteria->addAssociation('relations');
 
         /** @var CustomFieldSetCollection $customFieldSets */

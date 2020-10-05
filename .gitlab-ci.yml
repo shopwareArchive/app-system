@@ -28,7 +28,7 @@ cache:
         - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch $PLATFORM_BRANCH
         - unzip -q plugin.zip -d development/custom/plugins/SaasConnect
         - cd development
-        - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
+        - composer install --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
         - cp -v dev-ops/gitlab/.psh.yaml.override .
         - /entrypoint supervisord > /dev/null 2>&1 &
 
@@ -98,7 +98,7 @@ EasyCodingStandard:
             - master
     image: "${IMAGE_NAME}:latest"
     script:
-        - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
+        - composer install --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
         - ecs check .
 
 
@@ -135,7 +135,7 @@ PhpInsights:
             - master
     image: "${IMAGE_NAME}:latest"
     script:
-        - composer install --ignore-platform-reqs --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
+        - composer install --no-interaction --optimize-autoloader --no-suggest --no-scripts --no-progress
         - phpinsights --no-interaction --min-quality=100 --min-complexity=75 --min-architecture=100 --min-style=100
 
 Eslint Administration:
@@ -175,7 +175,7 @@ Unit 6.3:
             - merge_requests
             - master
     variables:
-        PLATFORM_BRANCH: "6.3.0.0"
+        PLATFORM_BRANCH: "6.3.2.0"
         DEVELOPMENT_BRANCH: "master"
 
 Jest (Administration):
